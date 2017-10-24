@@ -1,0 +1,389 @@
+---
+  title: Johdanto
+---
+
+<% partial 'partials/material_heading' do %>
+  Yleistä
+<% end %>
+
+<p>
+  Kurssilla tutustutaan nykyaikaisten, skaalautuvien ja virheenkestävien web-palvelinohjelmistojen toteuttamiseen, testaamiseen ja julkaisemiseen. 
+</p>
+
+<p>
+  Huom! Sivu kesken
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Osaamistavoitteet (alustava)
+<% end %>
+
+<table class="table">
+  <tr>
+    <th>
+      Osa (Viikko)
+    </th>
+    <th>
+      Teema
+    </th>
+    <th>
+      Osaamistavoitteet
+    </th>
+  </tr>
+  <tr>
+    <td>
+      -
+    </td>
+    <td>
+      Esitiedot
+    </td>
+    <td>
+      Olio-ohjelmointi ja ohjelmointiympäristön käyttö, yksikkötestaus, versionhallinta, relaatiotietokantojen toiminta.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      1
+    </td>
+    <td>
+      Johdanto web-sovellusten toimintaan.
+    </td>
+    <td>
+      Osaa toteuttaa yhtä tietokantataulua käyttävän web-sovelluksen. Osaa HTML:n perusteet. Tuntee Mavenin, Spring Bootin, Thymeleafin ja Spring Data JPAn.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      2
+    </td>
+    <td>
+      Internetin perusosat. Kerrosarkkitehtuuri ja MVC-malli. Pyynnön kulku web-sovelluksessa. Tietokannat ja tietokanta-abstraktiot.
+    </td>
+    <td>
+      Ymmärtää asiakas-palvelin -mallin. Tietää ensisijaiset kerrosarkkitehtuurin ja MVC-mallin edut. Ymmärtää miten käyttäjän tekemään pyyntöön muodostuu vastaus palvelimella. Osaa luoda web-sovelluksen, joka käyttää useampaa tietokantataulua. Ymmärtää tietokantatransaktioiden käytön ja osaa käyttää niitä web-sovelluksessa.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      3
+    </td>
+    <td>
+      HTTP-protokolla ja käyttäjän tilan ylläpito. Konfiguraatioprofiilit. Web-sovellusten testaaminen.
+    </td>
+    <td>
+      Ymmärtää HTTP-protokollan hyödyt ja rajoitteet. Ymmärtää mitä evästeet ovat, miten ne toimivat, sekä tietää niihin liittyvät uhkat ja lakitekniset rajoitteet. Osaa luoda kirjautuneen käyttäjän muistavan web-sovelluksen. Osaa kirjoittaa automaattisia yksikkötestejä web-sovellukselle. Ymmärtää paikallisen kehitys- ja testausympäristön hyödyt.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      4
+    </td>
+    <td>
+      Web-sovelluskehitykseen liittyvä ohjelmistokehitysprosessi. Tietokantamigraatiot. REST-arkkitehtuurimalli.
+    </td>
+    <td>
+      Ymmärtää tarpeen web-sovellusten kehitysprosessin automatisoinnille sekä web-sovellusten jatkuvalle inkrementaaliselle kehitykselle. Ymmärtää versionhallintapalvelun (esim. Github), sovelluksen testejä suorittavan integraatiopalvelun (esim. Travis CI) sekä testi- ja tuotantoympäristön (esim. Heroku) yhteistyön. Hyödyntää valmiita työvälineitä tietokantaskeeman päivittämiseen ohjelmistokehityksen yhteydessä. Ymmärtää REST-arkkitehtuurimallin perusperiaatteet.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      5
+    </td>
+    <td>
+      Javascript-pohjaisten selainohjelmistojen ja palvelinohjelmistojen yhteistyö. Web-sovellusten tietoturva.
+    </td>
+    <td>
+      Osaa tehdä selainohjelmistosta Javascript-pyynnön palvelimelle. Päivittää näkymän Javascript-pyynnön vastauksen perusteella. Tietää web-sovellusten tyypillisimmät haavoittuvuudet sekä niihin vaikuttavat tekijät (OWASP). Välttää tyypillisimmät haavoittuvuudet omassa ohjelmistossaan. Osaa etsiä haavoittuvuuksia muiden ohjelmistoista sekä ehdottaa niihin korjauksia.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      6
+    </td>
+    <td>
+      Web-sovellusten skaalaaminen isoille käyttäjäjoukoille. Asynkroniset metodikutsut. Palveluperustaiset arkkitehtuurit ja mikroarkkitehtuurit.
+    </td>
+    <td>
+      Ymmärtää sovelluksen vasteajan ja käyttäjäkokemuksen yhteyden. Ymmärtää web-sovellusten pullonkaulat ja osaa ehdottaa tapoja pullonkaulojen kiertämiseen. Ymmärtää vertikaaliseen ja horisontaaliseen skaalautumiseen liittyvät hyödyt ja haasteet. Ymmärtää palveluperustaisten arkkitehtuurien ja mikroarkkitehtuurien perusperiaatteet. Osaa tehdä web-sovelluksen, joka käyttää ja kerää tietoa useammasta erillisestä web-sovelluksesta.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      7
+    </td>
+    <td>
+      Reaktiivinen ohjelmointi. Kertaus.
+    </td>
+    <td>
+      Ymmärtää reaktiivisen ohjelmoinnin perusteet ja osaa tehdä yksinkertaisen palvelinohjelmiston reaktiivisella ohjelmointiparadigmalla.
+    </td>
+  </tr>
+</table>
+
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Kurssin suorittaminen
+<% end %>
+
+<p>
+  Kurssi suoritetaan viikoittaisilla harjoitustehtävillä, henkilökohtaisella projektilla sekä kokeella, joiden lisäksi kurssin suoritetaan kolmen muun projektin vertaisarviointi. Kurssilla on yhteensä neljä luentokertaa: 2.11., 9.11., 23.11., ja 30.11. Luennot järjestetään Kumpulan Exactumin salissa CK112 torstaisin klo 12:15-14:00.
+</p>
+
+<p>
+  Viikoittaisten harjoitustehtävien palautusaika tiistaisin klo 23:59. Ensimmäisen tehtäväsarjan viimeinen palautuspäivämäärä on 7.11., toisen tehtäväsarjan viimeinen palautuspäivämäärä on 14.11. jne. Tehtäviä julkaistaan kurssin edetessä.
+</p>
+
+<p>
+  Harjoitusten tekemiseen saa apua Kumpulan kampuksella maanantaisin klo 14-18 ja torstaisin klo 14-16. Tarkempi sali kerrotaan kurssin alussa.
+</p>
+
+<p>
+  Kurssin koe järjestetään keskiviikkona 20.12. klo 9:00 salissa A111.
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Harjoitustyö
+<% end %>
+
+<p>
+  Kurssiin liittyvä harjoitustyö julkaistaan 17.11. Harjoitustyö tulee palauttaa 8.12. mennessä ja harjoitustöiden vertaisarviot tulee tehdä 15.12. mennessä.
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Tukiväylät
+<% end %>
+
+<p>
+  Kurssin ensisijainen tukiväylä on Kumpulan kampuksella Exactumissa tapahtuva ohjaus. Ohjaustilaisuudet ovat avoimia tilaisuuksia, johon saa tulla vapaasti kysymään apua tehtäviin tai juttelemaan tehtävistä.
+</p>
+
+<p>TODO</p>
+
+<p>
+  Verkon yli nopein tapa avun kysymiseen on kurssin keskustelukanava <code>#mooc.fi</code>, johon pääsee helpointen kanavan Matrix-huoneen kautta: <a href="https://riot.im/app/#/room/#mooc.fi:matrix.org"  target="_blank" rel="noopener">https://riot.im/app/#/room/#mooc.fi:matrix.org</a>. Jos et pidä modernista teknologiasta, voit myös liityä huoneeseen Ircnetin kautta seuraamalla näitä ohjeita: <a href="http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/" target="_blank" rel="noopener">http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/</a>.
+</p>
+
+<p>
+  Huomaathan, että yllä mainitun kanavan osallistujat ovat kanssaopiskelijoita. Toiminta perustuu vapaaehtoisuuteen.
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Yhteistyö
+<% end %>
+
+<p>
+  Yhteistyö on kurssin tehtäviä tehdessä sallittua ja suositeltavaa. Hyvä yhteistyö keskittyy jokaisen osapuolen oppimiseen ja parantaa oppimistuloksia. Jos teet tehtäviä yhdessä muiden kanssa, sinun tulee kuitenkin tehdä ja palauttaa omat ratkaisusi itse.
+</p>
+
+<p>
+  Hyvä ohjesääntö yhteistyöhön on ns. <a href="http://courses.cs.washington.edu/courses/cse100/99au/syllabus.htm#OTHER" target="_blank" rel="noopener">Gilligan's Island -sääntö</a>:
+</p>
+
+<p>
+  <em>
+
+    <strong>The Gilligan's Island Rule</strong>: You are free to meet with fellow students(s) and discuss an assignment with them. Writing on a board or shared piece of paper during the meeting is acceptable; however, you should not take any written (electronic or otherwise) record away from the meeting. Everything that you derive from the collaboration should be in your head. After the meeting, engage in at least a half-hour of mind-numbing activity (like watching an episode of Gilligan's Island), before starting to work on the assignment. This will assure that you are able to reconstruct what you learned from the meeting by yourself.
+
+  </em>
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Opintovilpistä
+<% end %>
+
+<p>
+  Kurssilla seurataan Helsingin yliopiston opintokäytäntöjä. Plagiarismi ja opintovilppi, eli esimerkiksi netissä olevien tai kaverilta saatujen vastausten kopiointi ja niiden palauttaminen omana työnä on kurssilla kiellettyä.
+</p>
+
+<p>
+  Todettu opintovilppi johtaa kurssisuorituksen hylkäämiseen ja toistuva opintovilppi voi johtaa opinto-oikeuden määräaikaiseen menettämiseen.  Lue lisää osoitteesta <a href="http://blogs.helsinki.fi/alakopsaa/opiskelijalle/"  target="_blank" >http://blogs.helsinki.fi/alakopsaa/opiskelijalle/</a>.
+</p>
+
+<%= partial 'partials/quiz', locals: { id: '587bc5f11b527d0004a7971c' } %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Arvostelu
+<% end %>
+
+<p>
+  Kurssin arvostelu perustuu viikoittaisiin harjoitustehtäviin (40% arvostelusta), projektiin ja vertaisarviointeihin (30% arvostelusta) ja kokeeseen (30% arvostelusta). Kurssia ei voi suorittaa erillistentillä.
+</p>
+
+<p>
+  Viikoittaisista harjoitustehtävistä saa täydet tehtäväpisteet tekemällä 90% kunkin osan tehtävistä. Huomaathan, että jotkut tehtävät painavat arvostelussa enemmän kuin toiset. Kurssin seitsemännen viikon tehtävät ovat bonustehtäviä, joilla voi paikata väliin jääneitä ohjelmointitehtäviä tai heikosti mennyttä kurssiprojektia.
+</p>
+
+<p>
+  <strong>Huom!</strong> Edellä kuvattu arvostelu olettaa, että hyväksyt analytiikkadatan keräämisen kurssin tehtävistä. Analytiikkadata sisältää ajoittain kerättäviä aikaleimattuja kopioita työstämästäsi tehtävästä sekä tietoa kurssimateriaalin käytöstä. Analytiikkadataa ei kerätä henkilökohtaisista projekteistasi tai muualta koneeltasi.
+</p>
+
+
+<% partial 'partials/material_heading' do %>
+  Tunnukset ja työvälineet
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Käyttäjätunnuksen luominen
+<% end %>
+
+<p>
+  Kurssilla tarvitaan käyttäjätunnus Test My Code (TMC) -järjestelmään, jota käytetään tehtävien automaattiseen arviointiin. Käyttäjätunnuksella voit myös kirjautua tähän materiaaliin, jolloin pääset vastaamaan materiaalissa oleviin kyselyihin.
+</p>
+
+<p>
+  <strong>Huom!</strong> Jos olet Helsingin yliopiston opiskelija, aseta käyttäjätunnukseksesi opiskelijanumerosi. Näin opintopisteiden liittäminen kurssisuoritukseen helpottuu merkittävästi. Jos taas et ole Helsingin yliopiston opiskelija, keksi itsellesi sopiva käyttäjätunnus. Kun jatkossa kysymme TMC-tunnustasi, tarkoitamme sillä tätä käyttäjätunnusta.
+</p>
+
+<p>
+  Käyttäjätunnuksen luominen onnistuu sivulla <a href="https://tmc.mooc.fi/user/new" target="_blank" rel="noopener">https://tmc.mooc.fi/user/new</a>.
+</p>
+
+<p>
+  Kun olet luonut käyttäjätunnuksen, voit kirjautua tähän materiaaliin materiaalin oikeassa ylälaidassa olevan "Kirjaudu sisään"-napin kautta.
+</p>
+
+<% partial 'partials/material_sub_heading' do %>
+  Ohjelmointiympäristön asentaminen
+<% end %>
+
+
+<p>
+  Kurssin ohjelmointiympäristönä käytetään NetBeans-nimistä ohjelmointiympäristöä, johon lisätään TMC-niminen liitännäinen. Nämä työvälineet löytyvät Kumpulan kampuksen Exactumin mikroluokista B221 ja BK107 asennettuna nimellä "TMCBeans".
+</p>
+
+<p>
+  Jos teet kurssia kotoa, tulee sinun asentaa koneellesi sekä tuki Java-ohjelmien kehittämiselle, että ohjelmien kehittämiseen käytettävä NetBeans with TMC-ympäristö.
+</p>
+
+<ul>
+
+  <li>
+    <strong>Javan asentaminen (* linux, kts. alla!)</strong>: lataa uusin Javan kehitysympäristö (Java SE Development Kit 8u112) osoitteesta <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. Lataamasi versio riippuu käytössäsi olevasta käyttöjärjestelmästä, esimerkiksi Macintosh-käyttäjät lataavat tiedoston <code>jdk-8u112-macosx-x64.dmg</code> ja 64-bittisen Windows-käyttöjärjestelmän käyttäjät lataavat tiedoston <code>jdk-8u112-windows-x64.exe</code>. Kun olet ladannut tiedoston, asenna se koneellesi.
+  </li>
+
+  <li>
+    <strong>NetBeans with TMC:n asentaminen</strong>: Mene osoitteeseen <a href="http://update.testmycode.net/installers/tmc-netbeans_org_mooc/" target="_blank" rel="noopener">http://update.testmycode.net/installers/tmc-netbeans_org_mooc/</a>. Osoitteessa on listattuna eri asennusohjelmat eri käyttöjärjestelmille -- valitse listalla olevista sopivin ja lataa se. Esimerkiksi Windows-käyttäjät lataavat tiedoston <code>http://update.testmycode.net/installers/tmc-netbeans_org_mooc/tmc-netbeans_org_mooc_tmcbeans-windows.exe</code> ja Linuxilla <code>http://update.testmycode.net/installers/tmc-netbeans_org_mooc/tmc-netbeans_org_mooc_tmcbeans-windows.sh</code> jne. Kun tiedoston lataaminen on valmis, asenna sovellus koneellesi.
+  </li>
+</ul>
+
+
+<p>
+  <strong>(*)</strong> Linux-koneilla OpenJDK:n asentaminen on todennäköisesti helpompaa kuin yllämainitun Oraclen Java-version. OpenJDK:n asennus tapahtuu Ubuntussa komentoriviltä seuraavalla komennolla:
+</p>
+
+<pre>
+sudo apt-get install openjdk-8-jdk
+</pre>
+
+<p>
+  Asenna tämän jälkeen vielä OpenJFX, jota käytetään käyttöliittymien tekemiseen ja käsittelyyn. Tämän asentaminen onnistuu Ubuntussa (komentoriviltä) komennolla:
+</p>
+
+<pre>
+sudo apt-get install openjfx
+</pre>
+
+<p>
+  Joissain Linux-koneissa tulee lisäksi NetBeans with TMC:n asennuksen yhteydessä asettaa ensiksi ladatulle asennuspaketille suoritusoikeudet. Tämä tapahtuu klikkaamalla asennuspakettia oikealla hiirennapilla ja valitsemalla Properties. Valitse tämän jälkeen Permissions, ja aseta Allow executing file as a program -ruutuun ruksi. Ohjelman asennuksen pitäisi tämän jälkeen käynnistyä kun tuplaklikkaat tiedostoa ja valitset Run.
+</p>
+
+<p>
+  Kun olet saanut kurssin työvälineet asennettua, seuraava askel on kurssin valinta ohjelmointiympäristössä.
+</p>
+
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Oikean kurssin valinta ohjelmointiympäristössä
+<% end %>
+
+<p>
+  <strong>Helsingin yliopiston syksyn 2017 kurssi Web-palvelinohjelmointi</strong> (kurssi <a href="https://courses.helsinki.fi/fi/node/4487696/" target="_blank" rel="noopener">https://courses.helsinki.fi/fi/node/4487696/</a>). Jos teet kurssia Helsingin yliopistolla, valitse TMC:n asetuksista palvelimen osoitteeksi (server address) <code>TODO</code>. Kurssin nimi on tällöin <code>hy-wepa-s17</code>.
+</p>
+
+<p>
+  Ylläolevat asetukset saa asetettua NetBeans with TMC:n valikosta TMC -> Settings. TMC:hen asetettava käyttäjätunnus on aiemmin luomasi TMC-tunnus, ja salasana on luomallesi tunnuksellesi asettamasi salasana.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Analytiikkadatan keräämisestä ja kurssilla tehtävästä tutkimuksesta
+<% end %>
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Analytiikkadatan kerääminen ja arvostelu
+<% end %>
+
+<p>
+  Kurssin aikana tehdyistä tehtävistä kerätään tietoa. Kerätty tieto sisältää materiaalissa olevia kyselyitä, ohjelmointitehtävien vastauksia, sekä kurssimateriaalin käyttöä. Jos et hyväksy tiedon keräämistä, kurssin pisteytyksessä ei voida ottaa näihin liittyviä suorituksia huomioon. Tallennettu tieto sisältää henkilökohtaisen tunnisteen, jonka perusteella ei voida suoraan päätellä henkilöllisyyttäsi. Tieto ei esimerkiksi siis sisällä nimeäsi tai sähköpostiosoitettasi.
+</p>
+
+<p>
+  Varmista että TMC:n asetuksissa (Valikko TMC -> Settings) kohdassa "Send snapshots of your progress for study" on ruksi.
+</p>
+
+<p>
+  Jos olet opiskelijana Helsingin yliopistolla ja et halua että työstämistäsi tehtävistä kerätään ajoittaista dataa kurssiarvostelua varten, voit vaihtoehtoisesti suorittaa kurssin niin, että arvostelu perustuu kurssikokeeseen (70%) sekä projektiin ja vertaisarviointeihin (30%). Analytiikkadataa kerätään vain kurssiin liittyvistä tehtävistä, ei muista projekteistasi tai muualta koneeltasi.
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Kurssilla tehtävästä tutkimuksesta
+<% end %>
+
+<p>
+  Kurssilla tehdään oppimiseen liittyvää tutkimusta. Tällä tutkimuksella on useampia tavoitteita: (1) lähestyä tilannetta, missä oppimateriaali ja tehtävät osaavat ottaa oppijoiden yksilölliset erot paremmin huomioon ja reagoida niihin tarjoten kohdennetumpaa opetusta, (2) kehittää digitaalisissa ympäristöissä tapahtuvaan oppimiseen liittyvää ymmärrystä ja tietoa, sekä (3) tukea tutkimustiedon kautta muita oppimaterialien kehittäjiä ja oppimisen tutkijoita. Tutkimusdatan hallinnasta vastaa Helsingin yliopiston tietojenkäsittelytieteen laitoksen Agile Education Research -ryhmän Arto Hellas. Anonymisoimattomaan tutkimusdataan eivät pääse käsiksi muut tutkijat. Voit myös pyytää milloin tahansa sinusta kerätyn datan poistamista lähettämällä sähköpostin osoitteeseen arto.hellas@cs.helsinki.fi
+</p>
+
+<p>
+  Työskentelystä kerättyä tietoa käytetään tutkimuksessa jos sallit. Tutkimuksemme päätavoitteena on osaamisen kehittymisen arviointi tekemisen arvioinnin sijaan, mikä mahdollistaisi yksilöllistä osaamista parhaiten kehittävien vinkkien ja tehtävien tarjoamisen. Tutkimustuloksista ei pystytä tunnistamaan yksittäisiä opiskelijoita. Jos et salli kurssin aikana kerättyjen tietojen käyttämistä tutkimuksessa, siitä ei tule minkäänlaisia seuraamuksia.
+</p>
+
+<p>
+  Kurssilla tehdään lisäksi tutkimusta, joka voi vaikuttaa kurssikokemukseen (esim. kurssisisältö). Jos osallistut tutkimukseen, saatat saada esimerkiksi uusia ominaisuuksia materiaaliin. Jos et halua osallistua tutkimukseen, saat kurssin sisällöstä perusversion. Tutkimukseen osallistuminen ei vaikuta loppuarvosanaan.
+</p>
+
+
+<p>
+  TODO
+</p>
+
+<div class="quiznator-plugin" data-quiz-id="59a92ba68858e700042f839f"></div>
+
+
+<% partial 'partials/hint', locals: { name: 'Sitten materiaaliin...' } do %>
+
+  <p>
+    Löydät tämän sivun ylälaidasta linkin "Osa 1", jolla pääset ensimmäiseen osaan käsiksi. Siirtyminen onnistuu myös <%= link_to 'tästä', 'part1.html'%> painamalla.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Kurssimateriaalin tekijät ja lisenssi
+<% end %>
+
+<p>
+  Kurssimateriaalin on tehnyt Arto Hellas (né Vihavainen) ja Agile Education Research -tutkimusryhmä. Materiaalin syntyyn ja muovautumiseen ovat vaikuttaneet kurssin edelliset versiot, niiden osallistujat, sekä kurssien assistentit.
+</p>
+
+<p>
+  Tämä materiaali on lisensoitu Creative Commons BY-NC-SA-lisenssillä, joten voit käyttää ja levittää sitä vapaasti, kunhan alkuperäisten tekijöiden nimiä ei poisteta. Jos teet muutoksia materiaaliin ja haluat levittää muunneltua versiota, se täytyy lisensoida samalla lisenssillä. Materiaalien käyttö kaupalliseen tarkoitukseen on ilman erillistä lupaa kielletty.
+</p>
+
+<p>
+  Voit osallistua kurssimateriaalin parantamiseen myös itse. Jokaisen sivun alalaidassa on linkit, joilla pääset ehdottamaan muutoksia. Muutosten ehdottaminen vaatii <a href="https://github.com/" target="_blank">Github</a>-tunnuksen.
+</p>

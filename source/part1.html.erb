@@ -1,0 +1,131 @@
+---
+  title: Osa 1
+  exercise_page: true
+  quiz_page: true
+  published: true
+---
+
+
+<% partial 'partials/material_heading' do %>
+  Johdanto
+<% end %>
+
+
+<% partial 'partials/hint', locals: { name: 'Ensimmäisen osan tavoitteet' } do %>
+
+<% end %>
+
+<%= partial 'partials/quiz', locals: { id: '59adb85e98b5730004cda2c4' } %>
+
+
+<% partial 'partials/material_heading' do %>
+  Ohjelma ja lähdekoodi
+<% end %>
+
+<% partial 'partials/code_highlight' do %>
+  System.out.println("Hei maailma");
+<% end %>
+
+<% partial 'partials/material_sub_heading' do %>
+  Ohjelmarunko
+<% end %>
+
+<% partial 'partials/code_highlight' do %>
+public class Esimerkki {
+    public static void main(String[] args) {
+
+        // Tänne kirjoitetaan ohjelman käyttämät lauseet
+        System.out.println("Tulostettava teksti");
+
+    }
+}
+<% end %>
+
+
+<div class="typonator-widget">
+  <div class="typonator-model-source">
+public class Esimerkki {
+    public static void main(String[] args) {
+        // Tänne kirjoitetaan ohjelman käyttämät lauseet
+        System.out.println("Tulostettava teksti");
+    }
+}
+  </div>
+  <div class="typonator-template-source">
+public class Esimerkki {
+    public static void main(String[] args) {
+        // Tänne kirjoitetaan ohjelman käyttämät lauseet
+        // MARK
+    }
+}
+  </div>
+</div>
+
+
+<% partial 'partials/hint', locals: { name: 'Ohjelmoinnin aloittaminen' } do %>
+
+  <p>
+    Ohjelmoinnin aloittamiseen tarvitset seuraavat asiat.
+  </p>
+
+  <ol>
+    <li>
+      Käyttäjätunnuksen kurssilla käytettyyn TMC-järjestelmään (käytä käyttäjätunnuksena opiskelijanumeroasi).
+    </li>
+    <li>
+      Javan (Java JDK).
+    </li>
+    <li>
+      NetBeans with TMC-ohjelmointiympäristön.
+    </li>
+  </ol>
+
+  <p>
+    Edellisten tekemiseen ja asentamiseen löytyy ohjeet kurssin Johdannosta.
+  </p>
+
+  <p>
+    Seuraavalla videolla näytetään miten tehtävien tekeminen ja palauttaminen NetBeansilla ja TMC:llä tapahtuu. Video perustuu hieman aiempaan kurssiin, joten tehtävä ei ole täysin identtinen nykyisen kurssin ensimmäisen tehtävän kanssa.
+  </p>
+
+  <p>
+    Toisin kuin videolla, tällä kurssilla palvelimen osoite on <code>https://tmc.mooc.fi/org/hy/courses/243</code> ja kurssin tunnus on <code>hy-ohpe-s17</code>.
+  </p>
+
+  <iframe width="420" height="315" src="//www.youtube.com/embed/sQYq2LISMRU" frameborder="0" allowfullscreen=""></iframe>
+  
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Ada Lovelace' } do %>
+
+
+  <p>
+    Tehtäväpohjassa on seuraavanlainen ohjelmarunko:
+  </p>
+
+  <% partial 'partials/code_highlight' do %>
+public class Nimi {
+
+    public static void main(String[] args) {
+        // Kirjoita ohjelmasi tähän alle
+
+    }
+}
+  <% end %>
+
+  <p>
+    Rivi "// Kirjoita ohjelmasi tähän alle" on <em>kommenttirivi</em>, jota tietokone ei ota huomioon ohjelmaa suoritettaessa. Lisää kommenttirivin alle lause, joka tulostaa merkkijonon "Ada Lovelace" ja suorita ohjelma. Ohjelman tulostuksen tulee olla seuraavanlainen:
+  </p>
+
+  <% partial 'partials/sample_output' do %>
+    Ada Lovelace
+  <% end %>
+
+  <p>
+    Kun olet tehnyt tehtävän ja huomaat, että ohjelma tulostaa halutun merkkijonon, palauta tehtävä TMC:lle. Tutustu tämän jälkeen halutessasi lisää <a href="https://en.wikipedia.org/wiki/Ada_Lovelace" target="_blank" rel="noopener">Ada Lovelaceen</a>, joka oli yksi ensimmäisistä ohjelmoijista.
+  </p>
+
+<% end %>
+
+
