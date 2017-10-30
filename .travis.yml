@@ -25,8 +25,7 @@ after_success:
 - git checkout HEAD README.md .github
 - git add --all
 - git commit -m "$COMMIT_MESSAGE"
-- git push "https://hnbot:$GITHUB_API_KEY@github.com/materiaalit/wepa-s17.git"
-  gh-pages:gh-pages 2>&1 | sed "s/$GITHUB_API_KEY/<confidential>/g"
+- git push "https://hnbot:$GITHUB_API_KEY@github.com/materiaalit/wepa-s17.git" gh-pages:gh-pages 2>&1 | sed "s/$GITHUB_API_KEY/<confidential>/g"
 env:
   global:
-    secure: hyx8CY/nfyCF+rddesdOG9eD4ai2EXpMny8yGSOvj0U5TvS+hUgUtJqccF863/XKPJ5seCSmb6mEgg998JLt3K4N2/n95W6ltebbB6YFmEmd3YsvfnUeK5bFtfp5JFsULZE3ArNnSGTlGVqR+fkghGlVSUQM3QqpJcRmzEZ9QpWybnphlXAzXeZXdxqodTBoV8+QlKpPJ/TKxCmOmS9K4ynBCxPIlFtKQ54GJqWTjtc0JtL6rVArOF6JZi+2b4EUKbaC2SypG6n09Kp6JT1J7aDX/HfgM9xeCFrq5n92jMUl2pZjvwb7UuMBUTfgkvsl3ilHOhtm0FHtrfWm+lFd23pltQ9OVkwtd71SbqZjjFyLSBruq/DziLs7C8FaO7QwreT1JdaMsZ1bwcSYbj5VGxvJVnGYk/WDWyKK3fK4/7gc4bvJ5AZ1jCI3g9GxeIZhCZrnQiLv1ls1pX3bjRDOHrzmMsSF4fiFZTIYqFm1l7E8ZkmmuK2XxnUVoVAIDIJtyIuC8Rvp+gDQf29PpDk/5a4rYcrldGe9QxUZFPk1RkBrnGTq7WPwpyd6/CRtC0dzocOSvd73O6bIpvD1DaiMITPVWcojBqXXC/WZydKe4V/5j6beTo7crCQkqc/7E+LVONGo0Vq+UOSA8DmZDlccv3xIHf4SNzak0AdKe39skHI=
+    secure: AR+LitD+a22s8tSYyrAQj8VnhPg0oKsGmU9oysF2mHSKoI+UeiXPsuttoRw9PkD5OeCI6RrzCUVCmq1BwWbG4iCDQX49m8IfJvCMJJDJa5wVY8bTab0FSu4OLcxX8CeD7T0YK/3YE90RlMN6ArZ0dKeQtGt14OEac8UaXm2xZXMa/pGEJqQckipUwuykNaRbYddsi/h94Hqp0sLA1AxK1YG0hKw/AeVFqnmQ0w/SlEpt56Sw5nDND9Fs7/x5gbgxdfUBoIhiaeP6CoU+LCJmygV1ia7kGVDgGiVfW3AFIJhiw6Lpg4IVMzvb1RUsscUbdDxmna/kJPD3SPIE5sVLGLzC9MLTUYKnKoEL4sM5oe5ZbgvZY7CMvheT0HWoie7DR45bbXzsKv8fWHL8IGyM+bsu5kA4sjbs1726j0srUf9XUgXIwqkHXQO8UdsdSVMy8oqjrTnFF5fuRm8q9e2iXPJgwMMGrL0nDebnwkr0/+6SvdGOjg3mY8BDfo0Tr+Qhicyflv0v5e45CkvD3C1Wa9UHAjBuIxHyH6BrmIOIQnbazzTPgaIlSchRYl/PEcjmnPGdSk0dpzRM9uSUB57sRLC7XX8BowBYjAWuONgPUYhwF/OfZAuSAGrYbPUrLKZ/jrBM78KnmzOxXf3L8eWEFFp/ClZCtS2rNHt26CAzgTs=
