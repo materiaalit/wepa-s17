@@ -7,17 +7,17 @@
 <% end %>
 
 <p>
-  Kurssilla tutustutaan nykyaikaisten, skaalautuvien ja virheenkestävien web-palvelinohjelmistojen toteuttamiseen, testaamiseen ja julkaisemiseen. 
-</p>
-
-<p>
-  Huom! Sivu kesken
+  Kurssilla tutustutaan skaalautuvien ja virheenkestävien web-palvelinohjelmistojen toteuttamiseen, testaamiseen ja julkaisemiseen. Pääpaino on palvelinpään toiminnalla ja esimerkiksi Javascriptillä on kurssilla hyvin minimaalinen rooli.
 </p>
 
 
 <% partial 'partials/material_sub_heading' do %>
   Osaamistavoitteet (alustava)
 <% end %>
+
+<p>
+  Täydentyy kurssin edetessä.
+</p>
 
 <table class="table">
   <tr>
@@ -50,7 +50,7 @@
       Johdanto web-sovellusten toimintaan.
     </td>
     <td>
-      Osaa toteuttaa yhtä tietokantataulua käyttävän web-sovelluksen. Osaa HTML:n perusteet. Tuntee Mavenin, Spring Bootin, Thymeleafin ja Spring Data JPAn.
+      Tuntee hyvin pinnallisesti Spring Boot -sovelluskehyksen ja osaa luoda pyyntöihin reagoivan web-sovelluksen. Osaa muodostaa Thymeleaf-kirjastoa käyttäen template-sivuja, joita käytetään näkymien luontiin. Ymmärtää käsitteet polku, kontrolleri, pyynnön parametri ja polkumuuttuja. Tuntee POST/Redirect/GET-suunnittelumallin, ja osaa luoda em. suunnittelumallia seuraavan sovelluksen. Osaa käsitellä olioita ja kokoelmia osana sovellusta.
     </td>
   </tr>
   <tr>
@@ -61,7 +61,7 @@
       Internetin perusosat. Kerrosarkkitehtuuri ja MVC-malli. Pyynnön kulku web-sovelluksessa. Tietokannat ja tietokanta-abstraktiot.
     </td>
     <td>
-      Ymmärtää asiakas-palvelin -mallin. Tietää ensisijaiset kerrosarkkitehtuurin ja MVC-mallin edut. Ymmärtää miten käyttäjän tekemään pyyntöön muodostuu vastaus palvelimella. Osaa luoda web-sovelluksen, joka käyttää useampaa tietokantataulua. Ymmärtää tietokantatransaktioiden käytön ja osaa käyttää niitä web-sovelluksessa.
+      Ymmärtää asiakas-palvelin -mallin. Tietää ensisijaiset kerrosarkkitehtuurin ja MVC-mallin edut. Ymmärtää miten käyttäjän tekemään pyyntöön muodostuu vastaus palvelimella. Osaa luoda web-sovelluksen, joka käyttää yhtä tietokantataulua. Ymmärtää tietokantatransaktioiden käytön ja osaa käyttää niitä web-sovelluksessa.
     </td>
   </tr>
   <tr>
@@ -122,18 +122,16 @@
 </table>
 
 
-
-
 <% partial 'partials/material_sub_heading' do %>
   Kurssin suorittaminen
 <% end %>
 
 <p>
-  Kurssi suoritetaan viikoittaisilla harjoitustehtävillä, henkilökohtaisella projektilla sekä kokeella, joiden lisäksi kurssin suoritetaan kolmen muun projektin vertaisarviointi. Kurssilla on yhteensä neljä luentokertaa: 2.11., 9.11., 23.11., ja 30.11. Luennot järjestetään Kumpulan Exactumin salissa CK112 torstaisin klo 12:15-14:00.
+  Kurssi suoritetaan viikoittaisilla harjoitustehtävillä, henkilökohtaisella projektilla sekä kokeella, joiden lisäksi kurssiin kuuluu kolmen muun osallistujan projektin vertaisarviointi. Kurssilla on yhteensä neljä luentokertaa: 2.11., 9.11., 23.11., ja 30.11. Luennot järjestetään Kumpulan Exactumin salissa CK112 torstaisin klo 12:15-14:00.
 </p>
 
 <p>
-  Viikoittaisten harjoitustehtävien palautusaika tiistaisin klo 23:59. Ensimmäisen tehtäväsarjan viimeinen palautuspäivämäärä on 7.11., toisen tehtäväsarjan viimeinen palautuspäivämäärä on 14.11. jne. Tehtäviä julkaistaan kurssin edetessä.
+  Viikoittaisten harjoitustehtävien palautusaika on tiistaisin klo 23:59. Ensimmäisen tehtäväsarjan viimeinen palautuspäivämäärä on 7.11., toisen tehtäväsarjan viimeinen palautuspäivämäärä on 14.11. jne. Tehtäviä julkaistaan kurssin edetessä.
 </p>
 
 <p>
@@ -159,13 +157,11 @@
 <% end %>
 
 <p>
-  Kurssin ensisijainen tukiväylä on Kumpulan kampuksella Exactumissa tapahtuva ohjaus. Ohjaustilaisuudet ovat avoimia tilaisuuksia, johon saa tulla vapaasti kysymään apua tehtäviin tai juttelemaan tehtävistä.
+  Kurssin ensisijainen tukiväylä on Kumpulan kampuksella Exactumissa tapahtuva ohjaus. Ohjaustilaisuudet ovat avoimia tilaisuuksia, joihin saa tulla vapaasti kysymään apua tehtäviin tai juttelemaan tehtävistä.
 </p>
 
-<p>TODO</p>
-
 <p>
-  Verkon yli nopein tapa avun kysymiseen on kurssin keskustelukanava <code>#mooc.fi</code>, johon pääsee helpointen kanavan Matrix-huoneen kautta: <a href="https://riot.im/app/#/room/#mooc.fi:matrix.org"  target="_blank" rel="noopener">https://riot.im/app/#/room/#mooc.fi:matrix.org</a>. Jos et pidä modernista teknologiasta, voit myös liityä huoneeseen Ircnetin kautta seuraamalla näitä ohjeita: <a href="http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/" target="_blank" rel="noopener">http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/</a>.
+  Verkon yli nopein tapa avun kysymiseen on kurssin keskustelukanava <code>#wepa</code>, johon pääsee helpointen kanavan Matrix-huoneen kautta: <a href="https://riot.im/app/#/room/#wepa:matrix.org"  target="_blank" rel="noopener">https://riot.im/app/#/room/#wepa:matrix.org</a>. Jos et pidä modernista teknologiasta, voit myös liityä huoneeseen Ircnetin kautta seuraamalla näitä ohjeita: <a href="http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/" target="_blank" rel="noopener">http://mooc.fi/courses/general/ohjelmointi/tukikanavat/irc/ohjeet/</a>.
 </p>
 
 <p>
@@ -199,14 +195,14 @@
 <% end %>
 
 <p>
-  Kurssilla seurataan Helsingin yliopiston opintokäytäntöjä. Plagiarismi ja opintovilppi, eli esimerkiksi netissä olevien tai kaverilta saatujen vastausten kopiointi ja niiden palauttaminen omana työnä on kurssilla kiellettyä.
+  Kurssilla seurataan Helsingin yliopiston opintokäytäntöjä. Plagiarismi ja opintovilppi, eli esimerkiksi netissä olevien tai kaverilta saatujen vastausten kopiointi ja niiden palauttaminen omana työnä on kiellettyä.
 </p>
 
 <p>
   Todettu opintovilppi johtaa kurssisuorituksen hylkäämiseen ja toistuva opintovilppi voi johtaa opinto-oikeuden määräaikaiseen menettämiseen.  Lue lisää osoitteesta <a href="http://blogs.helsinki.fi/alakopsaa/opiskelijalle/"  target="_blank" >http://blogs.helsinki.fi/alakopsaa/opiskelijalle/</a>.
 </p>
 
-<%= partial 'partials/quiz', locals: { id: '587bc5f11b527d0004a7971c' } %>
+<%= partial 'partials/quiz', locals: { id: '59f60521271b380004a262f2' } %>
 
 
 
@@ -222,9 +218,82 @@
   Viikoittaisista harjoitustehtävistä saa täydet tehtäväpisteet tekemällä 90% kunkin osan tehtävistä. Huomaathan, että jotkut tehtävät painavat arvostelussa enemmän kuin toiset. Kurssin seitsemännen viikon tehtävät ovat bonustehtäviä, joilla voi paikata väliin jääneitä ohjelmointitehtäviä tai heikosti mennyttä kurssiprojektia.
 </p>
 
+
 <p>
-  <strong>Huom!</strong> Edellä kuvattu arvostelu olettaa, että hyväksyt analytiikkadatan keräämisen kurssin tehtävistä. Analytiikkadata sisältää ajoittain kerättäviä aikaleimattuja kopioita työstämästäsi tehtävästä sekä tietoa kurssimateriaalin käytöstä. Analytiikkadataa ei kerätä henkilökohtaisista projekteistasi tai muualta koneeltasi.
+  Arvosanarajat:
 </p>
+
+
+<table class="table">
+
+  <tr>
+    <th>
+      Kurssipisteet
+    </th>
+    <th>
+      Arvosana
+    </th>
+  </tr>
+  
+  <tr>
+    <td>
+      91 tai yli
+    </td>
+    <td>
+      5/5
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      86-90
+    </td>
+    <td>
+      4/5
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      81-85
+    </td>
+    <td>
+      3/5
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      76-80
+    </td>
+    <td>
+      2/5
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      70-75
+    </td>
+    <td>
+      1/5
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      &lt; 70
+    </td>
+    <td>
+      hylätty
+    </td>
+  </tr>
+</table>
+
+<p>
+  Edellä kuvattu arvostelu olettaa, että hyväksyt analytiikkadatan keräämisen kurssin tehtävistä. Analytiikkadata sisältää ajoittain kerättäviä aikaleimattuja kopioita työstämästäsi tehtävästä sekä tietoa kurssimateriaalin käytöstä. Analytiikkadataa ei kerätä henkilökohtaisista projekteistasi tai muualta koneeltasi.
+</p>
+
 
 
 <% partial 'partials/material_heading' do %>
@@ -259,7 +328,7 @@
 
 
 <p>
-  Kurssin ohjelmointiympäristönä käytetään NetBeans-nimistä ohjelmointiympäristöä, johon lisätään TMC-niminen liitännäinen. Nämä työvälineet löytyvät Kumpulan kampuksen Exactumin mikroluokista B221 ja BK107 asennettuna nimellä "TMCBeans".
+  Kurssin ohjelmointiympäristönä käytetään NetBeans-nimistä ohjelmointiympäristöä, johon lisätään TMC-niminen liitännäinen. Nämä työvälineet löytyvät Kumpulan kampuksen Exactumin mikroluokista asennettuna nimellä "TMCBeans".
 </p>
 
 <p>
@@ -269,7 +338,7 @@
 <ul>
 
   <li>
-    <strong>Javan asentaminen (* linux, kts. alla!)</strong>: lataa uusin Javan kehitysympäristö (Java SE Development Kit 8u112) osoitteesta <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. Lataamasi versio riippuu käytössäsi olevasta käyttöjärjestelmästä, esimerkiksi Macintosh-käyttäjät lataavat tiedoston <code>jdk-8u112-macosx-x64.dmg</code> ja 64-bittisen Windows-käyttöjärjestelmän käyttäjät lataavat tiedoston <code>jdk-8u112-windows-x64.exe</code>. Kun olet ladannut tiedoston, asenna se koneellesi.
+    <strong>Javan asentaminen</strong>: lataa uusin Javan kehitysympäristö (Java SE Development Kit 8u112) osoitteesta <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a>. Lataamasi versio riippuu käytössäsi olevasta käyttöjärjestelmästä, esimerkiksi Macintosh-käyttäjät lataavat tiedoston <code>jdk-8u112-macosx-x64.dmg</code> ja 64-bittisen Windows-käyttöjärjestelmän käyttäjät lataavat tiedoston <code>jdk-8u112-windows-x64.exe</code>. Kun olet ladannut tiedoston, asenna se koneellesi.
   </li>
 
   <li>
@@ -284,14 +353,6 @@
 
 <pre>
 sudo apt-get install openjdk-8-jdk
-</pre>
-
-<p>
-  Asenna tämän jälkeen vielä OpenJFX, jota käytetään käyttöliittymien tekemiseen ja käsittelyyn. Tämän asentaminen onnistuu Ubuntussa (komentoriviltä) komennolla:
-</p>
-
-<pre>
-sudo apt-get install openjfx
 </pre>
 
 <p>
@@ -356,11 +417,7 @@ sudo apt-get install openjfx
 </p>
 
 
-<p>
-  TODO
-</p>
-
-<div class="quiznator-plugin" data-quiz-id="59a92ba68858e700042f839f"></div>
+<div class="quiznator-plugin" data-quiz-id="59f605c6271b380004a262f5"></div>
 
 
 <% partial 'partials/hint', locals: { name: 'Sitten materiaaliin...' } do %>

@@ -1,0 +1,296 @@
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tiedon tallentaminen
+<% end %>
+
+<p>
+  Sovelluksemme -- vaikka huikeita ovatkin -- ovat melko alkeellisia, sillä sovelluksissa käsiteltävää tietoa ei tallenneta mihinkään. Esimerkiksi lomakkeen avulla sovellukselle lähetettävä data katoaa kun sovellus käynnistetään uudestaan. Tämä ei ole kivaa.
+</p>
+
+<p>
+  Tietokannat ovat palvelinohjelmistosta erillisiä sovelluksia, joiden ensisijainen tehtävä on varmistaa, että käytettävä tieto ei katoa. Otetaan ensiaskeleet tietokannan käyttöön web-palvelinohjelmistoissa -- tutustumme tietokantoihin tarkemmin myöhemmin kurssilla. Käytämme tietokantatoiminnallisuuden toteuttamisessa <a href="http://projects.spring.io/spring-data-jpa/" target="_blank">Spring Data JPA</a>-komponenttia, johon löytyy myös aloituspaketti käyttämästämme Spring Bootista.
+</p>
+
+<aside class="info">
+
+  <br/>
+  
+  <h1>Spring Data JPA:n käyttöönotto</h1>
+  
+  <p>Saadaksemme Spring Data JPA:n käyttöömme, tulee meidän lisätä se <code>pom.xml</code>-tiedostoon. Spring Bootin kautta löytyy näppärä paketti <code>spring-boot-starter-data-jpa</code>, joka vähentää yksittäisten riippuvuuksien lisäämistä. Tämän lisäksi tarvitsemme testikäyttöön sopivan tietokannan -- valitaan <a href="http://www.h2database.com/" target="_blank">H2 Database</a>, jonka voi ladata muistiin sovelluksen käynnistyessä.</p>
+  
+  <p>Lisätään projektiin seuraavat riippuvuudet:</p>
+
+  <% partial 'partials/xml_highlight' do %>
+    &lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-data-jpa&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+    &lt;groupId&gt;com.h2database&lt;/groupId&gt;
+    &lt;artifactId&gt;h2&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+  <% end %>
+  
+  <p>
+    Kun projektin riippuvuudet noudetaan Mavenin avulla, on tietokanta valmis testikäyttöön.
+  </p>
+  
+</aside>
+
+
+<h3>Tietokantaan tallennettavat oliot eli entiteetit</h3>
+
+<p>
+  Käytämme ORM-kirjastoa (object relational mapping), jonka tehtävänä on muuntaa oliot tietokantaan tallennettavaan muotoon. Karkeasti ajatellen luokka vastaa tietokantataulua ja oliomuuttujat vastaavat tietokannan sarakkeita. Jokainen taulun rivi vastaa yhtä luokasta tehtyä oliota.
+</p>
+
+<p>
+  Luokat, joista tehdyt oliot voidaan tallentaa tietokantaan, tulee annotoida <code>@Entity</code>-annotaatiolla. Tämän lisäksi luokille tulee määritellä tunnuskenttä, jonka avulla niihin liittyvät oliot voidaan yksilöidä. Voimme käyttää tunnuskentän luomiseen valmista <code>AbstractPersistable</code>-yliluokkaa, jota perittäessä kerromme uniikin tunnuksen tyypin. Esimerkiksi <code>Henkilo</code>-luokasta voidaan tehdä tietokantaan tallennettava seuraavilla muutoksilla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  package wad.domain;
+
+  import javax.persistence.Entity;
+  import org.springframework.data.jpa.domain.AbstractPersistable;
+
+  @Entity
+  public class Henkilo extends AbstractPersistable&lt;Long&gt; {
+
+  private String nimi;
+
+  public String getNimi() {
+  return this.nimi;
+  }
+
+  public void setNimi(String nimi) {
+  this.nimi = nimi;
+  }
+  }<% end %>
+
+<p>
+  Kun käytössämme on tietokantaan tallennettava luokka, voimme luoda tietokannan käsittelyyn käytettävän <em>rajapinnan</em>. Kutsutaan tätä rajapintaoliota nimellä <code>HenkiloRepository</code>.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  // pakkaus
+
+  import wad.domain.Henkilo;
+  import org.springframework.data.jpa.repository.JpaRepository;
+
+  public interface HenkiloRepository extends JpaRepository&lt;Henkilo, Long&gt; {
+
+  }<% end %>
+
+<p>
+  Rajapinta perii Spring Data-projektin <code>JpaRepository</code>-rajapinnan; samalla kerromme, että tallennettava olio on tyyppiä <code>Henkilo</code> ja että tallennettavan olion tunnus on <code>Long</code>-tyyppiä. Tämä tyyppi on sama kuin aiemmin <code>AbstractPersistable</code>-luokan perinnässä parametriksi asetettu tyyppi. Spring osaa käynnistyessään etsiä mm. JpaRepository-rajapintaluokan periviä luokkia. Jos niitä löytyy, se luo niiden pohjalta tietokannan käsittelyyn sopivan olion sekä asettaa olion ohjelmoijan haluamiin muuttujiin.
+</p>
+
+<p>
+  Nämä muuttujat tulee määritellä <code>@Autowired</code>-annotaatiolla -- jokaiselle muuttujalle tulee oma annotaatio -- palaamme myöhemmin kurssilla tarkemmin tähän ns. olioiden automaattiseen asettamiseen.
+</p>
+
+<p>
+  Kun olemme luoneet rajapinnan <code>HenkiloRepository</code>, voimme lisätä sen käyttöömme esimerkiksi kontrolleriluokkaan. Tämä tapahtuu seuraavasti.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  // ...
+
+  @Controller
+  public class HenkiloController {
+
+  @Autowired
+  private HenkiloRepository henkiloRepository;
+
+  // ...
+  }<% end %>
+
+<p>
+  Nyt tietokantaan pääsee käsiksi <code>HenkiloRepository</code>-olion kautta. Osoitteessa <a href="http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html" target="_blank">http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html</a> on JpaRepository-rajapinnan API-kuvaus, mistä löytyy rajapinnan tarjoamien metodien kuvauksia. Voimme esimerkiksi toteuttaa tietokannassa olevien olioiden listauksen sekä yksittäisen olion haun seuraavasti:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  // ...
+
+  @Controller
+  public class HenkiloController {
+
+  @Autowired
+  private HenkiloRepository henkiloRepository;
+
+  @GetMapping("/")
+  public String list(Model model) {
+  model.addAttribute("list", henkiloRepository.findAll());
+  return "henkilot"; // erillinen henkilot.html
+  }
+
+  @GetMapping("/{id}")
+  public String get(Model model, @PathVariable Long id) {
+  model.addAttribute("henkilo", henkiloRepository.findOne(id));
+  return "henkilo"; // erillinen henkilo.html
+  }
+  }
+<% end %>
+
+<div class="tehtavat">
+  <div class="tehtava" id="t-hellodatabase">
+    
+    <header>
+      <h1>
+        <a data-toggle="collapse" class="collapsed" href="#t-hellodatabase">
+          Hello Database
+        </a>
+      </h1>
+    </header>
+    
+    <div id="t-hellodatabase" class="collapse">
+      
+      <p>Tässä tehtävässä on valmiiksi toteutettuna tietokantatoiminnallisuus sekä esineiden noutaminen tietokannasta. Lisää sovellukseen toiminnallisuus, jonka avulla esineiden tallentaminen tietokantaan onnistuu valmiiksi määritellyllä lomakkeella.</p>
+      
+      <p>Alla esimerkki sovelluksesta kun tietokantaan on lisätty muutama rivi:</p>
+      
+      <p><img class="browser-img" src="img/2016-mooc/ex15.png"/></p>
+      
+    </div>
+  </div>
+</div>		
+
+<div class="tehtavat">
+  <div class="tehtava" id="t-tododatabase">
+    
+    <header>
+      <h1>
+        <a data-toggle="collapse" class="collapsed" href="#t-tododatabase">
+          Todo Database
+        </a>
+      </h1>
+    </header>
+    
+    <div id="t-tododatabase" class="collapse">
+      
+      <p>Luo tässä TodoApplication-tehtävässä nähty tehtävien hallintaan tarkoitettu toiminnallisuus mutta siten, että tehtävät tallennetaan tietokantaan. Tässä tehtävässä entiteettiluokan nimen tulee olla <code>Item</code> ja avaimen tyypin tulee olla <code>Long</code>: <% partial 'partials/code_highlight' do %>
+	@Entity
+	public class Item extends AbstractPersistable&lt;Long&gt; {
+	...<% end %></p>
+      <p>Noudata lisäksi HTML-sivujen rakennetta ja toiminnallisuutta.</p>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Ohjelma ja lähdekoodi
+<% end %>
+
+<% partial 'partials/code_highlight' do %>
+  System.out.println("Hei maailma");
+<% end %>
+
+<% partial 'partials/material_sub_heading' do %>
+  Ohjelmarunko
+<% end %>
+
+<% partial 'partials/code_highlight' do %>
+  public class Esimerkki {
+  public static void main(String[] args) {
+
+  // Tänne kirjoitetaan ohjelman käyttämät lauseet
+  System.out.println("Tulostettava teksti");
+
+  }
+  }
+<% end %>
+
+
+<div class="typonator-widget">
+  <div class="typonator-model-source">
+    public class Esimerkki {
+    public static void main(String[] args) {
+    // Tänne kirjoitetaan ohjelman käyttämät lauseet
+    System.out.println("Tulostettava teksti");
+    }
+    }
+  </div>
+  <div class="typonator-template-source">
+    public class Esimerkki {
+    public static void main(String[] args) {
+    // Tänne kirjoitetaan ohjelman käyttämät lauseet
+    // MARK
+    }
+    }
+  </div>
+</div>
+
+
+<% partial 'partials/hint', locals: { name: 'Ohjelmoinnin aloittaminen' } do %>
+
+  <p>
+    Ohjelmoinnin aloittamiseen tarvitset seuraavat asiat.
+  </p>
+
+  <ol>
+    <li>
+      Käyttäjätunnuksen kurssilla käytettyyn TMC-järjestelmään (käytä käyttäjätunnuksena opiskelijanumeroasi).
+    </li>
+    <li>
+      Javan (Java JDK).
+    </li>
+    <li>
+      NetBeans with TMC-ohjelmointiympäristön.
+    </li>
+  </ol>
+
+  <p>
+    Edellisten tekemiseen ja asentamiseen löytyy ohjeet kurssin Johdannosta.
+  </p>
+
+  <p>
+    Seuraavalla videolla näytetään miten tehtävien tekeminen ja palauttaminen NetBeansilla ja TMC:llä tapahtuu. Video perustuu hieman aiempaan kurssiin, joten tehtävä ei ole täysin identtinen nykyisen kurssin ensimmäisen tehtävän kanssa.
+  </p>
+
+  <p>
+    Toisin kuin videolla, tällä kurssilla palvelimen osoite on <code>https://tmc.mooc.fi/org/hy/courses/243</code> ja kurssin tunnus on <code>hy-ohpe-s17</code>.
+  </p>
+
+  <iframe width="420" height="315" src="//www.youtube.com/embed/sQYq2LISMRU" frameborder="0" allowfullscreen=""></iframe>
+  
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Ada Lovelace' } do %>
+
+
+  <p>
+    Tehtäväpohjassa on seuraavanlainen ohjelmarunko:
+  </p>
+
+  <% partial 'partials/code_highlight' do %>
+    public class Nimi {
+
+    public static void main(String[] args) {
+    // Kirjoita ohjelmasi tähän alle
+
+    }
+    }
+  <% end %>
+
+  <p>
+    Rivi "// Kirjoita ohjelmasi tähän alle" on <em>kommenttirivi</em>, jota tietokone ei ota huomioon ohjelmaa suoritettaessa. Lisää kommenttirivin alle lause, joka tulostaa merkkijonon "Ada Lovelace" ja suorita ohjelma. Ohjelman tulostuksen tulee olla seuraavanlainen:
+  </p>
+
+  <% partial 'partials/sample_output' do %>
+    Ada Lovelace
+  <% end %>
+
+  <p>
+    Kun olet tehnyt tehtävän ja huomaat, että ohjelma tulostaa halutun merkkijonon, palauta tehtävä TMC:lle. Tutustu tämän jälkeen halutessasi lisää <a href="https://en.wikipedia.org/wiki/Ada_Lovelace" target="_blank" rel="noopener">Ada Lovelaceen</a>, joka oli yksi ensimmäisistä ohjelmoijista.
+  </p>
+
+<% end %>
+
+

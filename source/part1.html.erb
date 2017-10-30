@@ -6,126 +6,1220 @@
 ---
 
 
-<% partial 'partials/material_heading' do %>
-  Johdanto
-<% end %>
-
-
 <% partial 'partials/hint', locals: { name: 'Ensimmäisen osan tavoitteet' } do %>
 
+  <p>
+    Tuntee hyvin pinnallisesti Spring Boot -sovelluskehyksen ja osaa luoda pyyntöihin reagoivan web-sovelluksen. Osaa muodostaa Thymeleaf-kirjastoa käyttäen template-sivuja, joita käytetään näkymien luontiin. Ymmärtää käsitteet polku, kontrolleri, pyynnön parametri ja polkumuuttuja. Tuntee POST/Redirect/GET-suunnittelumallin, ja osaa luoda em. suunnittelumallia seuraavan sovelluksen. Osaa käsitellä olioita ja kokoelmia osana sovellusta.
+  </p>
+  
+
 <% end %>
 
-<%= partial 'partials/quiz', locals: { id: '59adb85e98b5730004cda2c4' } %>
+<% partial 'partials/material_heading' do %>
+  Johdanto web-sovelluksiin
+<% end %>
+
+<p>
+  Web-sovellukset koostuvat selain- ja palvelinpuolesta. Käyttäjän koneella toimii selainohjelmisto (esim. <a href="http://chrome.google.com" target="_blank">Google Chrome</a>), jonka kautta käyttäjä tekee pyyntöjä verkossa sijaitsevalle palvelimelle. Kun palvelin vastaanottaa pyynnön, se käsittelee pyynnön ja rakentaa vastauksen. Vastaus voi sisältää esimerkiksi web-sivun HTML-koodia tai jossain muussa muodossa olevaa tietoa.
+</p>
+
+<figure>
+  <img src="/img/pyynto.png"/>
+
+  <figcaption>
+    Web-sovellusten käyttäminen: (1) käyttäjä klikkaa linkkiä, (2) selain tekee pyynnön palvelimelle, (3) palvelin käsittelee pyynnön ja rakentaa vastauksen, (4) selaimen tekemään pyyntöön palautetaan vastaus, (5) vastauksen näyttäminen käyttäjälle -- ei tässä kuvassa.
+  </figcaption>
+</figure>
+
+<p>
+  Selainohjelmointiin ja käyttöliittymäpuoleen keskityttäessä painotetaan rakenteen, ulkoasun ja toiminnallisuuden erottamista toisistaan. Karkeasti voidaan sanoa, että selaimessa näkyvän sivun sisältö ja rakenne määritellään <a href="http://en.wikipedia.org/wiki/HTML" target="_blank">HTML</a>-tiedostoilla, ulkoasu <a href="http://en.wikipedia.org/wiki/CSS" target="_blank">CSS</a>-tiedostoilla ja toiminnallisuus <a href="http://en.wikipedia.org/wiki/JavaScript" target="_blank">JavaScript</a>-tiedostoilla.
+</p>
+
+<p>
+  Palvelinpuolen toiminnallisuutta toteutettaessa keskitytään tyypillisesti selainohjelmiston tarvitsevan "APIn" suunnitteluun ja toteutukseen, sivujen muodostamiseen selainohjelmistoa varten, datan tallentamiseen ja käsittelyyn, sekä sellaisten laskentaoperaatioiden toteuttamiseen, joita selainohjelmistossa ei kannata tai voida tehdä.
+</p>
 
 
 <% partial 'partials/material_heading' do %>
-  Ohjelma ja lähdekoodi
+  Ensimmäinen palvelinohjelmisto
+<% end %>
+
+<p>
+  Käytämme kurssilla <a href="https://spring.io/" target="_blank">Spring</a>-sovellusperheen <a href="http://projects.spring.io/spring-boot/" target="_blank">Spring Boot</a> projektia web-sovellusten tekemiseen. Merkittävä osa web-sovellusten rakentamisesta perustuu valmiiden kirjastometodien käyttöön. Niiden avulla määritellään (1) mihin osoitteeseen tulevat pyynnöt käsitellään ja (2) mitä pyynnölle tulee tehdä.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Maven' } do %>
+    
+  <p>
+    Käytämme tällä kurssilla <a href="https://maven.apache.org/" target="_blank">Maven</a>ia valmiiden kirjastojen noutamiseen sekä projektien hallintaan. Tämän takia projektimme on luotu Maven-projekteina -- uuden Maven-projektin luominen onnistuu NetBeansissa valitsemalla File -&gt; New Project -&gt; Maven -&gt; Java Application.
+  </p>
+    
+  <p>
+    Maven-projektin riippuvuudet määritellään projektiin liittyvässä (Project Files) <code>pom.xml</code>-tiedostossa olevassa <code>dependencies</code>-osiossa.
+  </p>
+
+  <p>
+    Spring-projektin käynnistämisen voi tehdä komentoriviltä komennolla <code>mvn spring-boot:run</code>. Tällöin sovellus käynnistyy muutosten yhteydessä automaattisesti uudestaan (kun käytämme <code>spring-boot-devtools</code> liitännäistä sekä Spring-sovelluskehyksen maven-tukea) -- tämä nopeuttaa hieman ohjelmistokehitysprosessia. Lisää <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/using-boot-devtools.html" target="_blank">Spring Devtools</a>-projektista löytyy täältä.
+  </p>
+
+<% end %>
+
+<p>
+  Spring -sovelluskehystä käyttävien web-sovellusten kehityksessä käytettävät osat saa käyttöön lisäämällä projektiin riippuvuuden Spring Boot -projektiin (<code>spring-boot-starter-parent</code>) sekä web-projektiin (<code>spring-boot-starter-web</code>). Käytössämme on tällä hetkellä (30.10.) Spring Bootin version 2 ns. milestonejulkaisu. Tehtäväpohjat sisältävät oikeat määrittelyt.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;2.0.0.M5&lt;/version&gt;
+&lt;/parent&gt;
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+<% end %>
+
+<p>
+  Kun riippuvuudet on lisätty projektiin ja projektista pääsee käsiksi Spring-sovelluskehyksen metodeihin ja luokkiin, voimme luoda ensimmäisen palvelinohjelmistomme.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package heimaailma;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@SpringBootApplication
+@Controller
+public class HeiMaailmaController {
+
+    @GetMapping("*")
+    @ResponseBody
+    public String home() {
+        return "Hei Maailma!";
+    }
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(HeiMaailmaController.class, args);
+    }
+}
+<% end %>
+
+<p>
+  Yllä olevassa esimerkissä luodaan pyyntöjä vastaanottava luokka. Pyyntöjä vastaanottavat luokat merkitään <code>@Controller</code>-annotaatiolla. Tämän perusteella Spring-sovelluskehys tietää, että luokan metodit saattavat käsitellä selaimesta tehtyjä pyyntöjä.
+</p>
+
+<p>
+  Luokalle on määritelty lisäksi metodi <code>home</code>, jolla on kaksi annotaatiota: <code>@GetMapping</code> ja <code>@ResponseBody</code>. Annotaation <code>@GetMapping</code> avulla määritellään kuunneltava polku -- tässä kaikki <code>"*"</code>. Annotaatio <code>@ResponseBody</code> kertoo sovelluskehykselle, että metodin vastaus tulee näyttää vastauksena sellaisenaan.
+</p>
+
+<p>
+  Eriytämme pyyntöjä vastaanottavat luokat ja sovelluksen käynnistämiseen käytettävän luokan jatkossa toisistaan.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package heimaailma;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HeiMaailmaApplication {
+
+    public static void main(String[] args) throws Exception {
+        SpringApplication.run(HeiMaailmaApplication.class, args);
+    }
+}
 <% end %>
 
 <% partial 'partials/code_highlight' do %>
-  System.out.println("Hei maailma");
-<% end %>
+package heimaailma;
 
-<% partial 'partials/material_sub_heading' do %>
-  Ohjelmarunko
-<% end %>
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-<% partial 'partials/code_highlight' do %>
-public class Esimerkki {
-    public static void main(String[] args) {
+@Controller
+public class HeiMaailmaController {
 
-        // Tänne kirjoitetaan ohjelman käyttämät lauseet
-        System.out.println("Tulostettava teksti");
-
+    @GetMapping("*")
+    @ResponseBody
+    public String home() {
+        return "Hei Maailma!";
     }
 }
 <% end %>
 
 
-<div class="typonator-widget">
-  <div class="typonator-model-source">
-public class Esimerkki {
-    public static void main(String[] args) {
-        // Tänne kirjoitetaan ohjelman käyttämät lauseet
-        System.out.println("Tulostettava teksti");
-    }
-}
-  </div>
-  <div class="typonator-template-source">
-public class Esimerkki {
-    public static void main(String[] args) {
-        // Tänne kirjoitetaan ohjelman käyttämät lauseet
-        // MARK
-    }
-}
-  </div>
-</div>
-
-
-<% partial 'partials/hint', locals: { name: 'Ohjelmoinnin aloittaminen' } do %>
-
+<% partial 'partials/hint', locals: { name: 'Tehtävien tekeminen' } do %>
+  
   <p>
-    Ohjelmoinnin aloittamiseen tarvitset seuraavat asiat.
+    Tästä eteenpäin materiaalissa on myös ohjelmointitehtäviä. Tehtävien tekeminen ja palautus tapahtuu NetBeans-ympäristössä Test My Code-liitännäisen avulla. Test My Code lataa tehtäväpohjat sinulle valmiiksi.
+  </p>
+  
+<% end %>  
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello World!' } do %>
+      
+  <p>
+    Kuten huomattava osa ohjelmointikursseista, tämäkin kurssi alkaa tehtävällä, jossa toteutettava ohjelma kirjoittaa tekstin <code>Hello World!</code>.
+  </p>
+      
+  <p>
+    Toteuta tehtäväpohjan pakkauksessa <code>wad.helloworld</code> olevaan <code>HelloWorldController</code> luokkaan toiminnallisuus, joka kuuntelee kaikkia pyyntöjä. Kun palvelin vastaanottaa pyynnön, tulee palvelimen palauttaa merkkijono "Hello World!".
+  </p>
+      
+  <p>
+    <img class="browser-img" src="img/2016-mooc/ex1.png"/>
+  </p>
+      
+  <p>
+    Käynnistä palvelin painamalla NetBeansin play-nappia, suorittamalla <code>HelloWorldApplication</code>-luokan <code>main</code>-metodi, tai kirjoittamalla projektin juuripolussa <code>mvn spring-boot:run</code>. Avaa nettiselain, mene osoitteeseen <a href="http://localhost:8080" target="_blank">http://localhost:8080</a> ja näet selaimessasi tekstin "Hello World!".
+  </p>
+      
+  <p>
+    Palvelin sammutetaan NetBeansissa punaista nappia painamalla -- vain yksi sovellus voi olla kerrallaan päällä samassa osoitteessa. Palauta tehtävä lopuksi Test My Code:n submit-napilla.
   </p>
 
-  <ol>
-    <li>
-      Käyttäjätunnuksen kurssilla käytettyyn TMC-järjestelmään (käytä käyttäjätunnuksena opiskelijanumeroasi).
-    </li>
-    <li>
-      Javan (Java JDK).
-    </li>
-    <li>
-      NetBeans with TMC-ohjelmointiympäristön.
-    </li>
-  </ol>
+<% end %>
+
+<% partial 'partials/hint', locals: { name: 'Apua! Palvelimeni ei suostu sammumaan!' } do %>
+  
+  <p>
+    Palvelimen sammuttaminen tapahtuu NetBeansissa punaista neliötä klikkaamalla, joka sammuttaa suoritettavan ohjelman. Joissakin käyttöjärjestelmissä tämä on kuitenkin bugista, jolloin palvelin tulee sammuttaa komentoriviltä.
+  </p>
+    
+  <p>
+    Saat portissa 8080 käynnissä olevan prosessin tunnuksen tietoon terminaalissa komennolla <code>lsof -i :8080</code>. Etsi komennon palauttamasta tulosteesta prosessin tunnus, jonka jälkeen voit sammuttaa prosessin komennolla <code>kill -9 prosessin-tunnus</code>.
+  </p>
+    
+  <p>
+    Esimerkiksi:
+  </p>
+    
+  <pre>
+> lsof -i :8080
+COMMAND  PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+java    9916 kayttaja   51u  IPv6 0x65802ef6be5c6f29      0t0  TCP *:tram (LISTEN)
+>
+  </pre>
 
   <p>
-    Edellisten tekemiseen ja asentamiseen löytyy ohjeet kurssin Johdannosta.
+    Yllä prosessin tunnus (PID) on 9916. Tämän jälkeen prosessi sammutetaan komennolla <code>kill -9 9916</code>.
   </p>
+
+  <pre>
+> lsof -i :8080
+COMMAND  PID     USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+java    9916 kayttaja   51u  IPv6 0x65802ef6be5c6f29      0t0  TCP *:tram (LISTEN)
+> kill -9 9916
+  </pre>
 
   <p>
-    Seuraavalla videolla näytetään miten tehtävien tekeminen ja palauttaminen NetBeansilla ja TMC:llä tapahtuu. Video perustuu hieman aiempaan kurssiin, joten tehtävä ei ole täysin identtinen nykyisen kurssin ensimmäisen tehtävän kanssa.
+    Jos käynnistät sovelluksen komentoriviltä (komento <code>mvn spring-boot:run</code> sovelluksen juurikansiossa), ei tätä ongelmaa pitäisi olla.
   </p>
-
-  <p>
-    Toisin kuin videolla, tällä kurssilla palvelimen osoite on <code>https://tmc.mooc.fi/org/hy/courses/243</code> ja kurssin tunnus on <code>hy-ohpe-s17</code>.
-  </p>
-
-  <iframe width="420" height="315" src="//www.youtube.com/embed/sQYq2LISMRU" frameborder="0" allowfullscreen=""></iframe>
   
 <% end %>
 
 
-<% partial 'partials/exercise', locals: { name: 'Ada Lovelace' } do %>
 
 
-  <p>
-    Tehtäväpohjassa on seuraavanlainen ohjelmarunko:
-  </p>
+<% partial 'partials/material_sub_heading' do %>
+  Palvelinohjelmiston polut
+<% end %>
 
-  <% partial 'partials/code_highlight' do %>
-public class Nimi {
 
-    public static void main(String[] args) {
-        // Kirjoita ohjelmasi tähän alle
+<p>
+  Sovellus kuuntelee kaikkia palvelinohjelmistoon tulevia pyyntöjä jos pyyntöjen käsittelyyn tehty metodi on annotoitu <code>@GetMapping</code>-annotaatiolla, jolle on asetettu parametriksi <code>"*"</code>. Käytännössä @GetMapping-annotaation parametrilla määritellään <strong>polku</strong>, johon palvelimelle tulevat pyynnöt voidaan ohjata. Tähdellä ilmoitetaan, että kyseinen metodi käsittelee kaikki pyynnöt. Muiden polkujen määrittely on luonnollisesti myös mahdollista.
+</p>
 
+<p>
+  Antamalla @GetMapping-annotaation poluksi merkkijono <code>"/salaisuus"</code>, kaikki web-palvelimen osoitteeseen <code>/salaisuus</code> tehtävät pyynnöt ohjautuvat metodille, jolla kyseinen annotaatio on. Allaolevassa esimerkissä määritellään polku <code>/salaisuus</code> ja kerrotaan, että polkuun tehtävät pyynnöt palauttavat merkkijonon <code>"Kryptos"</code>.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping("/salaisuus")
+@ResponseBody
+public String home() {
+    return "Kryptos";
+}
+<% end %>
+
+<p>
+  Yhteen ohjelmaan voi määritellä useampia polkuja. Jokainen polku käsitellään omassa metodissaan. Alla olevassa esimerkissä pyyntöjä vastaanottavaan luokkaan on määritelty kolme erillistä polkua, joista jokainen palauttaa käyttäjälle merkkijonon.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package polut;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class PolkuController {
+
+    @GetMapping("/path")
+    @ResponseBody
+    public String path() {
+        return "Polku (path)";
+    }
+
+    @GetMapping("/route")
+    @ResponseBody
+    public String route() {
+        return "Polku (route)";
+    }
+
+    @GetMapping("/trail")
+    @ResponseBody
+    public String trail() {
+        return "Polku (trail)";
     }
 }
-  <% end %>
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Paths' } do %>
 
   <p>
-    Rivi "// Kirjoita ohjelmasi tähän alle" on <em>kommenttirivi</em>, jota tietokone ei ota huomioon ohjelmaa suoritettaessa. Lisää kommenttirivin alle lause, joka tulostaa merkkijonon "Ada Lovelace" ja suorita ohjelma. Ohjelman tulostuksen tulee olla seuraavanlainen:
+    Toteuta pakkauksessa <code>wad.hellopaths</code> olevaan luokkaan <code>HelloPathsController</code> seuraava toiminnallisuus:
   </p>
+      
+  <ul>
 
-  <% partial 'partials/sample_output' do %>
-    Ada Lovelace
-  <% end %>
+    <li>
+      Pyyntö polkuun <code>/hello</code> palauttaa käyttäjälle merkkijonon "Hello"
+    </li>
 
+    <li>
+      Pyyntö polkuun <code>/paths</code> palauttaa käyttäjälle merkkijonon "Paths"
+    </li>
+    
+  </ul>
+      
   <p>
-    Kun olet tehnyt tehtävän ja huomaat, että ohjelma tulostaa halutun merkkijonon, palauta tehtävä TMC:lle. Tutustu tämän jälkeen halutessasi lisää <a href="https://en.wikipedia.org/wiki/Ada_Lovelace" target="_blank" rel="noopener">Ada Lovelaceen</a>, joka oli yksi ensimmäisistä ohjelmoijista.
+    Alla olevassa kuvassa on esimerkki tilanteesta, missä selaimella on tehty pyyntö polkuun <code>/hello</code>
+  </p>
+  
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex2.png"/>
+  </p>
+      
+  <p>
+    Palauta tehtävä TMC:lle kun olet valmis.
   </p>
 
 <% end %>
 
 
+<% partial 'partials/material_sub_heading' do %>
+  Pyynnön parametrit
+<% end %>
+
+<p>
+  Palvelimelle voi lähettää tietoa pyynnön parametreina. Tutustutaan ensin tapaan, missä pyynnön parametrit lisätään osoitteeseen. Esimerkiksi pyynnössä <code>http://localhost:8080/salaisuus?onko=nauris</code> on parametri nimeltä <code>onko</code>, jonka arvoksi on määritelty arvo <code>nauris</code>.
+</p>
+
+<p>
+  Parametrien lisääminen pyyntöön tapahtuu lisäämällä osoitteen perään kysymysmerkki, jota seuraa parametrin nimi, yhtäsuuruusmerkki ja parametrille annettava arvo. Pyynnössä tuleviin parametreihin pääsee käsiksi <code><a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestParam.html" target="_blank">@RequestParam</a></code>-annotaation avulla.
+</p>
+
+<p>
+  Allaolevan esimerkin sovellus tervehtii kaikkia pyynnön tekijöitä. Ohjelma käsittelee polkuun <code>/hei</code> tulevia pyyntöjä ja palauttaa niihin vastauksena tervehdyksen. Tervehdykseen liitetään pyynnössä tulevan <code>nimi</code>-parametrin arvo.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package parametrit;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class TervehtijaController {
+
+    @GetMapping("/hei")
+    @ResponseBody
+    public String tervehdi(@RequestParam String nimi) {
+        return "Hei " + nimi + ", mitä kuuluu?";
+    }
+}
+<% end %>
+
+<p>
+  Nyt esimerkiksi osoitteeseen <code>http://localhost:8080/hei?nimi=Ada</code> tehtävä pyyntö saa vastaukseksi merkkijonon <code>Hei Ada, mitä kuuluu?</code>.
+</p>
+
+<p>
+  Jos parametreja on useampia, erotellaan ne toisistaan <code>&amp;</code>-merkillä. Seuraavassa esimerkissä pyynnössä on kolme parametria, <code>eka</code>, <code>toka</code> ja <code>kolmas</code>, joiden arvot ovat <code>1</code>, <code>2</code> ja <code>3</code> vastaavasti.
+</p>
+
+<pre>
+http://localhost:8080/salaisuus?eka=1&amp;toka=2&amp;kolmas=3
+</pre>
+
+<p>
+  Kaikki pyynnössä olevat parametrit saa pyyntöä käsittelevät metodin käyttöön <code>@RequestParam</code>-annotaatiolla, mitä seuraa <code>Map</code>-tietorakenne, johon parametrit ja niiden arvot asetetaan. Allaolevassa esimerkissä pyynnön parametrit asetetaan <code>Map</code>-tietorakenteeseen, jonka jälkeen kaikki pyynnön arvojen avaimet palautetaan kysyjälle.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package parametrit;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class PyyntoParametrienNimetController {
+
+    @GetMapping("/nimet")
+    @ResponseBody
+    public String nimet(@RequestParam Map&lt;String, String&gt; parametrit) {
+        return parametrit.keySet().toString();
+    }
+}
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Request Params' } do %>
+  
+  <p>
+    Toteuta pakkauksessa <code>wad.hellorequestparams</code> olevaan luokkaan <code>HelloRequestParamsController</code> seuraava toiminnallisuus:
+  </p>
+      
+  <ul>
+
+    <li>
+      Pyyntö polkuun <code>/hello</code> palauttaa käyttäjälle merkkijonon "Hello ", johon on liitetty <code>param</code>-nimisen parametrin sisältämä arvo.
+    </li>
+
+    <li>
+      Pyyntö polkuun <code>/params</code> palauttaa käyttäjälle kaikkien pyynnön mukana tulevien parametrien nimet ja arvot.
+    </li>
+    
+  </ul>
+      
+  <p>
+    Alla olevassa kuvassa on esimerkki tilanteesta, missä selaimella on tehty pyyntö polkuun <code>/params?hello=world&amp;it=works</code>
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex3.png"/>
+  </p>
+      
+  <p>
+    Palauta tehtävä TMC:lle kun olet valmis.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Calculator' } do %>
+      
+  <p>
+    Toteuta tässä tehtävässä pakkauksessa <code>wad.calculator</code> sijaitsevaan <code>CalculatorController</code>-luokkaan seuraava toiminnallisuus:
+  </p>
+      
+  <ul>
+
+    <li>
+      Pyyntö polkuun <code>/add</code> laskee parametrien <code>first</code> ja <code>second</code> arvot yhteen ja palauttaa vastauksen käyttäjälle. Huomaa että arvot ovat numeroita, ja ne tulee myös käsitellä numeroina.
+    </li>
+	
+    <li>
+      Pyyntö polkuun <code>/multiply</code> kertoo parametrien <code>first</code> ja <code>second</code> arvot ja palauttaa vastauksen käyttäjälle.
+    </li>
+	    
+  </ul>
+        
+  <p>
+    Palauta tehtävä TMC:lle kun olet valmis.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Näkymät ja data
+<% end %>
+
+
+<p>
+  Sovelluksemme ovat vastaanottaneet tiettyyn polkuun tulevan pyynnön ja palauttaneet käyttäjälle merkkijonomuodossa olevaa tietoa. Palvelin voi myös luoda käyttäjälle näkymän, jonka selain lopulta näyttää käyttäjälle.
+</p>
+
+<p>
+  Näkymät luodaan tyypillisesti apukirjastojen avulla siten, että ohjelmoija luo HTML-näkymät ja upottaa HTML-koodiin kirjastospesifejä komentoja. Nämä komennot mahdollistavat mm. tiedon lisäämisen sivuille.
+</p>
+
+<p>
+  Tällä kurssilla käyttämämme apuväline näkymän luomiseen on <a href="http://www.thymeleaf.org/" target="_blank">Thymeleaf</a>, joka tarjoaa välineitä datan lisäämiseen HTML-sivuille. Käytännössä näkymiä luodessa luodaan ensin HTML-sivu, jonka jälkeen sivulle lisätään komentoja Thymeleafin käsiteltäväksi.
+</p>
+
+<p>
+  Thymeleaf-sivut ("templatet") sijaitsevat projektin kansiossa <code>src/main/resources/templates</code> tai sen alla olevissa kansioissa. NetBeansissa kansio löytyy kun klikataan "Other Sources"-kansiota.
+</p>
+
+
+
+<% partial 'partials/hint', locals: { name: 'Thymeleafin käyttöönotto' } do %>
+    
+  <p>
+    Thymeleafin käyttöönotto vaatii <code>pom.xml</code>-tiedostossa olevien riippuvuuksien muokkaamista. Web-sovellusten perustoiminnallisuus saatiin käyttöön lisäämällä <code>org.springframework.boot</code>-ryhmän komponentti <code>spring-boot-starter-web</code> pom.xml-tiedoston dependencies-osioon. Kun vaihdamme riippuvuuden muotoon <code>spring-boot-starter-thymeleaf</code>, pääsemme käyttämään Thymeleafia.
+  </p>
+    
+  <% partial 'partials/xml_highlight' do %>
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+  <% end %>
+
+  <p>
+    Jos edellämainittu riippuvuus ei ole aiemmin ladattuna koneelle, tulee se myös hakea. Tämä onnistuu joko kirjoittamalla komentorivillä projektin juuressa komento <code>mvn dependency:resolve</code> tai valitsemalle NetBeansissa projektiin liittyvä kansio <em>Dependencies</em> oikealla hiirennapilla ja painamalla <em>Download Declared Dependencies</em>.
+  </p>
+    
+  <p>
+    Thymeleaf vaatii myös, että jokaisen HTML-sivun <code>html</code>-elementin määrittelyssä tulee olla seuraavat määrittelyt.
+  </p>
+
+  <% partial 'partials/xml_highlight' do %>
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"&gt;
+  <% end %>
+
+<% end %>
+
+
+<p>
+  Alla olevassa esimerkissä luodaan juuripolkua <code>/</code> kuunteleva sovellus. Kun sovellukseen tehdään pyyntö, palautetaan HTML-sivu, jonka Thymeleaf käsittelee. Spring päättelee käsiteltävän ja palautettavan sivun merkkijonon perusteella. Alla metodi palauttaa merkkijonon <code>"index"</code>, jolloin Spring etsii kansiosta <code>src/main/resources/templates/</code> sivua <code>index.html</code>. Kun sivu löytyy, se annetaan Thymeleafin käsiteltäväksi, jonka jälkeen sivu palautetaan käyttäjälle.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+package thymeleaf;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class ThymeleafController {
+
+    @GetMapping("/")
+    public String home() {
+        return "index";
+    }
+}
+<% end %>
+
+<p>
+  Pyyntöjä käsittelevällä metodilla ei ole annotaatiota <code>@ResponseBody</code>. Emme siis tässä halua, että metodin palauttama arvo näytetään suoraan käyttäjälle, vaan haluamme, että käyttäjälle näytetään merkkijonon osoittama näkymä. Näkymä luodaan Thymeleafin avulla.
+</p>
+
+<% partial 'partials/exercise', locals: { name: 'Hello Thymeleaf' } do %>
+        
+  <p>
+    Toteuta tässä tehtävässä pakkauksessa <code>wad.hellothymeleaf</code> sijaitsevaan <code>HelloThymeleafController</code>-luokkaan seuraava toiminnallisuus:
+  </p>
+      
+  <ul>
+    
+    <li>
+      Pyyntö juuripolkuun <code>/</code> palauttaa käyttäjälle Thymeleafin avulla kansiossa <code>src/main/resources/templates/</code> olevan <code>index.html</code>-tiedoston.
+    </li>
+	
+    <li>
+      Pyyntö polkuun <code>/video</code> palauttaa käyttäjälle Thymeleafin avulla kansiossa <code>src/main/resources/templates/</code> olevan <code>video.html</code>-tiedoston.
+    </li>
+	
+  </ul>
+      
+  <p>
+    Alla on esimerkki ohjelman toiminnasta, kun selaimella on tehty pyyntö sovelluksen juuripolkuun.
+  </p>
+      
+  <p><img class="browser-img" src="/img/2016-mooc/ex5.png"/></p>
+      
+  <p>Palauta tehtävä TMC:lle kun olet valmis.</p>
+
+<% end %>
+
+<% partial 'partials/hint', locals: { name: 'HTML' } do %>
+
+  <p>
+    Jos mietit mistä ihmeestä tuossa HTML-lyhenteessä on kyse tai haluat verestää HTML-osaamistasi, nyt on hyvä hetki käydä lukemassa osoitteessa <a href="http://www.w3schools.com/html/default.asp" target="_blank">http://www.w3schools.com/html/default.asp</a> oleva HTML-opas.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Model ja datan lisääminen näkymään
+<% end %>
+
+<p>
+  Palvelinohjelmistossa luodun tai haetun datan lisääminen näkymään tapahtuu <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/ui/Model.html" target="_blank">Model</a>-olion avulla. Kun lisäämme Model-olion pyyntöjä käsittelevän metodin parametriksi, lisää Spring-sovelluskehys sen automaattisesti käyttöömme.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+package thymeleafdata;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+public class ThymeleafJaDataController {
+
+    @GetMapping("/")
+    public String home(Model model) {
+        return "index";
+    }
+}
+<% end %>
+
+<p>
+  Model on Spring-sovelluskehyksen käyttämä hajautustaulun toimintaa jäljittelevä olio. Alla olevassa esimerkissä määrittelemme pyyntöjä käsittelevälle metodille Model-olion, jonka jälkeen lisäämme lokeroon nimeltä <code>teksti</code> arvon <code>"Hei mualima!"</code>.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package thymeleafdata;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class ThymeleafJaDataController {
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("teksti", "Hei mualima!");
+        return "index";
+    }
+}
+<% end %>
+
+<p>
+  Kun käyttäjä tekee pyynnön, joka ohjautuu ylläolevaan metodiin, ohjautuu pyyntö <code>return</code>-komennon jälkeen Thymeleafille, joka saa käyttöönsä myös Model-olion ja siihen lisätyt arvot.
+</p>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Sivun käsittely Thymeleafissa
+<% end %>
+
+<p>
+  Oletetaan, että käytössämme olevan <code>index.html</code>-sivun lähdekoodi on seuraavanlainen:
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Otsikko&lt;/title&gt;
+    &lt;/head&gt;
+
+    &lt;body&gt;
+        &lt;h1&gt;Hei maailma!&lt;/h1&gt;
+
+        &lt;h2 th:text="${teksti}"&gt;testi&lt;/h2&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+<% end %>
+
+<p>
+  Kun Thymeleaf käsittelee HTML-sivun, se etsii sieltä elementtejä, joilla on <code>th:</code>-alkuisia attribuutteja. Ylläolevasta sivusta Thymeleaf löytää <code>h2</code>-elementin, jolla on attribuutti <code>th:text</code> -- <code>&lt;h2 th:text="${teksti}"&gt;testi&lt;/h2&gt;</code>. Attribuutti <code>th:text</code> kertoo Thymeleafille, että elementin tekstiarvo (tässä "testi") tulee korvata attribuutin arvon ilmaisemalla muuttujalla. Attribuutin <code>th:text</code> arvona on <code>${teksti}</code>, jolloin Thymeleaf etsii <code>model</code>-oliosta arvoa avaimella <code>"teksti"</code>.
+</p>
+
+<p>
+  Käytännössä Thymeleaf etsii -- koska sivulla olevasta elementistä löytyy attribuutti <code>th:text="${teksti}"</code> -- Model-oliosta lokeron nimeltä <code>teksti</code> ja asettaa siinä olevan arvon elementin tekstiarvoksi. Tässä tapauksessa teksti <code>testi</code> korvataan Model-olion lokerosta teksti löytyvällä arvolla, eli tekstillä <code>Hei mualima!</code>.
+</p>
+
+<p></p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Model' } do %>
+      
+  <p>
+    Tehtäväpohjan mukana tulevaan HTML-tiedostoon on toteutettu tarina, joka tarvitsee otsikon ja päähenkilön. Toteuta pakkauksessa <code>wad.hellomodel</code> sijaitsevaan <code>HelloModelController</code>-luokkaan toiminnallisuus, joka käsittelee juuripolkuun tulevia pyyntöjä ja käyttää pyynnössä tulevia parametreja tarinan täydentämiseen. Voit olettaa, että pyynnön mukana tulevien parametrien nimet ovat <code>title</code> ja <code>person</code>.
+  </p>
+      
+  <p>
+    Lisää pyynnön mukana tulevien parametrien arvot Thymeleafille annettavaan HashMappiin. Otsikon avaimen tulee olla <code>"title"</code> ja henkilön avaimen tulee olla <code>"person"</code>. Palautettava sivu on <code>index.html</code>.
+  </p>
+      
+  <p>
+    Alla on esimerkki ohjelman toiminnasta, kun juuripolkuun tehdyssä pyynnössä on annettuna otsikoksi <code>Mökkielämää</code> ja henkilöksi <code>Leena</code>.
+  </p>
+	
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex6.png"/>
+  </p>
+      
+  <p>
+    Palauta tehtävä TMC:lle kun olet valmis.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_heading' do %>
+  Tiedon lähettäminen palvelimelle
+<% end %>
+
+<p>
+  HTML-sivuille voi määritellä lomakkeita (<a href="http://www.w3schools.com/html/html_forms.asp" target="_blank">form</a>), joiden avulla käyttäjä voi lähettää tietoa palvelimelle. Lomakkeen määrittely tapahtuu <code>form</code>-elementin avulla, jolle kerrotaan polku, mihin lomake lähetetään (action), sekä pyynnön tyyppi (method). Pidämme pyynnön tyypin toistaiseksi POST-tyyppisenä.
+</p>
+
+<p>
+  Lomakkeeseen voidaan määritellä mm. tekstikenttiä (<code>&lt;input type="text"...</code>) sekä painike, jolla lomake lähetetään (<code>&lt;input type="submit"...</code>). Alla tekstikentän <code>name</code>-attribuutin arvoksi on asetettu <code>nimi</code>. Tämä tarkoittaa sitä, että kun lomakkeen tiedot lähetetään palvelimelle, tulee pyynnössä <code>nimi</code>-niminen parametri, jonka arvona on tekstikenttään kirjoitettu teksti.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;form th:action="@{/}" method="POST"&gt;
+    &lt;input type="text" name="nimi"/&gt;
+    &lt;input type="submit"/&gt;
+&lt;/form&gt;
+<% end %>
+
+<p>
+  Lomakkeen avulla lähetetty tieto -- jos lähetysmetodiksi on asetettu "POST" -- vastaanotetaan annotaation <code>@PostMapping</code> avulla. Annotaatio on kuin <code>@GetMapping</code>, mutta annotaatiolla merkitään, että polku kuuntelee POST-tyyppisiä pyyntöjä.
+</p>
+
+
+
+<% partial 'partials/hint', locals: { name: 'HTML-lomakkeen lähetys ja th:action' } do %>
+
+  <p>
+    Polku, johon lomakkeen tiedot lähetetään määritellään form-elementin action-attribuutin avulla. Haluamme vaikuttaa polkuun hieman ja määrittelemme sen thymeleafin kautta <code>th:action</code> attribuutilla. Polku on lisäksi <code>@{<em>polku</em>}</code> <code>@</code>-merkin sekä aaltosulkujen sisällä -- <code>@{<em>polku</em>}</code>.
+  </p>
+
+  <p>
+    Tämän avulla varaudumme tilanteeseen, missä palvelimella voi sijaita useampia sovelluksia. Ohjelmoimamme sovellus voi sijaita esimerkiksi polussa <code>http://osoite.com/sovellus1/</code>, ja Thymeleaf päättelee automattisesti lomakkeen poluksi osoitteen <code>http://osoite.com/sovellus1/polku</code>.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Post/Redirect/Get -suunnittelumalli
+<% end %>
+
+<p>
+  Kun palvelimelle lähetetään tietoa <code>POST</code>-tyyppisessä pyynnössä, pyynnön parametrit kulkevat <strong>pyynnön rungossa</strong> -- palaamme pyynnön erilaisiin muotoihin myöhemmin kurssilla.
+</p>
+
+<p>
+  Oikeastaan kaikki pyynnöt, joissa lähetetään tietoa palvelimelle, ovat ongelmallisia jos pyynnön vastauksena palautetaan näytettävä sivu. Tällöin käyttäjä voi sivun uudelleenlatauksen (esim. painamalla F5) yhteydessä lähettää aiemmin lähettämänsä datan vahingossa uudelleen. 
+</p>
+
+<p>
+  Lomakkeen dataa vastaanottava toiminnallisuus tulee toteuttaa siten, että lähetetyn tiedon käsittelyn jälkeen käyttäjälle palautetaan vastauksena uudelleenohjauspyyntö. Tämän jälkeen käyttäjän selain tekee uuden pyynnön uudelleenohjauspyynnön mukana annettuun osoitteeseen. Tätä toteutustapaa kutsutaan <a href="http://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank">Post/Redirect/Get</a>-suunnittelumalliksi ja sillä mm. estetään lomakkeiden uudelleenlähetys, jonka lisäksi vähennetään toiminnallisuuden toisteisuutta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  POST-pyynnön kuuntelu ja uudelleenohjaus
+<% end %>
+
+<p>
+  Alla on toteutettu POST-tyyppistä pyyntöä kuunteleva polku sekä siihen liittyvä toiminnallisuus. POST-tyyppinen pyyntö määritellään annotaation <code>@PostMapping</code> avulla. Palauttamalla pyyntöä käsittelevästä metodista merkkijono <code>redirect:/</code> kerrotaan, että pyynnölle tulee lähettää vastauksena uudelleenohjauspyyntö polkuun <code>"/"</code>. Kun selain vastaanottaa uudelleenohjauspyynnön, tekee se GET-tyyppisen pyynnön uudelleenohjauspyynnössä annettuun osoitteeseen.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  package uudelleenohjaus;
+
+  import java.util.List;
+  import java.util.ArrayList;
+  import org.springframework.stereotype.Controller;
+  import org.springframework.ui.Model;
+  import org.springframework.web.bind.annotation.GetMapping;
+  import org.springframework.web.bind.annotation.PostMapping;
+  import org.springframework.web.bind.annotation.RequestParam;
+
+  @Controller
+  public class RedirectOnPostController {
+
+      private String message;
+  
+      @GetMapping("/")
+      public String home(Model model) {
+          model.addAttribute("message", message);
+          return "index";
+      }
+
+      @PostMapping("/")
+      public String post(@RequestParam String content) {
+          this.message = content;
+          return "redirect:/";
+      }
+  }
+<% end %>
+
+
+<p></p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Form' } do %>
+      
+  <p>
+    Tehtäväpohjassa on toiminnallisuus, jonka avulla sivulla voi näyttää tietoa, ja jonka avulla sivulta lähetetty tieto voidaan myös käsitellä. Tiedon lähettämiseen tarvitaan sivulle kuitenkin lomake.
+  </p>
+      
+  <p>
+    Toteuta tehtäväpohjan kansiossa <code>src/main/resources/templates</code> olevaan <code>index.html</code>-tiedostoon lomake. Lomakkeessa tulee olla tekstikenttä, jonka nimen tulee olla <code>content</code>. Tämän lisäksi, lomakkeessa tulee olla myös nappi, jolla lomakkeen voi lähettää. Lomakkeen tiedot tulee lähettää juuriosoitteeseen POST-tyyppisellä pyynnöllä.
+  </p>
+      
+  <p>
+    Kun sovellus toimii oikein, voit vaihtaa sivulla näkyvää otsikkoa lomakkeen avulla.
+  </p>
+
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'Hello POST/Redirect/GET' } do %>
+  
+  <p>
+    Tehtäväpohjassa on sekä muistilappujen listaamistoiminnallisuus, että lomake, jonka avulla voidaan lähettää POST-tyyppisiä pyyntöjä palvelimelle. Toteuta sovellukseen toiminnallisuus, missä palvelin kuuntelee POST-tyyppisiä pyyntöjä, lisää pyynnön yhteydessä tulevan tiedon sovelluksessa olevaan listaan ja uudelleenohjaa käyttäjän tekemään GET-tyyppisen pyynnön juuriosoitteeseen.
+  </p>
+
+  <p>
+    Tehtävässä ei ole testejä. Palauta tehtävä kun ohjelma toimii halutulla tavalla.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Listojen käsittely
+<% end %>
+
+<p>
+  Thymeleafille annettavalle Model-oliolle voi asettaa tekstin lisäksi myös arvokokoelmia. Alla luomme "pääohjelmassa" listan, joka asetetaan Thymeleafin käsiteltäväksi menevään Model-olioon jokaisen juuripolkuun tehtävän pyynnön yhteydessä. Jos juuripolkuun lähetetään parametri nimeltä <code>"content"</code>, lisätään se myös listaan.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package thymeleafdata;
+
+import java.util.List;
+import java.util.ArrayList;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class ListaController {
+    private List&lt;String&gt; lista;
+
+    public ListaController() {
+        this.lista = new ArrayList&lt;&gt;();
+        this.lista.add("Hello world!");
+    }
+
+    @GetMapping(value = "/")
+    public String home(Model model) {
+        model.addAttribute("list", lista);
+        return "index";
+    }
+  
+    @PostMapping(value = "/")
+    public String post(Model model, String content) {
+        this.lista.add(content);
+        return "redirect:/";
+    }
+}
+<% end %>
+
+<p>
+  Listan läpikäynti Thymeleafissa tapahtuu attribuutin <code>th:each</code> avulla. Sen määrittely saa muuttujan nimen, johon kokoelmasta otettava alkio kullakin iteraatiolla tallennetaan, sekä läpikäytävän kokoelman. Perussyntaksiltaan <code>th:each</code> on seuraavanlainen.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;p th:each="alkio : ${lista}"&gt;
+    &lt;span th:text="${alkio}"&gt;hello world!&lt;/span&gt;
+&lt;/p&gt;
+<% end %>
+
+<p>
+  Yllä käytämme attribuuttia nimeltä <code>lista</code> ja luomme jokaiselle sen sisältämälle alkiolle p-elementin, jonka sisällä on span-elementti, jonka tekstinä on alkion arvo. Attribuutin <code>th:each</code> voi asettaa käytännössä mille tahansa toistettavalle elementille. Esimerkiksi HTML-listan voisi tehdä seuraavalla tavalla.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;ul&gt;
+    &lt;li th:each="alkio : ${lista}"&gt;
+        &lt;span th:text="${alkio}"&gt;hello world!&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ul&gt;
+<% end %>
+
+
+<p>
+  <em>Huom! Eräs klassinen virhe on määritellä iteroitava joukko merkkijonona <code>th:each="alkio : lista"</code>. Tämä ei luonnollisesti toimi.</em>
+</p>
+
+<% partial 'partials/exercise', locals: { name: 'Hello List' } do %>
+      
+  <p>
+    Tehtäväpohjassa on palvelinpuolen toiminnallisuus, jossa käsitellään juuripolkuun tuleva pyyntö, sekä lisätään lista Thymeleafille sivun käsittelyyn. Tehtäväpohjaan liittyvä HTML-sivu ei kuitenkaan sisällä juurikaan toiminnallisuutta.
+  </p>
+      
+  <p>
+    Lisää HTML-sivulle (1) listalla olevien arvojen tulostaminen <code>th:each</code>-komennon avulla ja (2) lomake, jonka avulla palvelimelle voidaan lähettää uusia arvoja.
+  </p>
+      
+<% end %>
+  
+
+<% partial 'partials/exercise', locals: { name: 'Notebook' } do %>
+      
+  <p>
+    Toteuta tehtäväpohjan pakkauksessa <code>wad.notebook</code> olevaan <code>NotebookController</code>-luokkaan muistio-ohjelma, jolle voi lisätä muistiinpanoja. Tee ohjelmastasi sellainen, että jos muistiinpanoja on yli 10, se muistaa ja näyttää niistä vain viimeisimmät 10.
+  </p>
+
+  <p>
+    Hyödynnä muistion tekemiseen tehtäväpohjassa valmiina mukana tulevaa HTML-sivua. Huomaa, että lomakkeen metodi on <code>POST</code> ja että lomakkeen tekstikentän nimi on <code>content</code>.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Olioiden käsittely
+<% end %>
+
+<p>
+  Modeliin voi lisätä myös muunlaisia olioita. Oletetaan, että käytössämme on henkilöä kuvaava luokka.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+public class Henkilo {
+    private String nimi;
+
+    public Henkilo(String nimi) {
+        this.nimi = nimi;
+    }
+
+    public String getNimi() {
+        return this.nimi;
+    }
+
+    public void setNimi(String nimi) {
+        this.nimi = nimi;
+    }
+}
+<% end %>
+
+<p>
+  Henkilo-olion lisääminen on suoraviivaista:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping("/")
+public String home(Model model) {
+    model.addAttribute("henkilo", new Henkilo("Le Pigeon"));
+    return "index";
+}
+<% end %>
+
+<p>
+  Kun sivua luodaan, henkilöön päästään käsiksi modeliin asetetun avaimen perusteella. Edellä luotu "Le Pigeon"-henkilö on tallessa avaimella "henkilo". Kuten aiemminkin, avaimella pääsee olioon käsiksi.
+</p>
+
+
+<% partial 'partials/xml_highlight' do %>
+  &lt;h2 th:text="${henkilo}"&gt;Henkilön nimi&lt;/h2&gt;
+<% end %>
+
+<p>
+  Ylläolevaa henkilön tulostusta kokeillessamme saamme näkyville (esim.) merkkijonon <code>Henkilo@29453f44</code> -- ei ihan mitä toivoimme. Käytännössä Thymeleaf kutsuu edellisessä tapauksessa olioon liittyvää <code>toString</code>-metodia, jota emme ole määritelleet. Pääsemme oliomuuttujiin käsiksi olemassaolevien <code>get<em>Muuttuja</em></code>-metodien kautta. Jos haluamme tulostaa Henkilo-olioon liittyvän nimen, kutsumme metodia <code>getNimi</code>. Thymeleafin käyttämässä notaatiossa kutsu muuntuu muotoon <code>henkilo.nimi</code>. Saamme siis halutun tulostuksen seuraavalla tavalla:
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;h2 th:text="${henkilo.nimi}"&gt;Henkilön nimi&lt;/h2&gt;<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Olioita listalla
+<% end %>
+
+<p>Listan läpikäynti Thymeleafissa tapahtuu attribuutin <code>th:each</code> avulla. Sen määrittely saa muuttujan nimen, johon kokoelmasta otettava alkio kullakin iteraatiolla tallennetaan, sekä läpikäytävän kokoelman. Perussyntaksiltaan <code>th:each</code> on jo tullut aiemmin tutuksi.</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;p th:each="alkio : ${lista}"&gt;
+    &lt;span th:text="${alkio}"&gt;hello world!&lt;/span&gt;
+&lt;/p&gt;
+<% end %>
+
+<p>
+  Iteroitavan joukon alkioiden ominaisuuksiin pääsee käsiksi aivan samalla tavalla kuin muiden olioiden ominaisuuksiin. Tutkitaan seuraavaa esimerkkiä, jossa listaan lisätään kaksi henkilöä, lista lisätään pyyntöön ja lopulta luodaan näkymä Thymeleafin avulla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+package henkilot;
+
+import java.util.List;
+import java.util.ArrayList;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HenkiloController {
+    private List&lt;Henkilo&gt; henkilot;
+
+    public HenkiloController() {
+        this.henkilot = new ArrayList&lt;&gt;();
+        this.henkilot.add(new Henkilo("James Gosling"));
+        this.henkilot.add(new Henkilo("Martin Odersky"));
+    }
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("list", henkilot);
+        return "index";
+    }
+}
+<% end %>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;p&gt;Ja huomenna puheet pitävät:&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li th:each="henkilo : ${list}"&gt;
+        &lt;span th:text="${henkilo.nimi}"&gt;Esimerkkihenkilö&lt;/span&gt;
+    &lt;/li&gt;
+&lt;/ol&gt;
+<% end %>
+
+<p>Käyttäjälle lähetettävä sivu näyttää palvelimella tapahtuneen prosessoinnin jälkeen seuraavalta.</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;p&gt;Ja huomenna puheet pitävät:&lt;/p&gt;
+&lt;ol&gt;
+    &lt;li&gt;&lt;span&gt;James Gosling&lt;/span&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;span&gt;Martin Odersky&lt;/span&gt;&lt;/li&gt;
+&lt;/ol&gt;<% end %>
+
+<p></p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Objects' } do %>
+      
+  <p>
+    Tehtäväpohjassa on sovellus, jossa käsitellään <code>Item</code>-tyyppisiä olioita. Tehtävänäsi on lisätä sovellukseen lisätoiminnallisuutta:
+  </p>
+      
+  <ul>
+    
+    <li>
+      Kun käyttäjä avaa selaimella sovelluksen juuripolun, tulee hänen lomakkeen lisäksi nähdä lista esineistä. Jokaisesta esineestä tulee tulla ilmi sen nimi (name) ja tyyppi (type).
+    </li>
+
+    <li>
+      Kun käyttäjä lähettää lomakkeella uuden esineen palvelimelle, tulee palvelimen säilöä esine listalle seuraavaa näyttämistä varten. Huomaa, että lomake lähettää tiedot POST-pyynnöllä sovelluksen juureen. Kun esine on säilötty, uudelleenohjaa käyttäjän pyyntö siten, että käyttäjän selain tekee GET-tyyppisen pyynnön sovelluksen juuripolkuun.
+    </li>
+    
+  </ul>
+      
+  <p>
+    Alla olevassa esimerkissä sovellukseen on lisätty olemassaolevan taikurin hatun lisäksi <a href="https://en.wikipedia.org/wiki/Party_hat" target="_blank">Party hat</a>, eli bilehattu.
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex11.png"/>
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Kokoelmien käsittely ja polkumuuttujat
+<% end %>
+
+<p>
+  Polkuja käytetään erilaisten resurssien tunnistamiseen ja yksilöintiin. Usein kuitenkin vastaan tulee tilanne, missä luodut resurssit ovat uniikkeja, emmekä niiden tietoja ennen sovelluksen käynnistymistä. Jos haluaisimme näyttää tietyn resurssin tiedot, voisimme lisätä pyyntöön parametrin -- esim <code>esineet?tunnus=3</code>, minkä arvo olisi haetun resurssin tunnus.
+</p>
+
+<p>
+  Toinen vaihtoehto on ajatella polkua haettavan resurssin tunnistajana. Annotaatiolle <code>@GetMapping</code> määriteltävään polkuun voidaan määritellä polkumuuttuja aaltosulkujen avulla. Esimerkiksi polku <code>"/{arvo}"</code> ottaisi vastaan minkä tahansa juuripolun alle tulevan kyselyn ja tallentaisi arvon myöhempää käyttöä varten. Tällöin jos käyttäjä tekee pyynnön esimerkiksi osoitteeseen <code>http://localhost:8080/kirja</code>, tallentuu arvo "kirja" myöhempää käyttöä varten. Polkumuuttujiin pääsee käsiksi pyyntöä käsittelevälle metodille määriteltävän annotaation <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html" target="_blank">@PathVariable</a> avulla.
+</p>
+
+<p>Yksittäisen henkilön näyttäminen onnistuisi esimerkiksi seuravavasti:</p>
+
+<% partial 'partials/code_highlight' do %>
+package henkilot;
+
+import java.util.List;
+import java.util.ArrayList;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HenkiloController {
+    private List&lt;Henkilo&gt; henkilot;
+
+    public ListaController() {
+        this.henkilot = new ArrayList&lt;&gt;();
+        this.henkilot.add(new Henkilo("James Gosling"));
+        this.henkilot.add(new Henkilo("Martin Odersky"));
+    }
+
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("list", henkilot);
+        return "index";
+    }
+
+    @GetMapping("/{id}")
+    public String getOne(Model model, @PathVariable Integer id) {
+        if(id &lt; 0 || id &gt;= this.henkilot.size()) {
+            return home(model);
+        }
+
+        model.addAttribute("henkilo", henkilot.get(id));
+        return "henkilo";
+    }
+}
+<% end %>
+
+<p></p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Path Variables' } do %>
+  
+  <p>
+    Tehtäväpohjassa on sovellus, jossa käsitellään taas edellisestä tehtävästä tuttuja <code>Item</code>-tyyppisiä olioita. Tällä kertaa esineet kuitenkin kuvastavat hattuja. Kun sovelluksen juureen tehdään pyyntö, käyttäjälle näytetään oletushattu ("default"). Lisää sovellukseen toiminnallisuus, minkä avulla tiettyyn polkuun tehtävä kysely palauttaa sivun, jossa näkyy tietyn hatun tiedot -- huomaa, että voit asettaa polkumuuttujan tyypiksi myös Stringin.
+  </p>
+      
+  <p>
+    Sovelluksen juuripolkuun tehtävä pyyntö näyttää seuraavanlaisen sivun:
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex12-default.png"/>
+  </p>
+      
+  <p>
+    Muihin osoitteisiin tehtävät pyynnöt taas palauttavat tehtäväpohjassa olevasta <code>items</code>-hajautustaulusta polkuun sopivan hatun. Esimerkiksi pyyntö polkuun <code>/ascot</code> näyttää seuraavanlaisen sivun:
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex12-ascot.png"/>
+  </p>
+
+<% end %>
+
+<% partial 'partials/hint', locals: { name: 'FluentLenium' } do %>
+
+  <p>
+    Seuraavat kaksi tehtävää käyttävät <a href="http://fluentlenium.org/" target="_blank" norel>FluentLenium</a>-nimistä kirjastoa testeihin. Klikkaa projektien kohdalla Dependencies -> Download declared dependencies, niin kirjastot latautuvat käyttöön.
+  </p>
+    
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'Hello Individual Pages' } do %>
+      
+  <p>
+    Edellisessä tehtävässä käytössämme oli vain yksi sivu. Olisi kuitenkin hienoa, jos jokaiselle hatulle olisi oma sivu -- ainakin sovelluksen käyttäjän näkökulmasta.
+  </p>
+      
+  <p>
+    Tehtäväpohjassa on valmiina sovellus, joka listaa olemassaolevat hatut ja näyttää ne käyttäjälle. Jokaisen hatun yhteydessä on linkki, jota klikkaamalla pitäisi päästä hatun omalle sivulle.
+  </p>
+      
+  <p>
+    Toteuta sekä html-sivu (<code>single.html</code>), että sopiva metodi, joka ohjaa pyynnön sivulle.
+  </p>
+      
+  <p>
+    Pyyntö sovelluksen juureen luo seuraavanlaisen sivun.
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex13-list.png"/>
+  </p>
+	
+  <p>
+    Jos sivulta klikkaa hattua, pääsee tietyn hatun tiedot sisältävälle sivulle. Alla olevassa esimerkissä on klikattu taikurin hattuun liittyvää linkkiä.
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex13-single.png"/>
+  </p>
+
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'Todo Application' } do %>
+                
+  <p>
+    Tässä tehtävässä tulee rakentaa tehtävien hallintaan tarkoitettu sovellus. Sovelluksen käyttämät sivut ovat valmiina näkyvissä, itse sovelluksen pääset toteuttamaan itse.
+  </p>
+      
+  <p>
+    Sovelluksen tulee sisältää seuraavat toiminnallisuudet:
+  </p>
+      
+  <ul>
+
+    <li>
+      Kaikkien tehtävien listaaminen. Kun käyttäjä tekee pyynnön sovelluksen juuripolkuun, tulee hänelle näyttää sivu, missä tehtävät on listattuna. Sivulla on myös lomake tehtävien lisäämiseen.
+    </li>
+
+    <li>
+      Yksittäisen tehtävän lisääminen. Kun käyttäjä täyttää lomakkeen sivulla ja lähettää tiedot palvelimelle, tulee sovelluksen lisätä tehtävä näytettävään listaan.
+    </li>
+
+    <li>
+      Yksittäisen tehtävän poistaminen. Kun käyttäjä painaa tehtävään liittyvää <code>Done!</code>-nappia, tulee tehtävä poistaa listalta. Toteuta tämä niin, että metodin tyyppi on <code>DELETE</code>:
+      <% partial 'partials/code_highlight' do %>
+@DeleteMapping("/{item}")<% end %>
+    </li>
+
+    <li>
+      Yksittäisen tehtävän näyttäminen. Kun käyttäjä klikkaa tehtävään liittyvää linkkiä, tulee käyttäjälle näyttää tehtäväsivu. Huom! Tehtävään liittyvien tarkistusten määrä tulee kasvaa aina yhdellä kun sivulla vieraillaan.
+    </li>
+    
+  </ul>
+      
+  <p>
+    Alla kuva tehtävien listauksesta:
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex14-list.png"/>
+  </p>
+      
+  <p>
+    Kun tehtävää klikkaa, näytetään erillinen tehtäväsivu:
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex14-item-1.png"/>
+  </p>
+      
+  <p>
+    Kun sivu avataan toisen kerran, kasvaa tehtävien tarkistukseen liittyvä laskuri:
+  </p>
+      
+  <p>
+    <img class="browser-img" src="/img/2016-mooc/ex14-item-2.png"/>
+  </p>
+
+<% end %>
+      
