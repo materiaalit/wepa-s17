@@ -294,3 +294,86 @@
 <% end %>
 
 
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tietokantakyselyn tulosten järjestäminen ja rajoittaminen
+<% end %>
+
+<p>
+  Tietokantakyselyn tulokset halutaan usein hakea tai järjestää tietyn kriteerin mukaan. Jos tietokantadatan läpikäynti toteutettaisiin osana palvelua, tekisimme oikeastaan juuri sen työn, missä tietokannat loistavat.
+</p>
+
+<p>
+  Esimerkiksi alla oleva lisäys tarjoaa metodin henkilöiden etsimiseen, joilla ei ole huonetta (oletamme että Henkilo-luokalla on attribuutti Asunto).
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  public interface HenkiloRepository extends JpaRepository&lt;Henkilo, Long&gt; {
+  List&lt;Henkilo&gt; findByAsuntoIsNull();
+  }
+<% end %>
+
+<p>
+  Vastaavasti voisimme hakea esimerkiksi nimen osalla: <code>findByNimiContaining(String osa)</code>.
+</p>
+
+<p>
+  Spring Data JPAn rajapinta <a href="http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html" target="_blank">JpaRepository</a> mahdollistaa muutaman lisäparametrin käyttämisen osassa pyyntöjä. Voimme esimerkiksi käyttää parametria <a href="http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/PageRequest.html" target="_blank">PageRequest</a>, joka tarjoaa apuvälineet sivuttamiseen sekä pyynnön hakutulosten rajoittamiseen. Alla olevalla PageRequest-oliolla haluasimme ensimmäiset 50 hakutulosta attribuutin nimi mukaan käänteisessä järjestyksessä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  Pageable pageable = new PageRequest(0, 50, Sort.Direction.DESC, "nimi");
+<% end %>
+
+<p>
+  Voimme muokata metodia <code>findByAsuntoIsNull</code> hyväksymään <code>Pageable</code>-rajapinnan toteuttavan olion parametriksi, jolloin metodi palauttaa <a href="http://docs.spring.io/spring-data/data-commons/docs/1.6.1.RELEASE/api/org/springframework/data/domain/Page.html" target="_blank">Page</a>-luokan ilmentymän.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  public interface HenkiloRepository extends JpaRepository&lt;Henkilo, Long&gt; {
+  Page&lt;Henkilo&gt; findByAsuntoIsNull(Pageable pageable);
+  }
+<% end %>
+
+<p>
+  Yhdistämällä kaksi edellistä, voisimme hakea kaikki huoneettomat henkilöt sopivasti järjestettynä:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  //...
+  import org.springframework.data.domain.Page;
+  import org.springframework.data.domain.PageRequest;
+  import org.springframework.data.domain.Pageable;
+  import org.springframework.data.domain.Sort;
+  //...
+
+  // tämä palvelussa
+  Pageable pageable = new PageRequest(0, 50, Sort.Direction.DESC, "nimi");
+  Page&lt;Henkilo&gt; henkiloSivu = henkiloRepository.findByAsuntoIsNull(pageable);
+  List&lt;Henkilo&gt; henkilot = henkiloSivu.getContent();
+<% end %>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Last Messages' } do %>
+  
+  <p>
+    Tehtävässä on käytössä viestien lähetykseen käytettävä sovellus. Muokkaa sovellusta siten, että MessageServicen <code>list</code>-metodi palauttaa aina vain uusimmat 10 viestiä. Käytä tässä hyödyksi yllä nähtyä Pageable-oliota.
+  </p>
+
+<% end %>
+
+
+TODO:
+
+3 - ajan tallentaminen tietokantaan
+3 - tulosten hakeminen ja ryhmittely
+3 - omien kyselyiden kirjoittaminen
+3 - binääritiedon tallentaminen tietokantaan
+3 - flyway
+3 - import data
+
+3 - konffit
+    logit

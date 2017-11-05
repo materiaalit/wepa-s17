@@ -12,7 +12,8 @@ function getWepaSyksy17Config() {
     courseId: '266',
     courseName: 'Web-palvelinohjelmointi',
     exerciseGroups: {
-      'Set 1': ['31.10.2017 12:00', '07.11.2017 23:59', 'set01-']
+      'Set 1': ['31.10.2017 12:00', '07.11.2017 23:59', 'set01-'],
+      'Set 2': ['06.11.2017 18:00', '14.11.2017 23:59', 'set02-']
     }
   };
 }
