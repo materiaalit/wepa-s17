@@ -1,0 +1,1129 @@
+---
+  title: Osa 3
+  exercise_page: true
+  quiz_page: false
+  published: false
+---
+
+
+<% partial 'partials/hint', locals: { name: 'Kolmannen osan tavoitteet' } do %>
+
+  <p>
+
+
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_heading' do %>
+  Lombok ja "Boilerplaten" vähentäminen
+<% end %>
+
+<p>
+  Javan tietokohteita kuvaavat luokat tarvitsevat oletuksena konstruktoreita sekä gettereitä ja settereitä. Thymeleaf hyödyntää luokan get-metodeja HTML-sivuja täydentäessä. Spring Data JPA taas käyttää parametritonta konstruktoria sekä attribuuttien arvojen asettamiseen käytettäviä set-metodeja.
+</p>
+
+<p>
+  Hyvin yksinkertainenkin luokka -- kuten alla oleva tapahtumaa kuvaava <code>Event</code> -- sisältää paljon ohjelmakoodia.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  public class Event {
+
+      private String name;
+    
+      public Event() {
+      }
+
+      public Event(String name) {
+          this.name = name;
+      } 
+
+      public String getName() {
+          return this.name;
+      }
+
+      public void setName(String name) {
+          this.name = name;
+      }
+  }
+<% end %>
+
+<p>
+  Suurin osa ohjelmakoodista on oleellista vallitsevien käytänteiden takia -- esimerkiksi Thymeleafin ja Spring Data JPA tarvitsee getterit ja setterit -- mutta samalla epäoleellista. Edellä kuvattujen luokkien sekä niiden attribuuttien määrän lisääntyessä projekteissa tulee olemaan lopulta satoja ellei tuhansia rivejä "turhahkoa" lähdekoodia.
+</p>
+
+<p>
+  <a href="https://projectlombok.org/" target="_blank" norel>Lombok</a> on kirjasto, joka on suunniteltu vähentämään projekteissa esiintyvien toisteisten konstruktorien, getterien ja setterien määrää. Lombokin saa projektin käyttöön lisäämällä projektin <code>pom.xml</code>-tiedostoon lombok-riippuvuuden.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+  &lt;dependency&gt;
+    &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+    &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+    &lt;optional&gt;true&lt;/optional&gt;
+  &lt;/dependency&gt;
+<% end %>
+
+<p>
+  Projekti tarjoaa mahdollisuuden gettereiden ja settereiden luomiseen lennossa. Ohjelmoijan näkökulmasta edellä kuvattu luokka <code>Event</code> toimii täysin samalla tavalla, jos konstruktorit ja metodit poistetaan ja luokkaan lisätään muutama annotaatio.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public class Event {
+
+      private String name;
+
+  }
+<% end %>
+
+<p>
+  Edellä käytetyt annotaatiot toimivat seuraavasti: Annotaatio <code>@NoArgsConstructor</code> luo luokalle parametrittoman konstruktorin, annotaatio <code>@AllArgsConstructor</code> luo luokalle kaikki attribuutit sisältävän konstruktorin, ja annotaatio <code>@Data</code> luo attribuuteille getterit ja setterit.
+</p>
+
+<img src="/img/lombok.gif" />
+
+<p>
+  Lombok toimii yhdessä myös <code>@Entity</code>-annotaation kanssa. Alla <code>Event</code>-luokasta on tehty tietokantaan tallennettava.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import javax.persistence.Entity;
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  import org.springframework.data.jpa.domain.AbstractPersistable;
+
+  @Entity
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public class Event extends AbstractPersistable&lt;Long&gt; {
+
+      private String name;
+
+  }
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Lombok' } do %>
+  
+  <p>
+    Tehtäväpohjassa on toisesta osasta tuttu tehtävä Item Database. Tutustu ohjelmaan ja ota projektissa Lombok käyttöön. Tehtävässä ei ole testejä, eli palauta tehtävä kun se on valmis. 
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_heading' do %>
+  Tiedon tallentamista ja hakemista
+<% end %>
+
+<p>
+  Jatketaan tietokannassa olevan tiedon hakemisen ja tallentamisen parissa. Edellisessä osassa tutuksi tullut Spring Data JPA tarjoaa merkittävän määrän tietokantakyselyiden logiikkaa valmiina, mikä vähentää tarvetta rutiininomaisten tietokantakyselyiden kirjoittamiseen.
+</p>
+
+<p>
+  Tietokantakyselyt saa näkyville palvelimen logeihin lisäämällä sovelluksen kansioon <code>src/main/resources</code> tiedoston <code>application.properties</code> -- eli projektin konfiguraatiotiedoston -- ja lisäämällä konfiguraatiotiedostoon rivin <code>spring.jpa.show-sql=true</code>.
+</p>
+
+<pre>
+spring.jpa.show-sql=true
+</pre>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Ajan tallentaminen
+<% end %>
+
+<p>
+  Tietoon liittyy usein aikamääreitä. Esimerkiksi kirjalla on julkaisupäivämäärä, henkilöllä on syntymäpäivä, elokuvalla on näytösaika jne. Javan kahdeksannessa versiossa julkaistiin <a href="https://docs.oracle.com/javase/8/docs/api/java/time/package-summary.html" target="_blank" norel>uusia ajan käsittelyyn tarkoitettuja luokkia</a>. Luokkaa <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDate.html" target="_blank" norel>LocalDate</a> käytetään vuoden, kuukauden ja päivämäärän tallentamiseen. Luokka <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html" target="_blank" norel>LocalDateTime</a> mahdollistaa taas vuoden, kuukauden ja päivämäärän lisäksi tuntien, minuuttien, sekuntien ja millisekuntien tallentamisen.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import java.time.LocalDate;
+  import java.time.LocalDateTime;
+
+  public class Demo {
+
+      public static void main(String[] args) {
+          System.out.println(LocalDate.now());
+          System.out.println(LocalDateTime.now());
+      }
+  }
+
+<% end %>
+
+<% partial 'partials/sample_output' do %>
+  2017-10-15
+  2017-10-15T22:11:10.433
+<% end %>
+
+<p>
+  Luokkia voi käyttää suoraan entiteettien oliomuuttujina. Alla on määritelty henkilöä kuvaava entiteetti. Henkilöllä on pääavain (id), nimi, ja syntymäpäivä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import java.time.LocalDate;
+  import javax.persistence.Entity;
+  import lombok.AllArgsConstructor;
+  import lombok.Data;
+  import lombok.NoArgsConstructor;
+  import org.springframework.data.jpa.domain.AbstractPersistable;
+
+  @Entity
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Data
+  public class Person extends AbstractPersistable&lt;Long&gt; {
+
+      private String name;
+      private LocalDate birthday;
+
+  }
+<% end %>
+
+<p>
+  Sovelluksen käynnistyessä tietokantaan luodaan -- kun käytössä on H2-tietokannanhallintajärjestelmä  -- seuraavanlainen tietokantataulu. Syntymäpäivää kuvaava sarake <code>birthday</code> luodaan <a href="http://www.h2database.com/html/datatypes.html#date_type" target="_blank" norel>date</a>-tyyppisenä sarakkeena.
+</p>
+
+<% partial 'partials/sql_highlight' do %>
+  CREATE TABLE PERSON (
+      id bigint not null,
+      birthday date,
+      name varchar(255),
+      primary key (id)
+  )
+<% end %>
+
+
+<p>
+  Aikamääreiden lähettäminen onnistuu myös sovelluksesta palvelimelle. Tällöin kontrollerin metodissa tulee määritellä menetelmä aikaa kuvaavan merkkijonon muuntamiseen aikamääreeksi. Muunto merkkijonosta aikamääreeksi onnistuu <code>DateTimeFormat</code>-annotaation avulla. Annotaatiolle annetaan parametrina tiedon muoto, alla <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/format/annotation/DateTimeFormat.ISO.html#DATE" target="_blank" norel>DateTimeFormat.ISO.DATE</a>.
+</p>
+
+<% partial 'partials/sql_highlight' do %>
+public String create(@RequestParam String name,
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthday) {
+...
+<% end %>
+
+<p>
+  Edellä oleva muoto DateTimeFormat.ISO.DATE olettaa, että päivämäärä lähetetään palvelimelle muodossa <code>yyyy-MM-dd</code>. Tässä on ensin vuosi (4 numeroa), sitten viiva, sitten kuukausi (2 numeroa), sitten viiva, ja lopulta päivä (2 numeroa). Tämä muoto liittyy <a href="https://tools.ietf.org/html/rfc3339#section-5.6" target="_blank">RFC3339-spesifikaatioon</a>, joka määrittelee muodon, mitä päivämäärissä <em>pitäisi</em> käyttää kun tietoa lähetetään palvelimelle. Spesifikaation takia voimme olettaa (tai toivoa), että esimerkiksi HTML:n <a href="https://www.w3.org/TR/html-markup/input.date.html" target="_blank">date</a>-elementtiin syötettävä päivämäärä lähetetään palvelimelle em. muodossa.
+</p>
+
+<p>
+  HTML-lomake, jolla henkilö voidaan luoda, on melko suoraviivainen.
+</p>
+
+<% partial 'partials/sql_highlight' do %>
+  &lt;form th:action="@{/persons}" method="POST"&gt;
+    &lt;input name="name" type="date"/&gt;&lt;br/&gt;
+    &lt;input name="birthday" type="date"/&gt;&lt;br/&gt;
+    &lt;input type="submit"/&gt;
+  &lt;/form&gt;
+<% end %>
+
+
+<% partial 'partials/hint', locals: { name: 'Aikavyöhykkeen asettaminen' } do %>
+
+  <p>
+    Web-sovellukset voivat sijaita käytännössä lähes millä tahansa aikavyöhykkeellä. Sovellus käyttää oletuksena palvelimen asetuksissa asetettua aikavyöhykettä. Sovelluksen aikavyöhykkeen muutaminen onnistuu sekä ohjelmallisesti että käynnistyksen yhteydessä. Ohjelmallisesti aikavyöhyke asetetaan TimeZone-luokan metodilla <code>setDefault</code> -- tästä esimerkki alla.
+  </p>
+  
+  <% partial 'partials/code_highlight' do %>
+  import java.util.TimeZone;
+  import javax.annotation.PostConstruct;
+  import org.springframework.boot.SpringApplication;
+  import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+  @SpringBootApplication
+  public class DemoApplication {
+
+      @PostConstruct
+      public void started() {
+          TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+      }
+
+      public static void main(String[] args) {
+          SpringApplication.run(DemoApplication.class, args);
+      }
+  }
+  <% end %>
+
+
+  <p>
+    Käynnistyksen yhteydessä aikavyöhyke annetaan sovellukselle parametrina komentoriviltä. Kun sovellus on paketoitu (Clean & Build), sen voi käynnistää komentoriviltä. Sovellus löytyy projektin kansiosta <code>target</code>. 
+  </p>
+
+  <pre>
+$ java -Duser.timezone=GMT -jar target/<em>sovellus</em>.jar
+  </pre>
+
+  <p>
+    Saat kansion target poistettua Clean-komennolla. Kansio kannattaa poistaa, sillä se sisältää kaikki sovelluksen ajamiseeen tarvittavat kirjastot.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'Kirjat' } do %>
+  
+  <p>
+    TODO
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tulosten järjestäminen ja rajoittaminen
+<% end %>
+
+<p>
+  Tietokantakyselyn tulokset halutaan usein tietynlaisessa järjestyksessä tai niin, että kysely palauttaa vain rajatun joukon kaikista tuloksista. Jos järjestäminen tai rajaus toteutetaan web-sovelluksessa (eli ei tietokannassa), sovelluksessa tehdään juuri se työ, mihin tietokannat on tarkoitettu. Samalla, jos tietokannan tieto noudetaan sovellukseen järjestämistä tai rajausta varten, käytetään tiedon kopiointiin paikasta toiseen turhaan aikaa ja resursseja.
+</p>
+
+<p>
+  Spring Data JPAn rajapinta <a href="http://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/JpaRepository.html" target="_blank">JpaRepository</a> mahdollistaa muutaman lisäparametrin käyttämisen osassa pyyntöjä. Voimme esimerkiksi käyttää parametria <a href="http://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/PageRequest.html" target="_blank">PageRequest</a>, joka tarjoaa apuvälineet sivuttamiseen sekä pyynnön hakutulosten rajoittamiseen. Alla olevalla PageRequest-oliolla haluasimme ensimmäiset 10 hakutulosta attribuutin name mukaan käänteisessä järjestyksessä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  Pageable pageable = new PageRequest(0, 10, Sort.Direction.DESC, "name");
+<% end %>
+
+<p>
+  Pageable-olion voi antaa parametrina suurelle osasta JpaRepositoryn valmiista metodeista. Esimerkiksi findAll-metodille tarjottuna tietokannasta haettaisiin vain kymmenen ensimmäistä tulosta sarakkeen name mukaan järjestettynä.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+  // ...
+
+  public PersonController {
+
+      @Autowired
+      private PersonRepository personRepository;
+
+      public String list(Model model) {
+          Pageable pageable = new PageRequest(0, 10, Sort.Direction.DESC, "name");
+          model.addAttribute("persons", personRepository.findAll(pageable));
+          return "index";
+      }
+
+      // ...
+
+  }
+<% end %>
+
+<p>
+  Oletetaan, että edellä käytössämme on seuraavanlainen PersonRepository-toteutus.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import org.springframework.data.jpa.repository.JpaRepository;
+
+  public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+
+  }
+<% end %>
+
+<p>
+  Kyselyiden rajoittaminen on suoraviivaista. Jos tuloksia halutaan hakea tietyllä attribuutin arvolla, rajapinnalle voidaan lisätä muotoa <code>findBy<em>Attribuutti(Tyyppi arvo)</em></code>. Esimerkiksi päivämäärän perusteella tapahtuva haku onnistuu seuraavasti.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import java.time.LocalDate;
+  import java.util.List;
+  import org.springframework.data.jpa.repository.JpaRepository;
+
+  public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+
+      List&lt;Person&gt; findByBirthday(LocalDate birthday);
+  }
+<% end %>
+  
+<p>
+  Tarkemmin kyselyiden luomisesta löytyy osoitteessa <a href="https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods" target="_blank" norel>https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods</a> olevan dokumentaation kohdasta <em>Query creation</em>. Edellistä esimerkkiä voidaan laajentaa siten, että rajapinnalla on myös metodi nimen ja syntymäpäivän mukaan etsimiselle.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import java.time.LocalDate;
+  import java.util.List;
+  import org.springframework.data.jpa.repository.JpaRepository;
+
+  public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+
+      List&lt;Person&gt; findByBirthday(LocalDate birthday);
+      List&lt;Person&gt; findByNameAndBirthday(String name, LocalDate birthday);
+  }
+<% end %>
+
+<p>
+  Myös edellä kuvatuille metodeille voidaan määritellä parametriksi Pageable-olio. Jos oletamme, että käyttäjä antaa pageablen aina metodille <code>findByBirthday</code>, voidaan sen määrittely muuttaa seuraavaksi.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+  import java.time.LocalDate;
+  import java.util.List;
+  import org.springframework.data.domain.Pageable;
+  import org.springframework.data.jpa.repository.JpaRepository;
+
+  public interface PersonRepository extends JpaRepository&lt;Person, Long&gt; {
+      List&lt;Person&gt; findByBirthday(LocalDate birthday, Pageable pageable);
+      List&lt;Person&gt; findByNameAndBirthday(String name, LocalDate birthday);
+  }
+<% end %>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Last Messages' } do %>
+  
+  <p>
+    Tehtävässä on käytössä viestien lähetykseen käytettävä sovellus. Muokkaa sovellusta siten, että MessageServicen <code>list</code>-metodi palauttaa aina vain uusimmat 10 viestiä. Käytä tässä hyödyksi yllä nähtyä Pageable-oliota.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Mediatyypit
+<% end %>
+
+
+<p>
+  Palvelimelle tehtävät pyynnöt ja palvelimelta saatavat vastaukset voivat sisältää erimuotoista tietoa. Pyyntö tai vastaus voi sisältää esimerkiksi tekstidokumentin, kuvatiedoston tai esimerkiksi PDF-tiedoston. Palvelin vastaanottaa ja kertoo pyynnön tyypin HTTP-protokollan mukana kulkevalla otsakkeella <code>Content-Type</code>.
+</p>
+
+<p>
+  Tätä tietoa lähetettävän tai vastaanotettavan datan muodosta kutsutaan <a href="http://en.wikipedia.org/wiki/Internet_media_type" target="_blank" norel>mediatyypiksi</a>. Dataa käsittelevä ohjelmisto päättää mediatyypin perusteella miten data käsitellään. Mediatyyppi sisältää yleensä kaksi osaa; mediatyypin sekä tarkenteen (esim <code>application/json</code>). Kattava lista eri mediatyypeistä löytyy IANA-organisaation ylläpitämästä <a href="http://www.iana.org/assignments/media-types/media-types.xhtml" target="_blank" norel>mediatyyppilistasta</a>.
+</p>
+
+<p>
+  Tyypillisiä mediatyyppejä ovat erilaiset kuvat <code>image/*</code>, videot <code>video/*</code>, äänet <code>audio/*</code> sekä erilaiset tekstimuodot kuten JSON <code>application/json</code>.
+</p>
+
+<p>
+  Web-palvelut voivat tarjota käytännössä mitä tahansa näistä tiedostotyypeistä käyttäjälle; käyttäjän sovellusohjelmisto päättelee vastauksessa tulevan mediatyypin mukaan osaako se käsitellä tiedoston.
+</p>
+
+<p>
+  Yksinkertaisimmillaan mediatiedoston lähetys palvelimelta toimii Springillä seuraavasti. Oletetaan, että käytössämme on levypalvelin ja polussa <code>/media/data/</code> oleva PNG-kuvatiedosto <code>architecture.png</code>.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping(path = "/images/1", produces = "image/png")
+public void copyImage(OutputStream out) throws IOException {
+    Files.copy(Paths.get("/media/data/architecture.png"), out);
+}
+<% end %>
+
+<p>
+  Yllä olevassa esimerkissä kerromme että metodi kuuntelee polkua "/images/1" ja tuottaa <code>image/png</code>-tyyppistä sisältöä. Spring asettaa kontrollerin metodin parametriksi automaattisesti <code>OutputStream</code>-olion, johon pyynnön vastaus voidaan kirjoittaa. <code>Files</code>-luokan tarjoama <code>copy</code>-metodi kopioi kuvan suoraan tiedostosta pyynnön vastaukseksi.
+</p>
+
+<p>
+  Ylläolevan kontrollerimetodin palauttaman kuvan voi näyttää osana sivua <code>img</code>-elementin avulla. Jos metodi kuuntelee osoitetta <code>/media/image.png</code>, HTML-elementti <code>&lt;img src="/media/image.png" /&gt;</code> hakee kuvan automaattisesti osoitteesta sivun latautuessa.
+</p>
+
+<p>
+  Huom! Jos kuvat ovat staattisia eikä niitä esimerkiksi lisäillä tai poisteta, tulee niiden olla esimerkiksi projektin kansiossa <code>/src/main/resources/public/img</code> -- niille <strong>ei</strong> tule määritellä kontrollerimetodia. Kansion <code>public</code> alla olevat tiedostot kopioidaan web-sovelluksen käyttöön, ja niihin pääsee käsiksi web-selaimella ilman tarvetta kontrollerille.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tiedostojen tallentaminen ja lataaminen
+<% end %>
+
+<p>
+  Web-sivuilta voi lähettää tiedostoja palvelimelle. Alla oleva lomake HTML-koodi luo lomakkeen, joka voi sisältää myös binääridataa (kts. <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2" target="_blank">multipart/form-data</a>).
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;form th:action="@{/files}" method="POST" enctype="multipart/form-data"&gt;
+    &lt;input type="file" name="file" /&gt;
+    &lt;input type="submit" value="Send!"/&gt;
+&lt;/form&gt;
+<% end %>
+
+<p>
+  Lomake lähettää tiedot palvelimelle, jonka tulee käsitellä pyyntö. Pyynnön käsittely tapahtuu aivan kuten minkä tahansa muunkin pyynnön, mutta tässä tapauksessa pyynnön parametrin tyyppi on <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html" target="_blank">MultipartFile</a>, joka sisältää lähetettävän tiedoston tiedot.
+</p>
+
+<p>
+  Alla oleva kontrollerimetodi vastaanottaa pyynnön, ja tulostaa pyynnössä lähetetyn tiedoston koon ja tyypin. Se ei kuitenkaan tee vielä muuta.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@PostMapping("/files")
+public String create(@RequestParam("file") MultipartFile file) {
+    System.out.println(file.getSize());
+    System.out.println(file.getContentType());
+
+    return "redirect:/files";
+}
+<% end %>
+
+<p>
+  MultipartFile-olio sisältää myös viitteen tavutaulukkoon, joka sisältää pyynnössä lähetetyn datan. Tavutaulukon -- eli tässä tapauksessa datan -- tallennus tietokantaan onnistuu seuraavasti. Entiteetti <code>FileObject</code> sisältää tavutaulukon siten, että sen voi tallentaa tietokantaan.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+// muita sopivia annotaatioita
+@Entity
+public class FileObject extends AbstractPersistable&lt;Long&gt; {
+
+    @Lob
+    private byte[] content;
+
+}
+<% end %>
+
+<p>
+  Annotaatiolla <a href="http://docs.oracle.com/javaee/6/api/javax/persistence/Lob.html" target="_blank">@Lob</a> kerrotaan että annotoitu muuttuja tulee tallentaa tietokantaan isona dataobjektina. Tietokantamoottorit tallentavat nämä tyypillisesti erilliseen isommille tiedostoille tarkoitettuun sijaintiin, jolloin tehokkuus ei juurikaan kärsi erikokoisten kenttien takia.
+</p>
+
+<p>
+  Kun entiteetille tekee repository-olion, voi sen ottaa käyttöön myös kontrollerissa. Tietokantaan tallentaminen tapahtuu tällöin seuraavasti:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@PostMapping("/files")
+public String save(@RequestParam("file") MultipartFile file) throws IOException {
+    FileObject fo = new FileObject();
+    fo.setContent(file.getBytes());
+
+    fileObjectRepository.save(fo);
+
+    return "redirect:/files";
+}
+<% end %>
+
+<p>
+  Tiedoston lähetys kontrollerista onnistuu vastaavasti. Tässä tapauksessa oletamme, että data on muotoa <code>image/png</code>; kontrolleri palauttaa tietokantaoliolta saatavan tavutaulukon pyynnön vastauksen rungossa.
+</p> 
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping(path = "/files/{id}", produces = "image/png")
+@ResponseBody
+public byte[] get(@PathVariable Long id) {
+    return fileObjectRepository.findOne(id).getContent();
+}
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'GifBin' } do %>
+  
+  <p>
+    Tässä tehtävässä toteutetaan sovellus gif-kuvien varastointiin ja selaamiseen.
+  </p>
+      
+  <p>
+    Pääset toteuttamaan huomattavan osan sovelluksesta itse -- tarkista että suunnittelemasi domain-oliot sopivat yhteen annetun näkymän kanssa.
+  </p>
+
+  
+  <p>
+    Tehtäväpohjassa olevassa <code>gifs.html</code>-sivussa on toiminnallisuus, minkä avulla kuvia näytetään käyttäjälle.
+  </p>
+      
+  <p>
+    Toteuta toiminnallisuus, jonka avulla seuraavat toiminnot ovat käytössä.
+  </p>
+      
+  <ul>
+    <li>Kun käyttäjä tekee GET-tyyppisen pyynnön osoitteeseen <code>/gifs</code>, hänet ohjataan osoitteeseen <code>/gifs/1</code>.</li>
+    <li>Kun käyttäjä tekee GET-tyyppisen pyynnön osoitteeseen <code>/gifs/{id}</code>, hänelle näytetään sivu <code>gifs</code>. Pyynnön modeliin tulee lisätä attribuutti <code>count</code>, joka sisältää tietokannassa olevien kuvien määrän. Tämän lisäksi, pyyntöön tulee lisätä attribuutti <code>next</code>, joka sisältää seuraavan kuvan tunnuksen -- jos sellainen on olemassa,  attribuutti <code>previous</code>, joka sisältää edeltävän kuvan tunnuksen -- jos sellainen on olemassa, ja <code>current</code>, joka sisältää nykyisen kuvan tunnuksen -- jos sellainen on olemassa.</li>
+    <li>Kun käyttäjä tekee GET-tyyppisen pyynnön osoitteeseen <code>/gifs/{id}/content</code>, tulee hänelle palauttaa tunnukslla <code>{id}</code> tietokannassa oleva kuva -- vastauksen mediatyypiksi tulee asettaa myös <code>image/gif</code>.</li>
+  </ul>
+  
+  <p>
+    HTML-sivulla on myös lomake, jonka avulla palvelimelle voi lähettää uusia kuvia. Toteuta palvelimelle toiminnallisuus, jonka avulla osoitteeseen <code>/gifs</code> tehdystä POST-pyynnöstä otetaan sisältö talteen ja tallennetaan se tietokantaa. Huom! Tallenna sisältö vain jos sen mediatyyppi on <code>image/gif</code>. Pyyntö uudelleenohjataan aina lopuksi osoitteeseen <code>/gifs</code>.
+  </p>
+  
+<% end %>
+      
+
+<p>
+  Kun tietokantaan tallennetaan isoja tiedostoja, kannattaa tietokanta suunnitella siten, että tiedostot ladataan vain niitä tarvittaessa. Voimme lisätä olioattribuuteille annotaatiolla <code>@Basic</code> lisämääreen <code>fetch</code>, minkä avulla hakeminen rajoitetaan eksplisiittisiin kutsuihin. Tarkasta tässä vaiheessa edellisen tehtävän mallivastaus -- huomaat että sielläkin -- vaikka annotaatio <code>@Basic</code> ei ollut käytössä -- konkreettinen kuva ladataan hyvin harvoin.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+// muut annotaatiot
+@Entity
+public class FileObject extends AbstractPersistable&lt;Long&gt; {
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] content;
+
+}
+<% end %>
+
+<p>
+  Ylläoleva <code>@Basic(fetch = FetchType.LAZY)</code> annotaatio pyytää JPA-toteutusta (tapauksessamme Hibernate) luomaan annotoidun olioattribuutin get-metodiin ns. proxymetodin -- data haetaan tietokannasta vasta kun metodia <code>getContent()</code> kutsutaan.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Yleiskäyttöinen tiedoston tallennus ja lataaminen
+<% end %>
+
+
+<p>
+  Edellisessä esimerkissä määrittelimme kontrollerimetodin palauttaman mediatyypin osaksi <code>@RequestMapping</code> annotaatiota. Usein tiedostopalvelimet voivat kuitenkin palauttaa lähes minkätyyppisiä tiedostoja tahansa. Tutustutaan tässä yleisempään tiedoston tallentamiseen ja lataukseen.
+</p>
+
+<p>
+  Käytämme edellisessä esimerkissä käytettyä <code>FileObject</code>-entiteettiä toteutuksen pohjana.
+</p>
+
+<p>
+  Jotta voimme kertoa tiedoston mediatyypin, haluamme tallentaa sen tietokantaan. Tallennetaan tietokantaan mediatyypin lisäksi myös tiedoston alkuperäinen nimi sekä tiedoston pituus.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+import javax.persistence.Basic;
+import javax.persistence.Entity;
+import javax.persistence.Lob;
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
+// muut annotaatiot
+@Entity
+public class FileObject extends AbstractPersistable&lt;Long&gt; {
+
+    private String name;
+    private String mediaType;
+    private Long size;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] content;
+
+}
+<% end %>
+
+<p>
+  Pääsemme kaikkiin kenttiin käsiksi <code>MultipartFile</code>-olion kautta; muokataan aiemmin näkemäämme kontrolleria siten, että otamme kaikki yllämääritellyt kentät tietokantaan tallennettavaan olioon.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@PostMapping("/files")
+public String save(@RequestParam("file") MultipartFile file) throws IOException {
+    FileObject fo = new FileObject();
+
+    fo.setName(file.getOriginalName());
+    fo.setMediaType(file.getContentType());
+    fo.setSize(file.getSize());
+    fo.setContent(file.getBytes());
+
+    fileObjectRepository.save(fo);
+
+    return "redirect:/files";
+}
+<% end %>
+
+<p>
+  Nyt tietokantaan tallennettu olio tietää myös siihen liittyvän mediatyypin. Haluamme seuraavaksi pystyä myös kertomaan kyseisen mediatyypin tiedostoa hakevalle käyttäjälle.
+</p>
+
+<p>
+  <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html" target="_blank">ResponseEntity</a>-oliota käytetään vastauksen paketointiin; voimme palauttaa kontrollerista ResponseEntity-olion, jonka pohjalta Spring luo vastauksen käyttäjälle. ResponseEntity-oliolle voidaan myös asettaa otsaketietoja, joihin saamme asetettua mediatyypin.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping("/files/{id}")
+public ResponseEntity&lt;byte[]&gt; viewFile(@PathVariable Long id) {
+    FileObject fo = fileObjectRepository.findOne(id);
+
+    final HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.parseMediaType(fo.getContentType()));
+    headers.setContentLength(fo.getSize());
+
+    return new ResponseEntity&lt;&gt;(fo.getContent(), headers, HttpStatus.CREATED);
+}
+<% end %>
+
+<p>
+  Ylläolevassa esimerkissä vastaanotetaan pyyntö, minkä pohjalta tietokannasta haetaan FileObject-olio. Tämän jälkeen luodaan otsakeolio <code>HttpHeaders</code> ja asetetaan sille palautettavan datan mediatyyppi ja koko. Lopuksi palautetaan <code>ResponseEntity</code>-olio, mihin data, otsaketiedot ja pyyntöön liittyvä statusviesti (tässä tapauksessa CREATED) liitetään.
+</p>
+
+<p>
+  Edeltävä esimerkki ei ota kantaa tiedoston nimeen tai siihen, miten se ladataan. Voimme lisäksi vastaukseen <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec19.html" target="_blank">Content-Disposition</a>-otsakkeen, minkä avulla voidaan ehdottaa tiedoston tallennusnimeä sekä kertoa että tiedosto on liitetiedosto, jolloin se tulee tallentaa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@GetMapping("/files/{id}")
+public ResponseEntity&lt;byte[]&gt; viewFile(@PathVariable Long id) {
+    FileObject fo = fileObjectRepository.findOne(id);
+
+    final HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.parseMediaType(fo.getContentType()));
+    headers.setContentLength(fo.getSize());
+    headers.add("Content-Disposition", "attachment; filename=" + fo.getName());
+
+    return new ResponseEntity&lt;&gt;(fo.getContent(), headers, HttpStatus.CREATED);
+}
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'FileManager' } do %>
+      
+  <p>
+    Tässä tehtävässä toteutetaan yleisempi tiedostojen varastointiin ja näyttämiseen käytettävä sovellus.
+  </p>
+      
+  <p>
+    Kuten edellisessä tehtävässä, pääset toteuttamaan huomattavan osan sovelluksesta itse -- tarkista että suunnittelemasi domain-oliot sopivat yhteen annetun näkymän kanssa.
+  </p>
+      
+  <p>
+    Toteuta toiminnallisuus, jonka avulla seuraavat toiminnot ovat käytössä.
+  </p>
+      
+  <ul>
+    <li>
+      Kun käyttäjä tekee GET-tyyppisen pyynnön osoitteeseen <code>/files</code>, pyyntöön lisätään tietokannasta löytyvät tiedostot ja käyttäjä ohjataan sivulle <code>files.html</code>.
+    </li>
+    <li>
+      Kun käyttäjä lähettää lomakkeella tiedoston osoitteeseen <code>/files</code>, pyynnöstä otetaan talteen kaikki tiedot mitä näkymässä halutaan näyttää, ja tallennetaan ne tietokantaan. Pyyntö ohjataan lopuksi uudelleen osoitteeseen <code>/files</code>.
+    </li>
+    <li>
+      Kun käyttäjä klikkaa yksittäiseen tiedostoon liittyvää delete-nappia, tulee tiedosto poistaa tietokannasta. Lopuksi pyyntö uudelleenohjataan osoitteeseen <code>/files</code>.
+    </li>
+    <li>
+      Kun käyttäjä klikkaa yksittäiseen tiedostoon liittyvää nimeä sen lataamista varten, tulee tiedosto lähettää käyttäjälle. Aseta pyyntöön datan lisäksi myös tiedoston mediatyyppi että ja ehdotus tiedoston tallennusnimestä.
+    </li>
+  </ul>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tietokantamigraatiot
+<% end %>
+
+<p>
+  Ohjelmistojen kehityksessä tulee vastaan tyypillisesti tilanne, missä tuotantokäytössä olevaa tietokantaskeemaa tulee muuntaa. Koska käytössä oleva tietokantaversio voi poiketa ohjelmistokehittäjän koneesta riippuen -- joku saattaa työstää uutta versiota, jollain toisella voi olla työn alla korjaukset vanhempaan versioon -- tarvitaa myös tietokantamuutosten automatisointiin välineitä. Tähän käytetään esimerkiksi <a href="https://flywaydb.org/" target="_blank">Flyway</a>-kirjastoa, josta molemmista löytyy myös <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-database-initialization.html" target="_blank">Spring Boot</a>-ohjeet.
+</p>
+
+<p>
+  Käytännössä tietokantamigraatiot toteutetaan niin, että tietokannasta pidetään yllä tietokantataulujen muutos- ja muokkauskomennot sisältäviä versiokohtaisia tiedostoja. Käytössä olevaan tietokantaan on määritelty esimerkiksi taulu, jossa on tieto tämänhetkisestä versiosta. Jos käynnistettävässä sovelluksessa on uudempia muutoksia, ajetaan niihin liittyvät komennot tietokantaan ja tietokantaan merkitty versio päivittyy.
+</p>
+
+
+<% partial 'partials/material_heading' do %>
+  HTTP-protokollan tilattomuus ja evästeet
+<% end %>
+
+<p>
+  HTTP on tilaton protokolla. Tämä tarkoittaa sitä, että jokainen pyyntö on erillinen kokonaisuus, joka ei liity aiempiin pyyntöihin. Suunnittelupäätöksen taustalla oli ajatus siitä, että verkkosivulle ladattava sisältö voi sijaita useammalla eri palvelimella. Jos HTTP ottaisi kantaa käyttäjän tilaan, tulisi myös hajautettujen ratkaisujen tilan ylläpitoon ottaa kantaa -- tämä olisi myös ollut melko tehotonta (<a href="https://www.w3.org/Protocols/HTTP/HTTP2.html" target="_blank">Basic HTTP as defined in 1992</a>). Päätös tilattomuudesta oli alunperin hyvä: suurin osa verkkoliikenteestä liittyy muuttumattoman sisällön hakemiseen, palvelinten ei tarvitse varata resursseja käyttäjän tilan ylläpitämiseen, ja palvelinten ja selainohjelmistojen toteuttajien ei tarvinnut toteuttaa mekanismeja käyttäjien tilan ylläpitämiseen.
+</p>
+
+<p>
+  Käyttäjän tunnistamiseen pyyntöjen välillä on kuitenkin tarvetta. Esimerkiksi verkkokaupat ja muut käyttäjän kirjautumista vaativat palvelut tarvitsevat tavan käyttäjän tunnistamiseen. Klassinen -- mutta huono -- tapa kiertää HTTP:n tilattomuus on ollut säilyttää GET-muotoisessa osoitteessa parametreja, joiden perusteella asiakas voidaan tunnistaa palvelinsovelluksessa. Tämä ei kuitenkaan ole suositeltavaa, sillä osoitteessa olevia parametreja voi muokata käsin, ja ne saattavat jättää sovellukseen ylimääräisiä tietoturva-aukkoja.
+</p>
+
+<aside class="info">
+  
+  <br/>
+
+  <h1>Case: GET-parametri tunnistautumiseen</h1>
+  
+  <p>
+    Eräässä järjestelmässä verkkokaupan toiminnallisuus oli toteutettu siten, että GET-parametrina säilytettiin numeerista ostoskorin identifioivaa tunnusta. Käyttäjäkohtaisuus oli toteutettu palvelinpuolella siten, että tietyllä GET-parametrilla näytettiin aina tietyn käyttäjän ostoskori. Uusien tuotteiden lisääminen ostoskoriin onnistui helposti, sillä pyynnöissä oli aina mukana ostoskorin tunnistava GET-parametri. Ostoskorit oli valitettavasti identifioitu juoksevalla numerosarjalla. Henkilöllä 1 oli ostoskori 1, henkilöllä 2 ostoskori 2 jne..
+  </p>
+  
+  <p>
+    Koska käytännössä kuka tahansa pääsi katsomaan kenen tahansa ostoskoria vain osoitteessa olevaa numeroa vaihtamalla, olivat ostoskorien sisällöt välillä hyvin mielenkiintoisia.
+  </p>
+
+</aside>
+
+<p>
+  HTTP-protokollan tilattomuus ei pakota palvelinohjelmistoja tilattomuuteen. Palvelimella tilaa pidetään yllä jollain tavalla tekniikalla, joka ei näy HTTP-protokollaan asti. Yleisin tekniikka tilattomuuden kiertämiseen on evästeiden käyttö.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  HTTP ja evästeet
+<% end %>
+
+<p>
+  Merkittävä osa verkkosovelluksista sisältää käyttäjäkohtaista toiminnallisuutta, jonka toteuttamiseen sovelluksella täytyy olla jonkinlainen tieto käyttäjästä sekä mahdollisesti käyttäjän tilasta. HTTP/1.1 tarjoaa mahdollisuuden tilallisten verkkosovellusten toteuttamiseen evästeiden (<em>cookies</em>) avulla.
+</p>
+
+<p>
+  Kun palvelin asettaa pyynnön vastaukseen evästeen, tulee selaimen jatkossa lähettää evästetieto jatkossa aina palvelimelle. Tämä tapahtuu automaattisesti selaimen toimesta. Evästeitä käytetään istuntojen (<em>session</em>) ylläpitämiseen: istuntojen avulla pidetään kirjaa käyttäjästä useampien pyyntöjen yli.
+</p>
+
+<p>
+  Evästeet toteutetaan HTTP-protokollan otsakkeiden avulla. Kun käyttäjä tekee pyynnön palvelimelle, ja palvelimella halutaan asettaa käyttäjälle eväste, palauttaa palvelun vastauksen mukana otsakkeen <code>Set-Cookie</code>, jossa määritellään käyttäjäkohtainen evästetunnus. Set-Cookie voi olla esimerkiksi seuraavan näköinen:
+</p>
+
+<pre>
+Set-Cookie: SESS57a5819a77579dfb1a1466ccceee22a0=0hr0aa2ogdfgkelogg; Max-Age=3600; Domain=".helsinki.fi"
+</pre>
+
+<p>
+  Ylläoleva palvelimelta lähetetty vastaus ilmoittaa pyytää selainta tallettamaan evästeen. Selaimen tulee jatkossa lisätä eväste <code>SESS57a5819a77579dfb1a1466ccceee22a0=0hr0aa2ogdfgkelogg</code> jokaiseen <code>helsinki.fi</code>-osoitteeseen. Eväste on voimassa tunnin, eli selain ja palvelin voi unohtaa sen tunnin kuluttua sen asettamisesta. Tarkempi syntaksi evästeen asettamiselle on seuraava:
+</p>
+
+<pre>
+Set-Cookie: nimi=arvo [; Comment=kommentti] [; Max-Age=elinaika sekunteina]
+                      [; Expires=parasta ennen paiva] [; Path=polku tai polunosa jossa eväste voimassa]
+                      [; Domain=palvelimen osoite (URL) tai osoitteen osa jossa eväste voimassa]
+                      [; Secure (jos määritelty, eväste lähetetään vain salatun yhteyden kanssa)]
+                      [; Version=evästeen versio]
+</pre>
+
+
+<p>
+  Evästeet tallennetaan selaimen sisäiseen evästerekisteriin, josta niitä haetaan aina kun käyttäjä tekee selaimella kyselyn. Evästeet lähetetään palvelimelle jokaisen viestin yhteydessä <code>Cookie</code>-otsakkeessa.
+</p>
+
+<pre>
+Cookie: SESS57a5819a77579dfb1a1466ccceee22a0=0hr0aa2ogdfgkelogg
+</pre>
+
+<p>
+  Evästeiden nimet ja arvot ovat yleensä monimutkaisia ja satunnaisesti luotuja niiden yksilöllisyyden takaamiseksi. Samaan palvelinosoitteeseen voi liittyä useampia evästeitä. Yleisesti ottaen evästeet ovat sekä hyödyllisiä että haitallisia: niiden avulla voidaan luoda yksiöityjä käyttökokemuksia tarjoavia sovelluksia, mutta niitä voidaan käyttää myös käyttäjien seurantaan ympäri verkkoa.
+</p>
+
+<aside class="info">
+  
+  <br/>
+  
+  <h1>Evästeet hs.fi -palvelussa</h1>
+  
+  <p>Painamalla F12 tai valitsemalla Tools -> Developer tools, pääset tutkimaan sivun lataamiseen ja sisältöön liittyvää statistiikkaa. Lisäneuvoja löytyy <a href="https://developers.google.com/web/tools/chrome-devtools/" target="_blank">Google Developers</a> -sivustolta.</p>
+  
+  <p>Avaa developer tools, ja mene osoitteeseen <a href="http://www.hs.fi" target="_blank">http://www.hs.fi</a>. Valitsemalla developer toolsien välilehden <code>Resources</code>, löydät valikon erilaisista sivuun liittyvistä resursseista. Avaa <code>Cookies</code> ja valitse vaihtoehto <code>www.hs.fi</code>. Kuinka moni palvelu pitää sinusta kirjaa kun menet Helsingin sanomien sivuille?</p>
+  
+</aside>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Evästeet ja istunnot 
+<% end %>
+
+<p>
+  Kun selain lähettää palvelimelle pyynnön yhteydessä evästeen, palvelin etsii evästeen perusteella käynnissä olevaa istuntoa eli sessiota. Jos sessio löytyy, annetaan siihen liittyvät tiedot sovelluksen käyttöön käyttäjän pyynnön käsittelyä varten. Jos sessiota taas ei löydy, voidaan selaimelle palauttaa uusi eväste ja aloittaa uusi sessio, jolloin session tiedot löytyvät jatkossa palvelimelta.
+</p>
+
+<p>
+  Javassa sessioiden käsittelyyn löytyy <a href="http://docs.oracle.com/javaee/7/api/javax/servlet/http/HttpSession.html" target="_blank">HttpSession</a>-luokka, joka tarjoaa välineet sessio- ja käyttäjäkohtaisen tiedon tallentamiseen. Oleellisimmat luokan metodit ovat <code>public void setAttribute(String name, Object value)</code>, joka tallentaa sessioon arvon, sekä <code>public Object getAttribute(String name)</code>, jonka avulla kyseinen arvo löytyy.
+</p>
+
+<p>
+  Session saa yksinkertaisimmillaan käyttöön lisäämällä sen kontrollerimetodin parametriksi. Tällöin Spring liittää metodiin parametrin automaattisesti. Alla on kuvattuna sovellus, joka pitää sessiokohtaista kirjaa käyttäjien tekemistä pyynnöistä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+import javax.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+@Controller
+public class VisitCountController {
+    
+    @GetMapping("*")
+    @ResponseBody
+    public String count(HttpSession session) {
+        int visits = 0;
+        if (session.getAttribute("count") != null) {
+            visits = (int) session.getAttribute("count");
+        }
+        
+        visits++;
+        session.setAttribute("count", visits);
+        
+        return "Visits: " + visits;
+    }
+}
+<% end %>
+
+
+<p>
+  Kun käyttäjä tekee ensimmäistä kertaa pyynnön sovellukseen, palauttaa sovellus merkkijonon "Visits: 1". Vastauksen yhteydessä palautetaan myös eväste. Kun käyttäjä tekee seuraavan kerran pyynnön sovellukseen, lähettää selain pyynnön yhteydessä myös evästeen palvelimelle, jolloin palvelin osaa tunnistaa käyttäjän ja hakee oikean istunnon tiedot -- vastaukseksi palautuu lopulta merkkijono "Visits: 2".
+</p>  
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Hello Session' } do %>
+  
+  <p>
+    Toteuta sovellus, joka palauttaa käyttäjälle merkkijonon "Hello there!" jos käyttäjä ei ole ennen vieraillut sovelluksessa. Jos käyttäjä on vieraillut sovelluksessa aiemmin, tulee sovelluksen palauttaa käyttäjälle merkkijono "Hello again!".
+  </p>
+
+<% end %>
+
+<aside class="info">
+
+  <br/>
+
+  <h1>Evästeiden ja istuntojen testaaminen selaimella</h1>
+  
+  <p>
+    Istuntojen toiminnallisuuden testaaminen selaimella onnistuu näppärästi selainten tarjoaman anonyymitoiminnallisuuden avulla. Esimerkiksi Chromessa voi valita "New incognito window", mikä avaa käyttöön selainikkunan, missä ei aluksi ole lainkaan vanhoja evästeitä muistissa. Kun palvelimelle tehdään pyyntö, tallentuu vastauksen yhteydessä palautettava eväste selaimen muistiin vain siksi aikaa kun anonyymi-ikkuna on auki.
+  </p>
+
+  <p>
+    Session pituus riippuu esimerkiksi palvelimen asetuksista <code>session timeout</code> ja siitä, että salliiko käyttäjä evästeiden käytön.
+  </p>
+
+</aside>
+
+<p>HttpSession-olioon pääsee käsiksi myös muualla sovelluksessa, ja sen voi injektoida esimerkiksi palveluun <code>@Autowired</code>-annotaation avulla. Edellinen kontrolleriin toteutettu toiminnallisuus voitaisiin tehdä myös palvelussa.</p>
+
+<% partial 'partials/code_highlight' do %>
+// importit
+
+@Service
+public class CountService {
+
+    @Autowired
+    private HttpSession session;
+
+    public int incrementAndCount() {
+        int count = 0;
+        if (session.getAttribute("count") != null) {
+            count = (int) session.getAttribute("count");
+        }
+        
+        count++;
+        session.setAttribute("count", count);
+        return count;
+    }
+}
+<% end %>
+
+<p>
+  Nyt kontrollerin koodi olisi kevyempi:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// importit
+
+@Controller
+public class VisitCountController {
+
+    @Autowired
+    private CountService countService;   
+
+    @RequestMapping("*")
+    @ResponseBody
+    public String count() {
+        return "Visits: " + countService.incrementAndCount();
+    }
+}
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'Reload Heroes' } do %>
+      
+  <p>
+    Reload Heroes -sovellus pitää kirjaa käyttäjän tekemistä sivun uudelleenlatauksista. Kun käyttäjä saapuu sovellukseen ensimmäistä kertaa, hänelle luodaan satunnainen käyttäjätunnus ja hänen vierailujen määrä asetetaan yhteen. Jokaisen uudelleenvierailun yhteydessä käyttäjän vierailujen määrä kasvaa yhdellä.
+  </p>
+
+  <p>
+    Täydennä luokan <code>ReloadStatusService</code> metodit seuraavasti:
+  </p>
+      
+  <ul>
+    <li>
+      Metodi <code>public List&lt;ReloadStatus&gt; getTopList()</code> palauttaa viisi eniten uudelleenlatauksia tehnyttä käyttäjää suuruusjärjestyksessä. Listan ensimmäisellä sijalla on eniten uudelleenlatauksia tehnyt henkilö, toisella sijalla toiseksi eniten jne.
+    </li>
+    
+    <li>
+      Metodi <code>public ReloadStatus reload()</code> palauttaa pyynnön tehneeseen henkilöön liittyvän ReloadStatus-olion. Jos käyttäjä ei ole tehnyt yhtäkään pyyntöä aiemmin, tulee käyttäjälle luoda uusi tunnus sekä alustaa uudelleenlatausten määrä yhteen. Jos taas käyttäjä on tehnyt pyyntöjä aiemmin, tulee käyttäjän tekemien pyyntöjen määrää kasvattaa yhdellä. Tieto pyyntöjen määrästä tulee myös tallentaa tietokantaan.
+    </li>
+  </ul>
+  
+  <p>
+    Kun sovellus on valmis, toimii se kuten osoitteessa <a href="https://still-beyond-90359.herokuapp.com" target="_blank">https://still-beyond-90359.herokuapp.com</a> oleva sovellus.
+  </p>
+
+<% end %>
+
+
+<aside class="info">
+
+  <br/>
+
+  <h1>Milloin sessioita kannattaa käyttää?</h1>
+
+  <p>Muutamia faktoja sessioista:</p>
+
+  <ul>
+    <li>
+      Sessio häviää kun käyttäjä poistaa selaimesta evästeet.
+    </li>
+    <li>
+      Sessio häviää kun evästeen elinikä kuluu loppuun.
+    </li>
+    <li>
+      Jokaisessa päätelaitteessa on tyypillisesti oma sessio: jos palvelua käytetään kännykällä ja padilla, kummallakin on omat evästeet. <em>Tämä on nykyään muuttumassa, esimerkiksi jotkut Googlen tuotteet pitävät kirjaa evästeistä myös laitteiden yli.
+      </em>
+    </li>
+    <li>
+      Käyttäjä voi estää evästeiden käytön selaimen asetuksista.
+    </li>
+  </ul>
+
+  <p>
+    Sessioiden käyttö on näppärää sellaisen tiedon tallentamiseen mikä saakin kadota. Jos tiedon säilyvyys on oleellista sovelluksen toiminnan kannalta, kannattaa se tallentaa esimerkiksi tietokantaan.
+  </p>
+
+</aside>
+
+<p>
+  Springin annotaatio <code>@Autowired</code> luo oletuksena yhden ilmentymän luokasta, joka asetetaan <code>@Autowired</code>-annotaatiolla määriteltyyn luokkaan. Tarvittavien komponenttien luomista voidaan kontrolloida erillisen <code>@Scope</code>-annotaation avulla, mikä mahdollistaa ilmentymien luonnin esimerkiksi sessiokohtaisesti. Seuraavassa on esimerkki ostoskorista, joka on sessiokohtainen ja jokaiselle käyttäjälle oma. Annotaatio <code>@Component</code> on luokan toiminnalle oleellinen -- sen avulla Spring tietää, että luokka tulee ladata @Autowired-annotaatioon liittyvän toiminnallisuuden löydettäväksi.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// importit 
+
+@Component
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class ShoppingCart implements Serializable {
+
+    private Map&lt;Item, Integer&gt; items;
+
+    public ShoppingCart() {
+        this.items = new TreeMap&lt;&gt;();
+    }
+
+    public Map&lt;Item, Integer&gt; getItems() {
+        return items;
+    }
+
+    public void setItems(Map&lt;Item, Integer&gt; items) {
+        this.items = items;
+    }
+
+    public boolean isEmpty() {
+        return items == null || items.isEmpty();
+    }
+}
+<% end %>
+
+<p>
+  Ylläolevasta komponentista luotavat ilmentymät ovat elossa vain käyttäjän session ajan, eli sen aikaa kun käyttäjän eväste on elossa. Ylläolevasta ostoskorista saa lisättyä ilmentymän sovellukseen aivan kuten muistakin komponenteista, eli <code>@Autowired</code>-annotaatiolla.
+</p>
+
+<aside class="info">
+
+  <br/>
+
+  <h1>Mikä ihmeen proxymode?</h1>
+
+  <p>
+    Tarkempaa tietoa em. annotaatiosta löytyy <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/beans.html#beans-factory-scopes-other-injection" target="_blank">Springin dokumentaatiosta</a>.
+  </p>
+  
+</aside>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'EuroShopper (3 osaa)' } do %>
+                
+  <p>
+    Tässä tehtävässä toteutetaan verkkokauppaan ostoskoritoiminnallisuus.
+  </p>
+      
+  <h2>Ostoskori</h2>
+      
+  <p>
+    Luo pakkaukseen <code>wad.domain</code> luokka <code>ShoppingCart</code>, joka tarjoaa seuraavat toiminnallisuudet.
+  </p>
+      
+  <ul>
+    <li>
+      Metodi <code>getItems()</code> palauttaa <code>Map&lt;Item, Long&gt;</code>-tyyppisen olion, joka sisältää ostoskorissa olevien tuotteiden tuotekohtaisen lukumäärän.
+    </li>
+    
+    <li>
+      Metodi <code>addToCart(Item item)</code> lisää ostoskoriin yhden kappaleen <code>Item</code>-tyyppistä esinettä.
+    </li>
+    
+    <li>
+      Metodi <code>removeFromCart(Item item)</code> poistaa ostoskorista yhden kappaleen <code>Item</code>-tyyppistä esinettä. Jos lukumäärä laskee nollaan, <code>getItems()</code>-metodin ei tule sisältää enää kyseistä tuotetta.
+    </li>
+  </ul>
+  
+  
+  <h2>Kontrolleri ostoskorille</h2>
+      
+  <p>
+    Tee ostoskorista sessiokohtainen, eli eri käyttäjien tulee saada eri ostoskori käyttöönsä. Annotaatiosta <code>Scope</code> on tässä hyötyä.
+  </p>
+      
+  <p>
+    Luo projektiin sopiva kontrolleri, joka tarjoaa seuraavat osoitteet ja toiminnallisuudet.
+  </p>
+      
+  <ul>
+    <li>
+      GET /cart asettaa model-olion "items"-nimiseen attribuuttiin ostoskorin sisällön (aiempi <code>getItems()</code>). Pyynnön vastauksena käyttäjälle näytetään sivu, joka luodaan polussa <code>/src/main/resources/templates/cart.html</code> olevasta näkymästä.
+    </li>
+
+    <li>
+      POST /cart/items/{id} lisää ostoskoriin yhden {id}-tunnuksella tietokannasta löytyvän Item-olion. Pyyntö ohjataan osoitteeseen <code>/cart</code>.
+    </li>
+    
+    <li>
+      DELETE /cart/items/{id} poistaa ostoskorista yhden {id}-tunnuksella tietokannasta löytyvän Item-olion. Pyyntö ohjataan osoitteeseen <code>/cart</code>.
+    </li>
+  </ul>
+  
+  <h2>Tilauksen tekeminen</h2>
+      
+  <p>
+    Muokkaa luokkaa <code>wad.service.OrderService</code> siten, että tilaus tallennetaan tietokantaan. Tutustu luokkiin <code>Order</code>, <code>OrderItem</code> ja <code>UserDetails</code> ennen toteutusta. Varmista että esimerkiksi <code>OrderItem</code> viittaa oikeaan tietokantatauluun.
+  </p>
+  
+  <p>
+    Kun tilaus on tehty, tyhjennä ostoskori.
+  </p>
+
+<% end %>
+
+<% partial 'partials/material_sub_heading' do %>
+  Lakiteknisiä asioita evästeisiin liittyen
+<% end %>
+
+<p>
+  Euroopan komissio on säätänyt yksityisyydensuojaan liittyvän lain, joka määrää kertomaan käyttäjille evästeiden käytöstä. Käytännössä käyttäjältä tulee pyytää lupaa minkä tahansa sisällön tallentamiseen hänen koneelleen (<a href="http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32002L0058:EN:HTML" target="_blank">ePrivacy directive, Article 5, kohta (3)</a>). Myöhemmin säädetty <a href="http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=CELEX:32002L0058:EN:HTML" target="_blank">tarkennus</a> tarkentaa määritelmää myös evästeiden käytön kohdalla.
+</p>
+
+<aside>
+  <p>
+    (25) However, such devices, for instance so-called "cookies", can be a legitimate and useful tool, for example, in analysing the effectiveness of website design and advertising, and in verifying the identity of users engaged in on-line transactions. Where such devices, for instance cookies, are intended for a legitimate purpose, such as to facilitate the provision of information society services, their use should be allowed on condition that users are provided with clear and precise information in accordance with Directive 95/46/EC about the purposes of cookies or similar devices so as to ensure that users are made aware of information being placed on the terminal equipment they are using. Users should have the opportunity to refuse to have a cookie or similar device stored on their terminal equipment. This is particularly important where users other than the original user have access to the terminal equipment and thereby to any data containing privacy-sensitive information stored on such equipment. Information and the right to refuse may be offered once for the use of various devices to be installed on the user's terminal equipment during the same connection and also covering any further use that may be made of those devices during subsequent connections. The methods for giving information, offering a right to refuse or requesting consent should be made as user-friendly as possible. Access to specific website content may still be made conditional on the well-informed acceptance of a cookie or similar device, if it is used for a legitimate purpose.
+  </p>
+  
+</aside>
+
+<p>
+  Lisätietoa mm. osoitteessa <a href="http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF" target="_blank">http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF</a> sekä <a href="http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf" target="_blank">http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf</a>.
+</p>
+
