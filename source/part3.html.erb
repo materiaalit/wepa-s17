@@ -2,15 +2,14 @@
   title: Osa 3
   exercise_page: true
   quiz_page: false
-  published: false
+  published: true
 ---
 
 
 <% partial 'partials/hint', locals: { name: 'Kolmannen osan tavoitteet' } do %>
 
   <p>
-
-
+    Osaa käsitellä eri muodossa olevaa tietoa. Osaa järjestää ja rajata tietokannasta haettavaa tietoa. Tuntee käsitteen mediatyyppi. Tietää miten binäärimuotoista tietoa käsitellään web-sovelluksissa. Tuntee käsitteen tilattomuus. Tietää mitä evästeet ovat ja mihin niitä käytetään. Tuntee evästeisiin liittyviä oleellisia lakiteknisia asioita.
   </p>
   
 <% end %>
@@ -115,10 +114,10 @@
 <% end %>
 
 
-<% partial 'partials/exercise', locals: { name: 'Hello Lombok' } do %>
+<% partial 'partials/exercise', locals: { name: 'Jobs' } do %>
   
   <p>
-    Tehtäväpohjassa on toisesta osasta tuttu tehtävä Item Database. Tutustu ohjelmaan ja ota projektissa Lombok käyttöön. Tehtävässä ei ole testejä, eli palauta tehtävä kun se on valmis. 
+    Tehtäväpohjassa on sovellus tehtävien hallintaan. Tutustu ohjelmaan ja muokkaa entiteettiluokkaa tai luokkia siten, että ne hyödyntävät Lombokia. Tehtävän testit eivät tarkastele Lombokin käyttöönottoa, eli tarkasta toiminnallisuus itse.
   </p>
 
 <% end %>
@@ -275,14 +274,6 @@ $ java -Duser.timezone=GMT -jar target/<em>sovellus</em>.jar
 <% end %>
 
 
-<% partial 'partials/exercise', locals: { name: 'Kirjat' } do %>
-  
-  <p>
-    TODO
-  </p>
-
-<% end %>
-
 
 
 <% partial 'partials/material_sub_heading' do %>
@@ -298,7 +289,7 @@ $ java -Duser.timezone=GMT -jar target/<em>sovellus</em>.jar
 </p>
 
 <% partial 'partials/code_highlight' do %>
-  Pageable pageable = new PageRequest(0, 10, Sort.Direction.DESC, "name");
+  Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "name");
 <% end %>
 
 <p>
@@ -315,7 +306,7 @@ $ java -Duser.timezone=GMT -jar target/<em>sovellus</em>.jar
       private PersonRepository personRepository;
 
       public String list(Model model) {
-          Pageable pageable = new PageRequest(0, 10, Sort.Direction.DESC, "name");
+          Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "name");
           model.addAttribute("persons", personRepository.findAll(pageable));
           return "index";
       }
@@ -389,11 +380,35 @@ $ java -Duser.timezone=GMT -jar target/<em>sovellus</em>.jar
 <% partial 'partials/exercise', locals: { name: 'Last Messages' } do %>
   
   <p>
-    Tehtävässä on käytössä viestien lähetykseen käytettävä sovellus. Muokkaa sovellusta siten, että MessageServicen <code>list</code>-metodi palauttaa aina vain uusimmat 10 viestiä. Käytä tässä hyödyksi yllä nähtyä Pageable-oliota.
+    Tehtävässä on käytössä viestien lähetykseen käytettävä sovellus. Muokkaa sovellusta siten, että sovelluksessa näkyy aina vain uusimmat 5 viestiä. Käytä tässä hyödyksi yllä nähtyä Pageable-oliota.
+  </p>
+
+  <p>
+    Sovelluksessa ei ole testejä. Palauta se kun se toimii toivotulla tavalla.
   </p>
 
 <% end %>
 
+
+<% partial 'partials/exercise', locals: { name: 'Exams and Questions' } do %>
+  
+  <p>
+    Tehtävänäsi on täydentää kokeiden ja koekysymysten hallintaan tarkoitettua sovellusta. Sovellukseen on toteutettu valmiiksi rungot kokeiden ja koekysymysten lisäämiseen tarvittaviin kontrollereihin, jonka lisäksi sovelluksessa on osittain valmiina tarvitut <code>Exam</code> ja <code>Question</code> -entiteetit.
+  </p>
+
+  <p>
+    Lisää sovellukseen tarvittavat Repository-rajapinnat ja täydennä Exam- ja Question-entiteettejä niin, että yhteen kokeeseen monta kysymystä ja yksi kysymys voi liittyä useampaan kokeeseen. Toteuta myös kontrollereille tarvittavat metodit ja toiminnallisuudet -- saat näitä selville HTML-sivuja tarkastelemalla.
+  </p>
+
+  <p>
+    Muokkaa sovellusta lopulta niin, että osoitteessa "/exams" näytettävät kokeet järjestetään koepäivämäärän mukaan.
+  </p>
+
+  <p>
+    Huomaa, että testit eivät käsittele päivämääriä. Kokeile sovelluksen toimintaa -- myös tässäkin tehtävässä -- myös manuaalisesti.
+  </p>
+
+<% end %>
 
 
 <% partial 'partials/material_sub_heading' do %>
@@ -742,21 +757,18 @@ public ResponseEntity&lt;byte[]&gt; viewFile(@PathVariable Long id) {
   Käyttäjän tunnistamiseen pyyntöjen välillä on kuitenkin tarvetta. Esimerkiksi verkkokaupat ja muut käyttäjän kirjautumista vaativat palvelut tarvitsevat tavan käyttäjän tunnistamiseen. Klassinen -- mutta huono -- tapa kiertää HTTP:n tilattomuus on ollut säilyttää GET-muotoisessa osoitteessa parametreja, joiden perusteella asiakas voidaan tunnistaa palvelinsovelluksessa. Tämä ei kuitenkaan ole suositeltavaa, sillä osoitteessa olevia parametreja voi muokata käsin, ja ne saattavat jättää sovellukseen ylimääräisiä tietoturva-aukkoja.
 </p>
 
-<aside class="info">
-  
-  <br/>
 
-  <h1>Case: GET-parametri tunnistautumiseen</h1>
+<% partial 'partials/hint', locals: { name: 'Case: GET-parametri tunnistautumiseen' } do %>
   
   <p>
-    Eräässä järjestelmässä verkkokaupan toiminnallisuus oli toteutettu siten, että GET-parametrina säilytettiin numeerista ostoskorin identifioivaa tunnusta. Käyttäjäkohtaisuus oli toteutettu palvelinpuolella siten, että tietyllä GET-parametrilla näytettiin aina tietyn käyttäjän ostoskori. Uusien tuotteiden lisääminen ostoskoriin onnistui helposti, sillä pyynnöissä oli aina mukana ostoskorin tunnistava GET-parametri. Ostoskorit oli valitettavasti identifioitu juoksevalla numerosarjalla. Henkilöllä 1 oli ostoskori 1, henkilöllä 2 ostoskori 2 jne..
+    Eräässä järjestelmässä -- onneksi jo vuosia sitten -- verkkokaupan toiminnallisuus oli toteutettu siten, että GET-parametrina säilytettiin numeerista ostoskorin identifioivaa tunnusta. Käyttäjäkohtaisuus oli toteutettu palvelinpuolella siten, että tietyllä GET-parametrilla näytettiin aina tietyn käyttäjän ostoskori. Uusien tuotteiden lisääminen ostoskoriin onnistui helposti, sillä pyynnöissä oli aina mukana ostoskorin tunnistava GET-parametri. Ostoskorit oli valitettavasti identifioitu juoksevalla numerosarjalla. Henkilöllä 1 oli ostoskori 1, henkilöllä 2 ostoskori 2 jne..
   </p>
   
   <p>
     Koska käytännössä kuka tahansa pääsi katsomaan kenen tahansa ostoskoria vain osoitteessa olevaa numeroa vaihtamalla, olivat ostoskorien sisällöt välillä hyvin mielenkiintoisia.
   </p>
 
-</aside>
+<% end %>
 
 <p>
   HTTP-protokollan tilattomuus ei pakota palvelinohjelmistoja tilattomuuteen. Palvelimella tilaa pidetään yllä jollain tavalla tekniikalla, joka ei näy HTTP-protokollaan asti. Yleisin tekniikka tilattomuuden kiertämiseen on evästeiden käyttö.
@@ -808,17 +820,16 @@ Cookie: SESS57a5819a77579dfb1a1466ccceee22a0=0hr0aa2ogdfgkelogg
   Evästeiden nimet ja arvot ovat yleensä monimutkaisia ja satunnaisesti luotuja niiden yksilöllisyyden takaamiseksi. Samaan palvelinosoitteeseen voi liittyä useampia evästeitä. Yleisesti ottaen evästeet ovat sekä hyödyllisiä että haitallisia: niiden avulla voidaan luoda yksiöityjä käyttökokemuksia tarjoavia sovelluksia, mutta niitä voidaan käyttää myös käyttäjien seurantaan ympäri verkkoa.
 </p>
 
-<aside class="info">
+<% partial 'partials/hint', locals: { name: 'Evästeet hs.fi -palvelussa' } do %>
+
+  <p>
+    Painamalla F12 tai valitsemalla Tools -> Developer tools, pääset tutkimaan sivun lataamiseen ja sisältöön liittyvää statistiikkaa. Lisäneuvoja löytyy <a href="https://developers.google.com/web/tools/chrome-devtools/" target="_blank">Google Developers</a> -sivustolta.
+  </p>
   
-  <br/>
-  
-  <h1>Evästeet hs.fi -palvelussa</h1>
-  
-  <p>Painamalla F12 tai valitsemalla Tools -> Developer tools, pääset tutkimaan sivun lataamiseen ja sisältöön liittyvää statistiikkaa. Lisäneuvoja löytyy <a href="https://developers.google.com/web/tools/chrome-devtools/" target="_blank">Google Developers</a> -sivustolta.</p>
-  
-  <p>Avaa developer tools, ja mene osoitteeseen <a href="http://www.hs.fi" target="_blank">http://www.hs.fi</a>. Valitsemalla developer toolsien välilehden <code>Resources</code>, löydät valikon erilaisista sivuun liittyvistä resursseista. Avaa <code>Cookies</code> ja valitse vaihtoehto <code>www.hs.fi</code>. Kuinka moni palvelu pitää sinusta kirjaa kun menet Helsingin sanomien sivuille?</p>
-  
-</aside>
+  <p>
+    Avaa developer tools, ja mene osoitteeseen <a href="http://www.hs.fi" target="_blank">http://www.hs.fi</a>. Valitsemalla developer toolsien välilehden <code>Resources</code>, löydät valikon erilaisista sivuun liittyvistä resursseista. Avaa <code>Cookies</code> ja valitse vaihtoehto <code>www.hs.fi</code>. Kuinka moni palvelu pitää sinusta kirjaa kun menet Helsingin sanomien sivuille?
+  </p>
+<% end %>
 
 
 
@@ -878,23 +889,23 @@ public class VisitCountController {
 
 <% end %>
 
-<aside class="info">
 
-  <br/>
 
-  <h1>Evästeiden ja istuntojen testaaminen selaimella</h1>
+<% partial 'partials/hint', locals: { name: 'Evästeiden ja istuntojen testaaminen selaimella' } do %>
   
   <p>
     Istuntojen toiminnallisuuden testaaminen selaimella onnistuu näppärästi selainten tarjoaman anonyymitoiminnallisuuden avulla. Esimerkiksi Chromessa voi valita "New incognito window", mikä avaa käyttöön selainikkunan, missä ei aluksi ole lainkaan vanhoja evästeitä muistissa. Kun palvelimelle tehdään pyyntö, tallentuu vastauksen yhteydessä palautettava eväste selaimen muistiin vain siksi aikaa kun anonyymi-ikkuna on auki.
   </p>
-
+  
   <p>
     Session pituus riippuu esimerkiksi palvelimen asetuksista <code>session timeout</code> ja siitä, että salliiko käyttäjä evästeiden käytön.
   </p>
+  
+<% end %>
 
-</aside>
-
-<p>HttpSession-olioon pääsee käsiksi myös muualla sovelluksessa, ja sen voi injektoida esimerkiksi palveluun <code>@Autowired</code>-annotaation avulla. Edellinen kontrolleriin toteutettu toiminnallisuus voitaisiin tehdä myös palvelussa.</p>
+<p>
+  HttpSession-olioon pääsee käsiksi myös muualla sovelluksessa, ja sen voi injektoida esimerkiksi palveluun <code>@Autowired</code>-annotaation avulla. Edellinen kontrolleriin toteutettu toiminnallisuus voitaisiin tehdä myös palvelussa.
+</p>
 
 <% partial 'partials/code_highlight' do %>
 // importit
@@ -946,34 +957,32 @@ public class VisitCountController {
   </p>
 
   <p>
-    Täydennä luokan <code>ReloadStatusService</code> metodit seuraavasti:
+    Täydennä luokan <code>ReloadStatusController</code> metodin reload toimintaa seuraavasti.
   </p>
-      
+
   <ul>
     <li>
-      Metodi <code>public List&lt;ReloadStatus&gt; getTopList()</code> palauttaa viisi eniten uudelleenlatauksia tehnyttä käyttäjää suuruusjärjestyksessä. Listan ensimmäisellä sijalla on eniten uudelleenlatauksia tehnyt henkilö, toisella sijalla toiseksi eniten jne.
+      Metodin tulee palauttaa model-attribuuttina "scores" viisi eniten uudelleenlatauksia tehnyttä käyttäjää suuruusjärjestyksessä. Listan ensimmäisellä sijalla on eniten uudelleenlatauksia tehnyt henkilö, toisella sijalla toiseksi eniten jne.
     </li>
     
     <li>
-      Metodi <code>public ReloadStatus reload()</code> palauttaa pyynnön tehneeseen henkilöön liittyvän ReloadStatus-olion. Jos käyttäjä ei ole tehnyt yhtäkään pyyntöä aiemmin, tulee käyttäjälle luoda uusi tunnus sekä alustaa uudelleenlatausten määrä yhteen. Jos taas käyttäjä on tehnyt pyyntöjä aiemmin, tulee käyttäjän tekemien pyyntöjen määrää kasvattaa yhdellä. Tieto pyyntöjen määrästä tulee myös tallentaa tietokantaan.
+      Metodin tulee lisäksi palauttaa pyynnön tehneeseen henkilöön liittyvä ReloadStatus-olio modelin attribuuttina status. Jos käyttäjä ei ole tehnyt yhtäkään pyyntöä aiemmin, tulee käyttäjälle luoda uusi tunnus sekä alustaa uudelleenlatausten määrä yhteen. Jos taas käyttäjä on tehnyt pyyntöjä aiemmin, tulee käyttäjän tekemien pyyntöjen määrää kasvattaa yhdellä. Tieto pyyntöjen määrästä tulee myös tallentaa tietokantaan.
     </li>
   </ul>
-  
-  <p>
-    Kun sovellus on valmis, toimii se kuten osoitteessa <a href="https://still-beyond-90359.herokuapp.com" target="_blank">https://still-beyond-90359.herokuapp.com</a> oleva sovellus.
-  </p>
 
+  <p>
+    Voit testata sovelluksen toimintaa selaimen anonyymitilassa. Anonyymitilassa selain ei lähetä normaalitilassa kertyneitä evästeitä palvelimelle.
+  </p>
+  
 <% end %>
 
 
-<aside class="info">
 
-  <br/>
 
-  <h1>Milloin sessioita kannattaa käyttää?</h1>
+<% partial 'partials/hint', locals: { name: 'Milloin sessioita kannattaa käyttää?' } do %>
 
   <p>Muutamia faktoja sessioista:</p>
-
+  
   <ul>
     <li>
       Sessio häviää kun käyttäjä poistaa selaimesta evästeet.
@@ -989,12 +998,12 @@ public class VisitCountController {
       Käyttäjä voi estää evästeiden käytön selaimen asetuksista.
     </li>
   </ul>
-
+  
   <p>
     Sessioiden käyttö on näppärää sellaisen tiedon tallentamiseen mikä saakin kadota. Jos tiedon säilyvyys on oleellista sovelluksen toiminnan kannalta, kannattaa se tallentaa esimerkiksi tietokantaan.
   </p>
-
-</aside>
+  
+<% end %>
 
 <p>
   Springin annotaatio <code>@Autowired</code> luo oletuksena yhden ilmentymän luokasta, joka asetetaan <code>@Autowired</code>-annotaatiolla määriteltyyn luokkaan. Tarvittavien komponenttien luomista voidaan kontrolloida erillisen <code>@Scope</code>-annotaation avulla, mikä mahdollistaa ilmentymien luonnin esimerkiksi sessiokohtaisesti. Seuraavassa on esimerkki ostoskorista, joka on sessiokohtainen ja jokaiselle käyttäjälle oma. Annotaatio <code>@Component</code> on luokan toiminnalle oleellinen -- sen avulla Spring tietää, että luokka tulee ladata @Autowired-annotaatioon liittyvän toiminnallisuuden löydettäväksi.
@@ -1010,7 +1019,7 @@ public class ShoppingCart implements Serializable {
     private Map&lt;Item, Integer&gt; items;
 
     public ShoppingCart() {
-        this.items = new TreeMap&lt;&gt;();
+        this.items = new HashMap&lt;&gt;();
     }
 
     public Map&lt;Item, Integer&gt; getItems() {
@@ -1031,17 +1040,14 @@ public class ShoppingCart implements Serializable {
   Ylläolevasta komponentista luotavat ilmentymät ovat elossa vain käyttäjän session ajan, eli sen aikaa kun käyttäjän eväste on elossa. Ylläolevasta ostoskorista saa lisättyä ilmentymän sovellukseen aivan kuten muistakin komponenteista, eli <code>@Autowired</code>-annotaatiolla.
 </p>
 
-<aside class="info">
 
-  <br/>
-
-  <h1>Mikä ihmeen proxymode?</h1>
+<% partial 'partials/hint', locals: { name: 'Mikä ihmeen proxymode?' } do %>
 
   <p>
     Tarkempaa tietoa em. annotaatiosta löytyy <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/beans.html#beans-factory-scopes-other-injection" target="_blank">Springin dokumentaatiosta</a>.
   </p>
-  
-</aside>
+
+<% end %>
 
 
 
@@ -1099,7 +1105,7 @@ public class ShoppingCart implements Serializable {
   <h2>Tilauksen tekeminen</h2>
       
   <p>
-    Muokkaa luokkaa <code>wad.service.OrderService</code> siten, että tilaus tallennetaan tietokantaan. Tutustu luokkiin <code>Order</code>, <code>OrderItem</code> ja <code>UserDetails</code> ennen toteutusta. Varmista että esimerkiksi <code>OrderItem</code> viittaa oikeaan tietokantatauluun.
+    Muokkaa luokkaa <code>wad.controller.OrderController</code> siten, että tilaus tallennetaan tietokantaan. Tutustu luokkiin <code>Order</code> ja <code>OrderItem</code> ennen toteutusta. Varmista että esimerkiksi <code>OrderItem</code> viittaa oikeaan tietokantatauluun.
   </p>
   
   <p>
@@ -1124,6 +1130,6 @@ public class ShoppingCart implements Serializable {
 </aside>
 
 <p>
-  Lisätietoa mm. osoitteessa <a href="http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF" target="_blank">http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF</a> sekä <a href="http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf" target="_blank">http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf</a>.
+  Lisätietoa mm. osoitteessa <a href="http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF" target="_blank">http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2009:337:0011:0036:EN:PDF</a>, <a href="http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf" target="_blank">http://ec.europa.eu/justice/data-protection/article-29/documentation/opinion-recommendation/files/2012/wp194_en.pdf</a> sekä <a href="http://finlex.fi/fi/laki/ajantasa/2014/20140917#L24P205" target="_blank">http://finlex.fi/fi/laki/ajantasa/2014/20140917#L24P205</a>.
 </p>
 
