@@ -225,7 +225,7 @@ public String create(@RequestParam String name,
 
 <% partial 'partials/sql_highlight' do %>
   &lt;form th:action="@{/persons}" method="POST"&gt;
-    &lt;input name="name" type="date"/&gt;&lt;br/&gt;
+    &lt;input name="name" type="text"/&gt;&lt;br/&gt;
     &lt;input name="birthday" type="date"/&gt;&lt;br/&gt;
     &lt;input type="submit"/&gt;
   &lt;/form&gt;
