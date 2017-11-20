@@ -1,0 +1,763 @@
+---
+  title: Osa 4
+  exercise_page: true
+  quiz_page: false
+  published: false
+---
+
+
+<% partial 'partials/hint', locals: { name: 'Neljännen osan tavoitteet' } do %>
+
+  <p>
+    bla
+  </p>
+  
+<% end %>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Konfiguraatioprofiilit
+<% end %>
+
+<p>
+  Ohjelmistotuotannossa on tyypillistä, että jokaisella ohjelmistokehittäjällä on oma ympäristö, missä sovellusta voi kehittää ja testata. Sovelluksen siirtäminen koneelta toiselle ei vaadi muutoksia ohjelman lähdekoodiin, vaan muutokset ovat heti myös muiden kokeiltavissa. Samanlaista joustavuutta odotetaan myös silloin kun sovelluksesta julkaistaan uusi versio käyttäjille.
+</p>
+
+<p>
+  Sovelluksen julkaisun eli esimerkiksi tuotantopalvelimelle siirtämisen ei tule vaatia muutoksia sovelluksen lähdekoodiin. Kun sovellus on julkisessa käytössä, sillä on tyypillisesti ainakin usein eri tietokantaosoite kuin sovelluskehitysvaiheessa, mahdollisesti eri tietokannanhallintajärjestelmä, sekä todennäköisiä erilaisia salasanoihin ja ohjelman tuottamiin tulostuksiin (logeihin) liittyviä asetuksia.
+</p>
+
+<p>
+  Tarvitsemme siis tavan olennaisten asetusten määrittelyyn ympäristökohtaisesti.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Konfiguraatiot tiedostoissa
+<% end %>
+
+
+<p>
+  Spring-projekteissa konfiguraatiotiedostot sijaitsevat tyypillisesti kansiossa <code>src/main/resources/</code>. Spring etsii kansiosta tiedostoa nimeltä <code>application.properties</code>, johon ohjelmistokehittäjä voi määritellä sovelluksen käynnistyksen yhteydessä käytettäviä asetuksia. Asetustiedosto voi sisältää esimerkiksi tietokantaan liittyviä asetuksia:
+</p>
+
+<pre>
+spring.datasource.driverClassName=tietokanta-ajuri
+spring.datasource.url=jdbc-osoite
+</pre>
+
+<p>
+  Lista tyypillisistä asetuksista löytyy osoitteesta <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html" target="_blank">http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html</a>.
+</p>
+
+<p>
+  Käytettävän profiilin ja konfiguraatiotiedoston vaihtaminen toteutetaan tyypillisesti niin, että käytetyllä koneella on määriteltynä ympäristömuuttuja (<code>SPRING_PROFILES_ACTIVE</code>), joka kertoo käytettävän profiilin. Ympäristömuuttujan voi antaa myös sovellukselle parametrina sovellusta käynnistettäessä (<code>java ... -Dspring.profiles.active=arvo ...</code>).
+</p>
+
+<p>
+  Jos käytössä on aktiivista profiilia kuvaava ympäristömuuttuja, etsii Spring oletuskonfiguraatiotiedoston (<code>application.properties</code>) lisäksi myös <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html#boot-features-external-config-profile-specific-properties" target="_blank">aktiiviseen profiiliin liittyvää konfiguraatiotiedostoa</a>. Jos aktiivisena profiilina on <code>production</code>, etsitään myös konfiguraatiotiedostoa <code>application-production.properties</code>. Konfiguraatioprofiili voisi esimerkiksi sisältää tietoa käytettävästä tietokanta-ajurista sekä tietokannan osoitteesta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Konfiguraatiot ohjelmakoodissa
+<% end %>
+
+<p>
+  Osa Springin konfiguraatiosta tapahtuu ohjelmallisesti. Esimerkiksi tietoturvaan liittyvät asetukset, esimerkiksi aiemmin näkemämme <code>SecurityConfiguration</code>-luokka, määritellään usein ohjelmallisesti. Haluamme kuitenkin luoda tilanteen, missä tuotannossa on eri asetukset kuin kehityksessä.
+</p>
+
+<p>
+  Tämä onnistuu <code>@Profile</code>-annotaation avulla, jonka kautta voimme asettaa tietyt luokat tai metodit käyttöön vain kun <code>@Profile</code>-annotaatiossa määritelty profiili on käytössä. Esimerkiksi aiemmin luomamme <code>SecurityConfiguration</code>-luokka voidaan määritellä tuotantokäyttöön seuraavasti:
+</p>
+
+<p>
+  TODO: esimerkki -- devauskäyttö vs. tuotantokäyttö
+</p>
+
+
+<% partial 'partials/material_heading' do %>
+  Sovelluksen siirtäminen pilvipalveluun
+<% end %>
+
+
+<p>
+  Tutustutaan seuraavaksi sovelluksen siirtämiseen <a href="https://www.heroku.com/" target="_blank">Heroku</a>-pilvipalveluun. Heroku on palvelu, joka tarjoaa rajoitetun (ja ilmaisen) sijoituspaikan vähän resursseja kuluttaville sovelluksille. Toisin kuin aiemmin toteuttamiemme sovellusten tietokanta, Herokun käyttämä tietokannanhallintajärjestelmä on erillinen sovelluksesta, jolloin tietokantaan tallennetut tiedot pysyvät tietokannassa vaikka sovellus sammuisi välillä.
+</p>
+
+<p>
+  Seuraa ensin osoitteessa <a href="https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku" target="_blank">https://devcenter.heroku.com/articles/deploying-spring-boot-apps-to-heroku</a> olevaa opasta Spring Boot -sovelluksen käytöstä Herokussa ja luo ensimmäinen pilvessä sijaitseva Heroku-sovelluksesi.
+</p>
+
+<p>
+  Jotta saisimme oman tietokantaa käyttävän sovelluksen Herokuun, tarvitsemme muutaman lisäaskeleen. Heroku käyttää PostgreSQL-tietokannanhallintajärjestelmää, joten tarvitsemme sen ajurin sekä erillisen tietokantayhteyksiä hallitsevan apukirjaston. Nämä saa käyttöön lisäämällä projektin pom.xml-tiedostoon seuraavat riippuvuudet.
+</p>
+
+<p>
+  TODO: EI TARTTE COMMONSIA ENÄÄ?
+</p>
+
+<pre class="sh_xml">
+&lt;dependency&gt;
+    &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+    &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+    &lt;artifactId&gt;commons-dbcp2&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</pre>
+
+<p>
+  TODO: tartteeko erikseen määritellä pakattavaksi.
+</p>
+
+<p>
+  Luodaan seuraavaksi konfiguraatiotiedosto, jolla määrittelemme sovelluksen käyttöön PostgreSQL-kielen sekä pyydämme tietokantakyselyitä näkyville. Seuraava sisältö tulee tiedostoon <code>src/main/resources/application-production.properties</code>.
+</p>
+
+<pre>
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.generate-ddl=true
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+</pre>
+
+<p>
+  Luodaan tämän jälkeen profiili tuotantokäyttöä varten. Profiili noudattaa Herokun opasta osoitteessa <a href="https://devcenter.heroku.com/articles/connecting-to-relational-databases-on-heroku-with-java" target="_blank">https://devcenter.heroku.com/articles/connecting-to-relational-databases-on-heroku-with-java</a>, mutta on käytössä vain profiililla <code>production</code>. Tämän avulla sovellus muuntaa Herokun antaman tietokantaosoitteen sovelluksen käyttöön.
+</p>
+
+<pre class="sh_java">
+// pakkaus
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
+@Configuration
+@Profile("production")
+public class ProductionProfile {
+
+    @Bean
+    public BasicDataSource dataSource() throws URISyntaxException {
+        URI dbUri = new URI(System.getenv("DATABASE_URL"));
+
+        String username = dbUri.getUserInfo().split(":")[0];
+        String password = dbUri.getUserInfo().split(":")[1];
+        String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(dbUrl);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+
+        return basicDataSource;
+    }
+}</pre>
+
+
+<p>
+  Luodaan lopulta vielä erillinen <code>Procfile</code>-tiedosto, jonka perusteella Heroku osaa käynnistää sovelluksen. Procfile-tiedoston sisältö on seuraava:
+</p>
+
+<pre>
+web: java $JAVA_OPTS -Dspring.profiles.active=production -Dserver.port=$PORT -jar target/*.jar
+</pre>
+
+<p>
+  Tämän jälkeen sovelluksen siirtäminen tuotantoon onnistuu alkuperäisiä Herokun ohjeita noudattamalla.
+</p>
+
+
+<p>
+  Käytännössä siis Heroku määrittelee sovellukselle käynnistysparametrit sekä portin, jonka lisäksi määrittelemme aktiiviseksi profiiliksi tuotantoprofiilin. Kun sovellus siirretään herokuun, se käyttää Herokun tietokantaa. Toisaalta, kun sovellusta kehitetään paikallisesti, käytössä on testitietokanta -- ihan näppärää.
+</p>
+
+
+<p>
+  Voit kokeilla ReloadHeroes-sovellusta osoitteessa <a href="https://still-beyond-90359.herokuapp.com/" target="_blank">https://still-beyond-90359.herokuapp.com/</a>.
+</p>
+
+
+<% partial 'partials/material_heading' do %>
+  Sovellusten testaaminen
+<% end %>
+
+<p>
+  Kuten ohjelmistotuotannossa yleensä, myös palvelinohjelmistoja rakennettaessa sovellusten testaaminen hyödyntää sekä kehitystyötä että tulevaa ylläpitotyötä. Testaaminen voidaan karkeasti jakaa kolmeen osaan: yksikkötestaukseen, integraatiotestaukseen ja järjestelmätestaukseen. Tämän lisäksi on mm. myös käytettävyys- ja tietoturvatestaus, joita emme tässä käsittele tarkemmin.
+</p>
+
+<p>
+  Yksikkötestauksessa testataan sovellukseen kuuluvia pienimpiä yksittäisiä komponentteja ja varmistetaan että niiden tarjoamat rajapinnat toimivat tarkoitetulla tavalla. Integraatiotestauksessa testataan että komponentit toimivat yhdessä kuten niiden pitäisi, ja järjestelmätestauksessa varmistetaan, että järjestelmä toimii vaatimusten mukaan järjestelmän käyttäjille tarjotun rajapinnan (esim. selain) kautta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Yksikkötestaus
+<% end %>
+
+<p>
+  Yksikkötestauksella tarkoitetaan lähdekoodiin kuuluvien yksittäisten osien testausta. Termi yksikkö viittaa ohjelman pienimpiin mahdollisiin testattaviin toiminnallisuuksiin, kuten olion tarjoamiin metodeihin. Seuratessamme <a href="http://en.wikipedia.org/wiki/Single_responsibility_principle" target="_blank">single responsibility principle</a>ä, jokaisella oliolla ja metodilla on yksi selkeä vastuu, jota voi myös testata. Testaus tapahtuu yleensä testausohjelmistokehyksen avulla, jolloin luodut testit voidaan suorittaa automaattisesti. Yleisin Javalla käytettävä testauskehys on JUnit, jonka saa käyttöön lisäämällä siihen liittyvän riippuvuuden <code>pom.xml</code>-tiedostoon.
+</p>
+
+<pre class="sh_xml">
+&lt;dependency&gt;
+    &lt;groupId&gt;junit&lt;/groupId&gt;
+    &lt;artifactId&gt;junit&lt;/artifactId&gt;
+    &lt;version&gt;4.12&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</pre>
+
+<p>
+  Yksittäisen riippuvuuden määre <code>scope</code> kertoo milloin riippuvuutta tarvitaan. Määrittelemällä <code>scope</code>-elementin arvoksi <code>test</code> on riippuvuudet käytössä vain testejä ajettaessa. Uusia testiluokkia voi luoda NetBeansissa valitsemalla New -> Other -> JUnit -> JUnit Test. Tämän jälkeen NetBeans kysyy testiluokalle nimeä ja pakkausta. Huomaa että lähdekoodit ja testikoodit päätyvät erillisiin kansioihin -- juurin näin sen pitääkin olla. Kun testiluokka on luotu, on projektin rakenne kutakuinkin seuraavanlainen.
+</p>
+
+<pre>
+.
+|-- pom.xml
+`-- src
+    |-- main
+    |   |-- java
+    |   |   `-- wad
+    |   |       `-- ... oman projektin koodit
+    |   |-- resources
+    |           `-- ... resurssit, mm. konfiguraatio ja thymeleafin templatet
+    |           
+    `-- test
+        `-- java
+            `-- wad
+                `-- ... testikoodit!
+</pre>
+
+<p>
+  Tehtäväpohjissa JUnit-testikirjasto on valmiina mukana. Yksikkötestauksesta JUnit-kirjaston avulla löytyy pieni opas kurssin <a href="https://github.com/mluukkai/OTM2015/wiki/JUnit-ohje" target="_blank">Ohjelmistotekniikan menetelmät</a> sivuilta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Integraatiotestaus
+<% end %>
+
+<p>
+  Spring tarjoaa <code>spring-test</code>-komponentin, jonka avulla JUnit-kirjasto saa @Autowired-annotaatiot toimimaan. Tämän kautta pääsemme tilanteeseen, missä voimme injektoida testimetodille esimerkiksi kokonaisen palvelun, sekä testata sen tarjoamien metodien toimintaa. Testattava palvelu voi hyödyntää muita komponentteja, jolloin testauksen kohteena on kokonaisuuden toiminta yhdessä.
+</p>
+
+<p>
+  Spring test-komponentista on myös Spring Boot -projekti, jonka voimme ottaa käyttöömme lisäämällä seuraavan riippuvuuden pom.xml-tiedostoon. Käytetyn riippuvuuden versio liittyy Spring Boot -projektin versioon, eikä sitä tarvitse määritellä tarkemmin.
+</p>
+
+<pre class="sh_xml">
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+      &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;</pre>
+
+
+<p>
+  Yksittäisten palvelujen testaamisessa tarvitsemme testiluokkien alkuun kaksi annotaatiota. Annotaatio <code>@RunWith(SpringRunner.class)</code> kertoo että käytämme Springiä yksikkötestien ajamiseen ja annotaatio <code>@SpringBootTest</code> lataa sovelluksen osat käyttöön. Testiluokka, johon injektoidaan automaattisesti <code>MyService</code>-palvelu, näyttää seuraavalta.
+</p>
+
+<pre class="sh_java">
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ApplicationTest {
+
+    @Autowired
+    private MyService myService;
+
+    // ... testit jne
+}
+</pre>
+
+<p>
+  Käynnistämällä Springin osana testejä, saamme käyttöömme oliokontekstin, jonka avulla voimme asettaa testattavat oliot testiluokkiin testaamista varten. Testattavien olioiden riippuvuudet asetetaan myös automaattisesti, eli jos <code>MyService</code> sisältää muita komponentteja, on ne myös automaattisesti asetettu.
+</p>
+
+<p>
+  Voimme ylläolevalla lähestymistavalla testata myös sitä, että sovelluksemme eri osat toimivat yhteen toivotusti. Oletetaan, että käytössämme on luokka <code>PersonService</code>, joka tarjoaa metodin <code>save</code>, jonka pitäisi tallentaa parametrina annettava <code>Person</code>-olio tietokantaan. Tämän lisäksi käytössämme on <code>PersonRepository</code>, jolla on metodi <code>findByName</code>, minkä avulla voimme hakea tietokannasta henkilön sen nimen perusteella. Kummatkin toteutukset voidaan injektoida suoraan testiluokkaan, testi itsessään ensin tallentaa henkilön <code>PersonService</code>-olion avulla, ja tarkistaa sen jälkeen <code>PersonRepository</code>-oliolta että kyseinen henkilö on olemassa.
+</p>
+
+
+<pre class="sh_java">
+// importit
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ApplicationTest {
+
+    @Autowired
+    private PersonService personService;
+
+    @Autowired
+    private PersonRepository personRepository;
+
+    @Test
+    public void testSavePerson() {
+        Person person = new Person();
+        person.setName("Jack Bauer");
+        person.setAge(42);
+
+        personService.save(person);
+
+        Person retrieved = personService.findByName("Jack Bauer");
+        assertNotNull(retrieved);
+        assertEquals(42, retrieved.getAge());
+    }
+
+    // ja muita testejä
+}</pre>
+
+<p>
+  Ylläolevassa testissä olevat metodit <code>assertNotNull</code> ja <code>assertEquals</code> ovat JUnit-kirjaston tarjoamia toiminnallisuuksia.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Järjestelmätestaus
+<% end %>
+
+<p>
+  Järjestelmätestauksessa on tarkoitus varmistaa, että järjestelmä toimii toivotulla tavalla. Järjestelmää testataan saman rajapinnan kautta, kuin mitä sen loppukäyttäjät käyttävät. Järjestelmätestaukseen on monenlaisia työkaluja, joista käsittelemme tässä kahta. Tutustumme ensin integraatiotestauksessa käytetyn <code>spring-test</code>-komponenttiin järjestelmätason testaustoiminnallisuuteen, jonka jälkeen tutustumme harjoitustehtävän kautta <code>Selenium</code> ja <code>FluentLenium</code> -kirjastoihin.
+</p>
+
+<p>
+  Springin tarjoama <code>spring-test</code> tarjoaa tuen järjestelmätestaamiseen. Annotaatiolla <code>@SpringBootTest</code> testeillä on käytössä myös web-sovelluksen konteksti, jonka avulla voidaan luoda <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/test/web/servlet/MockMvc.html" target="_blank">MockMvc</a>-olio. MockMvc-oliolla pystymme tekemään pyyntöjä sovelluksen tarjoamiin osoitteisiin, tarkistelemaan pyyntöjen onnistumista, sekä tarkastelemaan vastauksena saatua dataa.
+</p>
+
+<p>
+  Alla oleva esimerkki käynnistää sovelluksen ja tekee kolme GET-pyyntöä osoitteeseen <code>/messages</code>. Ensimmäinen pyyntö liittyy testiin, missä varmistetaan että vastaus on sisältää statuskoodin <code>200</code> eli "OK", toinen pyyntö liittyy testiin joka varmistaa että vastauksen tyyppi on JSON-muotoista dataa, ja kolmas pyyntö tarkistaa että vastauksessa on merkkijono "Awesome". Alun <code>setUp</code>-metodi luo <code>MockMvc</code>-olion injektoidun palveinkontekstin perusteella.
+</p>
+
+<pre class="sh_java">
+// muut importit
+
+// mm. mockMvc:n get- ja post-metodit
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class MessagesTest {
+
+    @Autowired
+    private WebApplicationContext webAppContext;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setUp() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).build();
+    }
+
+    @Test
+    public void statusOk() throws Exception {
+        mockMvc.perform(get("/messages"))
+                .andExpect(status().isOk());
+    }
+
+
+    @Test
+    public void responseTypeApplicationJson() throws Exception {
+        mockMvc.perform(get("/messages"))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void responseContainsTextAwesome() throws Exception {
+        MvcResult res = mockMvc.perform(get("/messages"))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        Assert.assertTrue(content.contains("Awesome"));
+    }
+}</pre>
+
+<p>
+  Voit myös testata modeliin asetettujen attribuuttien olemassaoloa ja oikeellisuutta. Olemassaolon voi tarkistaa <code>model()</code>-metodin kautta, ja <code>MvcResult</code>-olion kautta pääsee käsiksi modelin sisältöön.
+</p>
+
+<pre class="sh_java">
+    @Test
+    public void modelHasAttributeMessages() throws Exception {
+        mockMvc.perform(get("/messages"))
+                .andExpect(model().attributeExists("messages"));
+    }
+
+    @Test
+    public void messagesCorrect() throws Exception {
+        MvcResult res = mockMvc.perform(get(API_URI))
+                .andReturn();
+
+        // oletetaan, että kontrolleri asettaa listan Message-tyyppisiä olioita
+        // modeliin
+
+        List&lt;Message&gt; messages = (List) res.getModelAndView().getModel().get("messages");
+
+        // tarkista lista
+    }
+</pre>        
+
+<p>
+  MockMvc:n avulla voi testata käytännössä suurinta osaa palvelinsovellusten toiminnallisuudesta, mutta samalla se tarjoaa pääsyn samaan rajapintaan kuin mitä selain käsitteelee.
+</p>
+
+
+<div class="tehtavat">
+  <div class="tehtava">
+    <header>
+      <h1>
+        <a data-toggle="collapse" class="collapsed" href="#t-lentokentatredux">
+          Airports and Airplanes Redux
+        </a>
+      </h1>
+    </header>
+    <div id="t-lentokentatredux" class="collapse">
+      
+      <p>Muistamme edellisestä osiosta tehtävän, missä tehtiin sovellus lentokoneiden ja lentokenttien hallintaan. Tässä tehtävässä harjoitellaan hieman sekä integraatio- että järjestelmätestausta.</p>
+      
+      <p>Huom! Tässä tehtävässä ei ole automaattisia testejä, joilla testattaisiin kirjoittamiasi testejä. Palauttaessasi tehtävän olet tarkistanut, että kirjoittamasi testit toimivat kuten tehtävänannossa on kuvattu.</p>
+      
+      <h1>AirportServiceTest</h1>
+      
+      <p>Sovellusessa on luokka <code>AirportService</code>, mikä sijaitsee pakkauksessa <code>wad.service</code>. Sille ei kuitenkaan ole yhtäkään testiä :(</p>
+
+      <p>Lisää testikansioon (<code>Test Packages</code>) pakkaus <code>wad.service</code>, ja luo sinne luokka <code>AirportServiceTest</code>.</p>
+      
+      <p>Lisää luokalle tarvittavat annotaatiot sekä oliomuuttujat, ja toteuta luokalle testimetodit, joiden avulla testataan että haluttu lentokone todellakin lisätään lentokentälle. Haluat ainakin tietää että:</p>
+      
+      <ul>
+        <li>Kun lentokone on lisätty lentokentälle, tietokannasta samalla tunnuksella haettavalla lentokoneella on asetettu lentokenttä, ja se on juuri se lentokenttä mihin kone on lisätty.</li>
+        <li>Kun lentokone on lisätty lentokentälle, lentokentältä löytyy myös kyseinen kone.</li>
+        <li>Kun lentokone on lisätty yhdelle lentokentälle, se ei ole muilla lentokentillä.</li>
+        <li>Lentokoneen lisääminen samalle lentokentälle useasti ei johda siihen, että lentokenttä sisältää saman koneen monta kertaa.</li>
+      </ul>
+      
+      <p>Aina kun lisäät yksittäisen testin, voit ajaa testit klikkaamalla projektia oikealla hiirennapilla ja valitsemalla "Test".</p>                        
+      
+      <h1>AircraftControllerTest</h1>
+      
+      <p>Luo testikansioon pakkaus <code>wad.controller</code> ja lisää sinne luokka <code>AircraftControllerTest</code>. Lisää luokkaan tarvittavat määrittelyt, jotta voit käyttää <code>MockMvc</code>-komponenttia testeissä.</p>
+      
+      <p>Tee seuraavat testit:</p>
+      
+      <ul>
+        <li>Kun osoitteeseen <code>/aircrafts</code> tehdään GET-pyyntö, vastauksen status on 200 (ok) ja vastauksen model-oliossa on parametrit <code>aircrafts</code> ja <code>airports</code>.</li>
+        <li>Kun osoitteeseen <code>/aircrafts</code> tehdään POST-pyyntö, jonka parametriksi annetaan <code>name</code>-kenttä, jonka arvona on "HA-LOL", pyynnön vastaukseksi tulee uudelleenohjaus. Tee tämän jälkeen erillinen kysely tietokantaan esim. <code>AircraftRepository</code>:n avulla, ja varmista, että tietokannasta löytyy lentokone, jonka nimi on <code>HA-LOL</code>.</li>
+        <li>Kun osoitteeseen <code>/aircrafts</code> tehdään POST-pyyntö, jonka parametriksi annetaan <code>name</code>-kenttä, jonka arvona on "XP-55", pyynnön vastaukseksi tulee uudelleenohjaus. Tee tämän jälkeen GET-pyyntö osoitteeseen <code>/aircrafts</code>, ja tarkista että pyynnön vastauksena saatavan <code>model</code>-olion sisältämässä <code>"aircrafts"</code>-listassa on juuri luotu lentokone.</li>
+      </ul>
+      
+      <p>Tässäkin tehtävässä, aina kun lisäät yksittäisen testin, voit ajaa testit klikkaamalla projektia oikealla hiirennapilla ja valitsemalla "Test".</p>                        
+    </div>
+  </div>
+</div>
+
+
+<p>
+  MockMvc:n lisäksi järjestelmätestaukseen käytetään melko paljon käyttöliittymän testaamiseen tarkoitettua <a href="http://www.seleniumhq.org/" target="_blank">Selenium</a>ia ja siihen liittyviä lisäosia kuten <a href="https://github.com/FluentLenium/FluentLenium" target="_blank">FluentLenium</a>. Käytännössä edellämainitut ovat web-selaimen toimintojen automatisointiin tarkoitettuja välineitä, jotka antavat sovelluskehittäjälle mahdollisuuden käydä läpi sovelluksen käyttöliittymää ohjelmallisesti.
+</p>
+
+<p>
+  Lisätään FluentLenium-kirjaston vaatimat riippuvuudet, oletetaan että testit kirjoitetaan JUnit-testikirjaston avulla (FluentLenium tarjoaa myös muita vaihtoehtoja).
+</p>
+
+<p>
+  TODO: päivitä versio
+</p>
+
+<pre class="sh_xml">
+&lt;dependency&gt;
+    &lt;groupId&gt;org.fluentlenium&lt;/groupId&gt;
+    &lt;artifactId&gt;fluentlenium-core&lt;/artifactId&gt;
+    &lt;version&gt;0.13.1&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.fluentlenium&lt;/groupId&gt;
+    &lt;artifactId&gt;fluentlenium-assertj&lt;/artifactId&gt;
+    &lt;version&gt;0.13.1&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.seleniumhq.selenium&lt;/groupId&gt;
+    &lt;artifactId&gt;htmlunit-driver&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</pre>
+
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  FluentLenium testien kirjoittaminen
+<% end %>
+
+<p>
+  Ajatellaan loppukäyttäjän haluamaa toiminnallisuutta "Käyttäjä voi ilmoittautua oppitunnille". Järjestelmä tarjoaa sivun, jonka ensimmäinen linkki vie ilmoittautumissivulle. Ilmoittautumissivulla tulee olla tietty otsikko -- varmistamme, että olemme oikealla sivulla. Tämän lisäksi ilmoiuttautumissivulla on lomakekenttä, jonka attribuutin <em>id</em> arvo on "name". Jos kentällä on attribuutti <em>id</em>, voidaan se valita kirjoittamalla "#kentannimi". Täytetään kenttään arvo "Bob" ja lähetetään lomake. Tämän jälkeen sivulla tulee olla teksti "Ilmoittautuminen onnistui!".
+</p>
+
+<p>
+  TODO: päivitä versio
+</p>
+
+<pre class="sh_java">
+// importit
+
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class ElokuvatietokantaTest extends FluentTest {
+
+    public WebDriver webDriver = new HtmlUnitDriver();
+
+    @Override
+    public WebDriver getDefaultDriver() {
+        return webDriver;
+    }
+
+    @LocalServerPort
+    private Integer port;
+
+    @Test
+    public void canSignUp() {
+        goTo("http://localhost:" + port);
+
+        click(find("a").first());
+        assertEquals("Ilmoittautuminen", title());
+
+        fill(find("#name")).with("Bob");
+        submit(find("form").first());
+
+        assertTrue(pageSource().contains("Ilmoittautuminen onnistui!"));
+    }
+// ...
+</pre>
+
+
+<p>
+  Yllä annotaatio <code>@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)</code> käynnistää palvelimen integraatiotestausta satunnaisessa portissa, joka saadaan muuttujaan <code>port</code> annotaation <code>@LocalServerPort</code> avulla. Luomme tämän lisäksi ajurin näkymien läpikäyntiin (rivi <code>private WebDriver webDriver = new HtmlUnitDriver();</code>, joka tarjotaan testiluokkamme peritylle toiminnallisuudelle (<code>FluentTest</code>) metodin <code>getDefaultDriver()</code> kautta.
+</p>
+
+<p>
+  Yllä menemme ensin paikalliseen osoitteeseen <code>http://localhost:<em>portti</em></code>, missä portin numero on satunnaisesti valittu -- surffaamme siis haluttuun osoitteeseen. Haemme tämän jälkeen ensimmäisen linkin, eli <code>a</code>-elementin sivulta, ja klikkaamme sitä. Tämän jälkeen tarkistamme, että sivun otsake on <code>Ilmoittautuminen</code>. Tätä seuraa kentän, jonka id on "name" täyttäminen "Bob"-merkkijonolla, jonka jälkeen lomake lähetetään. Kun lomake on lähetetty, haetaan sivun lähdekoodista tekstiä "Ilmoittautuminen onnistui!". Jos tekstiä ei löydy, testi epäonnistuu.
+</p>
+
+<p>
+  FluentLenium-kirjastoon liittyvää dokumentaatiota löytyy osoitteesta <a href="http://www.fluentlenium.org/" target="_blank">http://www.fluentlenium.org/</a>, jonka lisäksi googlesta löytyy apua seuraavaan tehtävään.
+</p>
+
+<div class="tehtavat">
+  <div class="tehtava">
+    <header>
+      <h1>
+        <a data-toggle="collapse" class="collapsed" href="#t-elokuvatredux">
+          Movie Database Redux
+        </a>
+      </h1>
+    </header>
+    <div id="t-elokuvatredux" class="collapse">
+      
+      <p>Muistamme toisesta osiosta myös tehtävän, missä tehtiin sovellus elokuvien ja näyttelijöiden hallintaan. Tässä tehtävässä harjoitellaan hieman järjestelmätestausta FluentLeniumin avulla. Tehtävässä ei ole automaattisia testejä, sillä sinun tehtävänä on toteuttaa ne.</p>
+      
+      <h1>Näyttelijän lisääminen ja poistaminen</h1>
+      
+      <p>Luo testikansioon <code>wad.selenium</code> testiluokka <code>ActorTest</code>, johon asetat Selenium-testaamiseen tarvittavat komponentit.</p>
+      
+      <p>Toteuta testi, jolla varmistetaan että käyttäjän lisääminen ja poistaminen onnistuu. Testin tulee toimia seuraavasti:</p>
+      
+      <ol>
+        <li>Menee näyttelijäsivulle</li>
+        <li>Tarkistaa ettei sivulla ole tekstiä "Van Damme"</li>
+        <li>Etsii kentän jonka id on "name", asettaa kenttään tekstin "Van Damme", ja lähettää lomakkeeseen liittyvän lomakkeen.</li>
+        <li>Tarkistaa että sivulla on teksti "Van Damme"</li>
+        <li>Klikkaa "Van Damme"en liittyvää poista-nappia </li>
+        <li>Tarkistaa että sivulla ei ole tekstiä "Van Damme"</li>
+      </ol>
+      
+      <p>Toteuta seuraavaksi testi, joka tekee seuraavat askeleet:</p>
+      
+      <ol>
+        <li>Menee näyttelijäsivulle</li>
+        <li>Tarkistaa ettei sivulla ole tekstiä "Van Damme"</li>
+        <li>Tarkistaa ettei sivulla ole tekstiä "Chuck Norris"</li>
+        <li>Etsii kentän jonka id on "name", asettaa kenttään tekstin "Chuck Norris", ja lähettää lomakkeeseen liittyvän lomakkeen.</li>
+        <li>Tarkistaa ettei sivulla ole tekstiä "Van Damme"</li>
+        <li>Tarkistaa että sivulla on teksti "Chuck Norris"</li>
+        <li>Etsii kentän jonka id on "name", asettaa kenttään tekstin "Van Damme", ja lähettää lomakkeeseen liittyvän lomakkeen.</li>
+        <li>Tarkistaa että sivulla on teksti "Van Damme"</li>
+        <li>Tarkistaa että sivulla on teksti "Chuck Norris"</li>
+        <li>Klikkaa "Van Damme"en liittyvää poista-nappia</li>
+        <li>Klikkaa henkilön "Chuck Norris" poista-nappia</li>
+        <li>Tarkistaa ettei sivulla ole tekstiä "Van Damme"</li>
+        <li>Tarkistaa että sivulla on teksti "Chuck Norris"</li>
+      </ol>
+      
+      
+      <h1>Elokuvan lisääminen ja näyttelijän lisääminen elokuvaan</h1>
+      
+      <p>Luo testikansioon <code>wad.selenium</code> testiluokka <code>MovieTest</code>, johon asetat Selenium-testaamiseen tarvittavat komponentit.</p>
+      
+      <p>Toteuta seuraavat askeleet</p>
+      
+      <ol>
+        <li>Mene elokuvasivulle</li>
+        <li>Tarkista että sivulla ei ole tekstiä "Bloodsport"</li>
+        <li>Tarkista että sivulla ei ole tekstiä "Van Damme"</li>
+        <li>Etsi kenttä jonka id on "name" ja lisää siihen arvo "Bloodsport"</li>
+        <li>Etsi kenttä jonka id on "lengthInMinutes" ja lisää siihen arvo "92"</li>
+        <li>Lähetä kenttään liittyvä lomake</li>
+	
+        <li>Tarkista että sivulla on teksti "Bloodsport"</li>
+        <li>Tarkista että sivulla ei ole tekstiä "Van Damme"</li>
+	
+        <li>Mene näyttelijäsivulle</li>
+        <li>Tarkista ettei sivulla ole tekstiä "Van Damme"</li>
+        <li>Etsi kenttä jonka id on "name", aseta kenttään teksti "Van Damme", ja lähetä lomake.</li>
+        <li>Tarkistaa että sivulla on teksti "Van Damme"</li>
+        <li>Etsi linkki, jossa on teksti "Van Damme" ja klikkaa siitä.</li>
+        <li>Etsi nappi, jonka id on "add-to-movie", ja klikkaa sitä.</li>
+	
+        <li>Mene elokuvasivulle</li>
+	
+        <li>Tarkista että sivulla on teksti "Bloodsport"</li>
+        <li>Tarkista että sivulla on teksti "Van Damme"</li>
+      </ol>
+      
+      <p>Suorita taas testit klikkaamalla projektia oikealla hiirennäppäimellä ja valitsemalla <code>Test</code>.</p>
+    </div>
+  </div>
+</div>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Konfiguraatioprofiilit ja testaaminen
+<% end %>
+
+
+<p>
+  Testien ajamisessa voidaan käyttää myös konfiguraatioprofiileja. Kun sovellukselle on määritelty erilaisia profiileja, esimerkiksi kirjautumiseen liittyvät konfiguraatiot, voidaan tietty profiili aktivoida testeissä. Testin aktivointi tapahtuu annotaation <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/test/context/ActiveProfiles.html" target="_blank">ActiveProfiles</a> avulla.
+</p>
+
+<p>
+  Alla olevassa esimerkissä testiluokan testit suoritetaan siten, että käytössä on profiiliin "test" liittyvä konfiguraatio, eli se konfiguraatio, joka on määritelty annotaatiolla <code>@Profile("test")</code> (tai <code>@Profile(values = {"test", "muita"})</code> jos halutaan että samaa konfiguraatiota käytetään useammassa profiilissa.
+</p>
+
+<pre class="sh_java">
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("dev")
+public class ApplicationTest {
+// ...
+</pre>
+
+
+
+
+<% partial 'partials/material_heading' do %>
+  Tyypillinen ohjelmistokehitysprosessi
+<% end %>
+
+<p>
+  Ohjelmiston elinkaareen kuuluu vaatimusmäärittely, suunnittelu, toteutus, testaus, sekä ylläpito ja jatkokehitys. Vaatimusmäärittelyyn kuuluu ohjelmistoon liittyvien toiveiden ja vaatimusten kartoitus, jota seuraa suunnittelu, missä pohditaan miten vaatimukset toteutetaan. Toteutusvaihe sisältää ohjelmointia sekä sovelluksen elinympäristöön liittyvien komponenttien yhteensovittamista. Testaukseen kuuluu sovelluksen testaus niin automaattisesti kuin manuaalisesti. Kun ohjelmisto tai sen osa on toiminnassa, tulee elinkaaren osaksi myös käytössä olevasta ohjelmistosta löytyvien virheiden korjaaminen sekä uusien ominaisuuksien kehittäminen.
+</p>
+
+<p>
+  Ohjelmointiin ja ohjelmistojen kehitykseen liittyy jatkuva etsiminen ja kokeileminen. Ongelmat pyritään ratkaisemaan kokeilemalla vaihtoehtoja kunnes ongelmaan löytyy sopiva ratkaisu. Jos ongelma on osittain tuttu, on tarkasteltavia vaihtoehtoja vähemmän, ja jos ongelma on tuttu, on siihen tyypillisesti ainakin yksi valmis ratkaisumalli. Tämän hetken suosituimmat ohjelmistokehitysmenetelmät (ketterät menetelmät kuten Scrum ja Kanban) ohjaavat työn läpinäkyvyyteen, oman työskentelyn kehittämiseen sekä siihen, että muiden osallistuminen ohjelmistokehitykseen on helppoa.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Ohjelmistoon liittyvät toiveet ja vaatimukset
+<% end %>
+
+<p>
+  Ohjelmistoon liittyvistä toiveista ja vaatimuksista keskustellaan asiakkaan ja käyttäjien kanssa, ja ne kirjataan muistiin. Vaatimukset kirjataan usein lyhyessä tarinamuodossa, joka kerrotaan uutta toiminnallisuutta toivovan henkilön näkökulmasta: "As a (käyttäjän tyyppi) I want (tavoite) so that (syy)." -- esimerkiksi "As a user I want to be able to view the messages so that I can see what others have written". Vaatimuksia kirjattaessa saadaan kuva ohjelmistolta toivotusta toiminnallisuudesta, jonka jälkeen toiminnallisuuksia voidaan järjestää tärkeysjärjestykseen.
+</p>
+
+<p>
+  Toiminnallisuuksien tärkeysjärjestykseen asettaminen tapahtuu yhdessä asiakkaan ja käyttäjien kanssa. Kun toiminnallisuudet ovat kutakuinkin tärkeysjärjestyksessä, valitaan niistä muutama kerrallaan työstettäväksi. Samalla varmistetaan asiakkaan kanssa, että ohjelmistokehittäjät ja asiakas ymmärtävät toiveen samalla tavalla. Kun toiminnallisuus on valmis, toiminnallisuus näytetään asiakkaalle ja asiakas pääsee kertomaan uusia toiminnallisuustoiveita sekä mahdollisesti uudelleenjärjestelemään vaatimusten tärkeysjärjestystä.
+</p>
+
+<p>
+  Vaatimuksia ja toiveita, sekä niiden kulkemista projektin eri vaiheissa voidaan käsitellä esimerkiksi <a href="https://trello.com/" target="_blank">Trello</a>:n avulla. <a href="https://www.youtube.com/watch?v=7najSDZcn-U" target="_blank">Ohje Trellon käyttöön</a>.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Versionhallinta
+<% end %>
+
+<p>
+  Ohjelmiston lähdekoodin ja dokumentaatio tallennetaan keskitetysti versionhallintaan, mistä kuka tahansa voi hakea ohjelmistosta uusimman version sekä lähettää sinne uudemman päivitetyn version. Käytännössä jokaisella ohjelmistokehittäjällä on oma hiekkalaatikko, jossa ohjelmistoon voi tehdä muutoksia vaikuttamatta muiden tekemään työhön. Jokaisella ohjelmistokehittäjällä on yleensä samat tai samankaltaiset työkalut (ohjelmointiympäristö, ...), mikä helpottaa muiden kehittäjien auttamista.
+</p>
+
+<p>
+  Kun ohjelmistokehittäjä valitsee vaatimuksen työstettäväksi, hän tyypillisesti hakee projektin versionhallinnasta projektin uusimman version, sekä lähtee toteuttamaan uutta vaatimusta. Kun vaatimukseen liittyvä osa tai komponentti on valmis sekä testattu paikallisesti (automaattiset testit on olemassa, toimii ohjelmistokehittäjän koneella), lähetetään uusi versio versionhallintapalvelimelle.
+</p>
+
+<p>
+  Versionhallintapalvelin sisältää myös mahdollisesti useampia versioita projektista. Esimerkiksi git-mahdollistaa ns. branchien käyttämisen, jolloin uusia ominaisuuksia voidaan toteuttaa erillään "päähaarasta". Kun uusi ominaisuus on valmis, voidaan se lisätä päähaaraan. Versionhallinnassa olevia koodeja voidaan myös tägätä julkaisuversioiksi.
+</p>
+
+<p>
+  Yleisin versionhallintatyökalu on <a href="https://en.wikipedia.org/wiki/Git_(software)" target="_blank">Git</a>, joka on käytössä <a href="https://github.com/" target="_blank">Github</a>issa. <a href="https://guides.github.com/activities/hello-world/" target="_blank">Ensiaskeleet Githubin käyttöön</a>.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Jatkuva integraatio
+<% end %>
+
+<p>
+  Versionhallintapalvelin on tyypillisesti kytketty integraatiopalvelimeen, jonka tehtävänä on suorittaa ohjelmistoon liittyvät testit jokaisen muutoksen yhteydessä sekä tuottaa niistä mahdollisesti erilaisia raportteja. Integraatiopalvelin kuuntelee käytännössä versionhallintajärjestelmässä tapahtuvia muutoksia, ja hakee uusimman lähdekoodiversion muutoksen yhteydessä.
+</p>
+
+<p>
+  Kun testit ajetaan sekä paikallisella kehityskoneella että erillisellä integraatiokoneella ohjelmistosta huomataan virheitä, jotka eivät tule esille muutoksen tehneen kehittäjän paikallisella koneella (esimerkiksi erilainen käyttöjärjestelmä, selain, ...). On myös mahdollista että ohjelmistosta ei noudeta kaikkia sen osia -- ohjelmisto voi koostua useista komponenteista --  jolloin kaikkien vaikutusten testaaminen paikallisesti on mahdotonta. Jos testit eivät mene läpi integraatiokoneella, korjataan muutokset mahdollisimman nopeasti.
+</p>
+
+<p>
+  Työkaluja automaattiseen kääntämiseen ja jatkuvaan integrointiin ovat esimerkiksi <a href="https://travis-ci.org" target="_blank">Travis</a> ja <a href="https://coveralls.io" target="_blank">Coveralls</a>. Travis varmistaa että viimeisin lähdekoodiversio kääntyy ja että testit menevät läpi, ja Coveralls tarjoaa välineitä testikattavuuden ja projektin historian tarkasteluun -- tässä hyödyksi on esimerkiksi <a href="https://github.com/cobertura/cobertura" target="_blank">Cobertura</a>. Kummatkin ovat ilmaisia käyttää kun projektin lähdekoodi on avointa -- kumpikin tarjoaa myös suoran Github-tuen.
+</p>
+
+<p>
+  Travisin käyttöönottoon vaaditaan käytännössä se, että projekti on esimerkiksi Githubissa ja että sen juurikansiossa on travisin konfiguraatiotiedosto <code>.travis.yml</code>. Yksinkertaisimmillaan konfiguraatiotiedosto sisältää vain käytetyn ohjelmointikielen -- travis osaa esimerkiksi päätellä projektin tyypin <code>pom.xml</code>-tiedoston pohjalta. <a href="https://docs.travis-ci.com/user/getting-started/" target="_blank">Ohje Traviksen käyttöönottoon</a>.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Nopeasti näytille
+<% end %>
+
+<p>
+  Kun uusi vaatimus tai sen osa on saatu valmiiksi, kannattaa viedä palvelimelle palautteen saamista varten. On tyypillistä, että ohjelmistolle on ainakin <em>Staging</em>- ja <em>Tuotanto</em>-palvelimet. Staging-palvelin on lähes identtinen ympäristö tuotantoympäristöön verrattuna. Staging (usein myös QA)-ympäristöön kopioidaan ajoittain tuotantoympäristön data, ja se toimii viimeisenä testaus- ja validointipaikkana (Quality assurance) ennen tuotantoon siirtoa. QA-ympäristöä käytetään myös demo- ja harjoitteluympäristönä. Kun QA-ympäristössä oleva sovellus on päätetty toimivaksi, siirretään sovellus tuotantoympäristöön.
+</p>
+
+<p>
+  Tuotantoympäristö voi olla yksittäinen palvelin, tai se saattaa olla joukko palvelimia, joihin uusin muutos viedään hiljalleen. Tuotantoympäristö on tyypillisesti erillään muista ympäristöistä mahdollisten virheiden minimoimiseksi.
+</p>
+
+<p>
+  Käytännössä versioiden päivitys tuotantoon tapahtuu usein automaattisesti. Esimerkiksi ohjelmistoon liittyvä Travis-konfiguraatio voidaan määritellä niin, että jos kaikki testit menevät läpi integraatiopalvelimella, siirretään ohjelmisto <a href="https://docs.travis-ci.com/user/deployment/heroku" target="_blank">automaattisesti tuotantoon</a>. Esimerkiksi Herokussa sijaitsevaan sovellukseen muutokset voidaan hakea automaattisesti Githubista (<a href="https://devcenter.heroku.com/articles/github-integration" target="_blank">ohje</a>).
+</p>
+
+
+<aside class="info">
+  <br/>
+  <h1>Tietokantamigraatiot</h1>
+
+  <p>Ohjelmistojen kehityksessä tulee vastaan tyypillisesti tilanne, missä tuotantokäytössä olevaa tietokantaskeemaa tulee muuntaa. Koska käytössä oleva tietokantaversio voi poiketa ohjelmistokehittäjän koneesta riippuen -- joku saattaa työstää uutta versiota, jollain toisella voi olla työn alla korjaukset vanhempaan versioon -- tarvitaa myös tietokantamuutosten automatisointiin välineitä. Tähän löytyy työvälineitä kuten <a href="http://www.liquibase.org/" target="_blank">Liquibase</a> ja <a href="https://flywaydb.org/" target="_blank">Flyway</a>, joista molemmista löytyy myös <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/howto-database-initialization.html" target="_blank">Spring Boot</a>-ohjeet.</p>
+
+  <p>Käytännössä tietokantamigraatiot toteutetaan niin, että tietokannasta pidetään yllä tietokantataulujen muutos- ja muokkauskomennot sisältäviä versiokohtaisia tiedostoja. Käytössä olevaan tietokantaan on määritelty esimerkiksi taulu, jossa on tieto tämänhetkisestä versiosta. Jos käynnistettävässä sovelluksessa on uudempia muutoksia, ajetaan niihin liittyvät komennot tietokantaan ja tietokantaan merkitty versio päivittyy.</p>
+
+  <p>Jos sovellus sijaitsee palvelussa kuten Heroku, jossa sovelluksen käynnistykseen on varattu vain rajattu aika, kannattaa tietokantamigraatioihin liittyvistä versiotiedostoista tehdä ohjelmalliset. Tällöin migraatio tapahtuu vasta kun sovellus on käynnistynyt, eikä käynnistystä keskeytetä ajan mahdollisen ylittymisen vuoksi. Esimerkiksi Flyway mahdollistaa muutosten tekemisen Java-koodissa.</p>
+
+</aside>
+
+
