@@ -456,11 +456,15 @@ spring.jpa.show-sql=true
 </code></pre>
 
 <p>
-  Luodaan seuraavaksi konfiguraatiotiedosto, jolla määrittelemme sovelluksen käyttöön PostgreSQL-kielen sekä pyydämme tietokantakyselyitä näkyville. Seuraava sisältö tulee tiedostoon <code>src/main/resources/application-production.properties</code>.
+  Luodaan seuraavaksi konfiguraatiotiedosto, jolla määrittelemme sovelluksen käyttöön PostgreSQL-kielen sekä pyydämme tietokantakyselyitä näkyville. Seuraava sisältö tulee tiedostoon <code>src/main/resources/application-production.properties</code>. Alla määritellyt parametrit kuten <code>${JDBC_DATABASE_URL}</code> tulevat Herokulta automaattisesti sovelluksen käynnistyksen yhteydessä.
 </p>
 
 <pre>
 spring.datasource.driverClassName=org.postgresql.Driver
+spring.datasource.url=${JDBC_DATABASE_URL}
+spring.datasource.jdbcUrl=${JDBC_DATABASE_URL}
+spring.datasource.username=${JDBC_DATABASE_USERNAME}
+spring.datasource.password=${JDBC_DATABASE_PASSWORD}
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 spring.jpa.generate-ddl=true
 spring.jpa.show-sql=true
@@ -506,6 +510,21 @@ web: java $JAVA_OPTS -Dspring.profiles.active=production -Dserver.port=$PORT -ja
 <p>
   Voit kokeilla ReloadHeroes-sovellusta osoitteessa <a href="https://still-beyond-90359.herokuapp.com/" target="_blank">https://still-beyond-90359.herokuapp.com/</a>.
 </p>
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>PostgreSQL ja Heroku
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Jos Herokun PostgreSQL ei lähde edellä kuvatulla esimerkillä käyntiin, tarkasta vielä, että sovellukseen on lisätty Herokussa tietokannanhallintajärjestelmä. Tämä löytyy Herokusta sovelluksen Resources-välilehdeltä kohdasta Add-ons.
+  </p>
+  
+
+  </div>
+</div>
 
 
 <h1 class="material-heading">
