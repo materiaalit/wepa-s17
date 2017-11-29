@@ -2,7 +2,7 @@
   title: Osa 5
   exercise_page: true
   quiz_page: false
-  published: false
+  published: true
 ---
 
 
@@ -376,37 +376,38 @@ book = restTemplate.postForObject("<em>osoite</em>/books", book, Book.class);
 </p>
 
 
-<% partial 'partials/exercise', locals: { name: 'GameRater (2 osaa)' } do %>
+<% partial 'partials/exercise', locals: { name: 'GameRater' } do %>
       
   <p>
     Palvelu <em>GameRater</em> lisää aiempaan tulospalveluun mahdollisuuden arvostella yksittäisiä pelejä antamalla niille numeroarvosanan 0-5. Arvostelu tehdään kuitenkin erilliseen palveluun, emmekä siis laajenna edellistä palvelua suoraan.
   </p>
   
   <p>
-    <em>GameRater</em>-palvelun tulee käyttää <em>Tulospalvelu</em>-palvelun REST-rajapintaa, jonka avulla se tarjoaa samanlaisen rajapinnan pelien ja tulosten käsittelyyn. Ainoastaan pelien arvostelut käsitellään ja talletetaan tässä palvelussa! Arvosteluihin käytettävä entiteetti <code>Rating</code> ja siihen liittyvät palveluluokat on valmiina tehtäväpohjassa.
+    <em>GameRater</em>-palvelun tulee käyttää <em>ScoreService</em>-palvelun REST-rajapintaa, jonka avulla se tarjoaa samanlaisen rajapinnan pelien ja tulosten käsittelyyn. Ainoastaan pelien arvostelut käsitellään ja talletetaan tässä palvelussa! Arvosteluihin käytettävä entiteetti <code>Rating</code> ja siihen liittyvät palveluluokat on valmiina tehtäväpohjassa.
   </p>
       
   <p>
-    <strong>Huom!</strong> Joudut tutkimaan tehtäväpohjassa annettua koodia, jotta voit hyödyntää sitä. Joudut myös lukemaan tehtävän <em>Tulospalvelu</em> kuvausta tämän tehtävän toteutuksessa.
+    <strong>Huom!</strong> Joudut tutkimaan tehtäväpohjassa annettua koodia, jotta voit hyödyntää sitä. Joudut myös lukemaan tehtävän <em>ScoreService</em> kuvausta tämän tehtävän toteutuksessa.
   </p>
       
   <p>
-    <strong>Huom!</strong> Valmis <em>Tulospalvelu</em>-palvelu löytyy osoitteesta <code>http://wepa-scoreservice-heroku.herokuapp.com/games</code>, joten voit tehdä tämän tehtävän täysin riippumatta tulospalvelu-tehtävästä.
-  </p>
-      
-  
-  <h2>GameRestClient ja GameController</h2>
-      
-  <p>
-    Tee luokka <code>wad.service.GameRestClient</code>, joka toteuttaa rajapinnan <code>GameService</code>. Luokan tulee käyttää <em>Tulospalvelu</em>-palvelua kaikissa rajapinnan määrittelemissä toiminnoissa. REST-rajapinnan käyttö onnistuu Springin <code>RestTemplate</code>-luokan avulla.
+    <strong>Huom!</strong> Valmis <em>ScoreService</em>-palvelu löytyy osoitteesta <code>http://wepa-scoreservice-heroku.herokuapp.com/games</code>, joten voit tehdä tämän tehtävän täysin riippumatta tulospalvelu-tehtävästä. 
   </p>
       
   <p>
-    <strong>Huom!</strong> <code>GameRestClient</code>-luokan <code>setUri</code>-metodi ottaa parametriksi yllä annetun URL-osoitteen valmiiseen <em>Tulospalvelu</em>-palveluun.
+    Ja asiaan..
   </p>
       
   <p>
-    Luo luokka <code>wad.controller.GameController</code>, joka tarjoaa <strong>täsmälleen samanlaisen</strong> JSON/REST-rajapinnan kuin <em>Tulospalvelu</em>-palvelun <code>GameController</code>, mutta siten, että jokainen toiminto käyttää valmista <em>Tulospalvelu</em>-palvelua rajapinnan <code>GameService</code> kautta.
+    Tee luokka <code>wad.service.GameRestClient</code>, joka toteuttaa rajapinnan <code>GameService</code>. Luokan tulee käyttää <em>ScoreService</em>-palvelua kaikissa rajapinnan määrittelemissä toiminnoissa. REST-rajapinnan käyttö onnistuu Springin <code>RestTemplate</code>-luokan avulla.
+  </p>
+      
+  <p>
+    <strong>Huom!</strong> <code>GameRestClient</code>-luokan <code>setUri</code>-metodi ottaa parametriksi yllä annetun URL-osoitteen valmiiseen <em>ScoreService</em>-palveluun.
+  </p>
+      
+  <p>
+    Luo luokka <code>wad.controller.GameController</code>, joka tarjoaa <strong>täsmälleen samanlaisen</strong> JSON/REST-rajapinnan kuin <em>Tulospalvelu</em>-palvelun <code>GameController</code>, mutta siten, että jokainen toiminto käyttää valmista <em>ScoreService</em>-palvelua rajapinnan <code>GameService</code> kautta.
   </p>
       
   <p>
@@ -437,9 +438,6 @@ book = restTemplate.postForObject("<em>osoite</em>/books", book, Book.class);
     </li>
     <li>
       <code>GET /games/{name}/ratings/{id}</code> palauttaa yksittäisen arvostelun tiedot pelin nimen <code>name</code> ja avaimen <code>id</code> perusteella
-    </li>
-    <li>
-      <code>DELETE /games/{name}/ratings/{id}</code> poistaa avaimen <code>id</code> mukaisen arvostelun
     </li>
   </ul>
 
