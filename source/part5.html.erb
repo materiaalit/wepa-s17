@@ -1,0 +1,1431 @@
+---
+  title: Osa 5
+  exercise_page: true
+  quiz_page: false
+  published: false
+---
+
+
+<% partial 'partials/hint', locals: { name: 'Viidennen osan tavoitteet' } do %>
+
+  <p>
+    Ymmärtää REST-arkkitehtuurimallin perusperiaatteet. Osaa toteuttaa palvelun, joka tarjoaa dataa REST-muotoisen rajapinnan yli. Osaa toteuttaa palvelun, joka hyödyntää REST-rajapintaa. Tietää, että Javascript-koodia voi suorittaa selaimessa käyttäjän koneella. Osaa tehdä selainohjelmistosta Javascript-pyynnön palvelimelle. Osaa päivittää näkymää Javascript-pyynnön vastauksen perusteella.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_heading' do %>
+  REST-Arkkitehtuurimalli
+<% end %>
+
+
+<p>
+  REST (<a href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank">representational state transfer</a>) on ohjelmointirajapintojen toteuttamiseen tarkoitettu arkkitehtuurimalli (tai tyyli). REST-malli määrittelee sovellukset tietoa käsittelevien osien (komponentit), tietokohteiden (resurssit), sekä näiden yhteyksien kautta.
+</p>
+
+<p>
+  Tietoa käsittelevät osat ovat selainohjelmisto, palvelinohjelmisto, ym. Resurssit ovat sovelluksen käsitteitä (henkilöt, kirjat, laskentaprosessit, laskentatulokset -- käytännössä mikä tahansa voi olla resurssi) sekä niitä yksilöiviä osoitteita. Resurssikokoelmat ovat löydettävissä ja navigoitavissa: resurssikokoelma voi löytyä esimerkiksi osoitteesta <code>/persons</code>, <code>/books</code>, <code>/processes</code> tai <code>/results</code>. Yksittäisille resursseille määritellään uniikit osoitteet (esimerkiksi <code>/persons/1</code>), ja niillä on myös esitysmuoto (esimerkiksi HTML, JSON tai XML); dataa voi tyypillisesti lähettää ja vastaanottaa samassa muodossa.
+</p>
+
+<p>
+  Resursseja ja tietoa käsittelevien osien yhteys perustuu tyypillisesti asiakas-palvelin -malliin, missä asiakas tekee pyynnön ja palvelin kuuntelee ja käsittelee vastaanottamiaan pyyntöjä sekä vastaa niihin.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Principled Design of the Modern Web Architecture' } do %>
+  
+  <p>
+    Tutustu Roy T. Fieldingin ja Richard N. Taylorin artikkeliin <a href="https://www.ics.uci.edu/~fielding/pubs/webarch_icse2000.pdf" target="_blank">"Principled Design of the Modern Web Architecture"</a>, jossa REST määritellään sekä Fieldingin väitöskirjan <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm" target="_blank">viidenteen lukuun</a>. Vaikka emme tässä kappaleessa täytä kaikkia REST-rajapintoihin liittyviä vaatimuksia -- ainakaan aluksi -- on Roy Fielding sitä mieltä, että <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven" target="_blank">oleellista on mahdollisuus resurssien välillä navigointiin</a>.
+  </p>
+  
+  <p>
+    <em>"A truly RESTful API looks like hypertext. Every addressable unit of information carries an address, either explicitly (e.g., link and id attributes) or implicitly (e.g., derived from the media type definition and representation structure). Query results are represented by a list of links with summary information, not by arrays of object representations (query is not a substitute for identification of resources)."
+    </em>
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  REST-rajapinnat web-sovelluksissa
+<% end %>
+
+<p>
+  HTTP-protokollan yli käsiteltävillä REST-rajapinnoilla on tyypillisesti seuraavat ominaisuudet:
+</p>
+
+<ul>
+  <li>
+    Juuriosoite resurssien käsittelyyn (esimerkiksi <code>/books</code>)
+  </li>
+  <li>
+    Resurssien esitysmuodon määrittelevä mediatyyppi (esimerkiksi <code>HTML</code>, <code>JSON</code>, ...), joka kertoo asiakkaalle miten resurssiin liittyvä data tulee käsitellä.
+  </li>
+  <li>
+    Resursseja voidaan käsitellä HTTP-protokollan metodeilla (GET, POST, DELETE, ..)
+  </li>
+</ul>
+
+<p>
+  Kirjojen käsittelyyn ja muokkaamiseen määriteltävä rajapinta voisi olla esimerkiksi seuraavanlainen:
+</p>
+
+<ul>
+  <li>
+    GET osoitteeseen <code>/books</code> palauttaa kaikkien kirjojen tiedot.
+  </li>
+  <li>
+    GET osoitteeseen <code>/books/{id}</code>, missä <code>{id}</code> on yksittäisen kirjan yksilöivä tunniste, palauttaa kyseisen kirjan tiedot.
+  </li>
+  <li>
+    PUT osoitteeseen <code>/books/{id}</code>, missä <code>{id}</code> on yksittäisen kirjan yksilöivä tunniste, muokkaa kyseisen kirjan tietoja. Kirjan uudet tiedot lähetetään osana pyyntöä.
+  </li>
+  <li>
+    DELETE osoitteeseen <code>/books/{id}</code> poistaa kirjan tietyllä tunnuksella.
+  </li>
+  <li>
+    POST osoitteeseen <code>/books</code> luo uuden kirjan pyynnössä lähetettävän datan pohjalta.
+  </li>
+</ul>
+
+<p>
+  Osoitteissa käytetään tyypillisesti substantiivejä -- ei <code>books?id={id}</code> vaan <code>/books/{id}</code>. HTTP-pyynnön tyyppi määrittelee operaation. DELETE-tyyppisellä pyynnöllä poistetaan, POST-tyyppisellä pyynnöllä lisätään, PUT-tyyppisellä pyynnöllä päivitetään, ja GET-tyyppisellä pyynnöllä haetaan tietoja.
+</p>
+
+<p>
+  Datan muoto on toteuttajan päätettävissä. Tällä hetkellä eräs suosituista datamuodoista on <a href="http://en.wikipedia.org/wiki/JSON" target="_blank">JSON</a>, sillä sen käyttäminen osana selainohjelmistoja on suoraviivaista JavaScriptin kautta. Myös palvelinohjelmistot tukevat olioiden muuttamista JSON-muotoon.
+</p>
+
+<p>
+  Oletetaan että edelläkuvattu kirjojen käsittelyyn tarkoitettu rajapinta käsittelee JSON-muotoista dataa. Kirjaa kuvaava luokka on seuraavanlainen:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// pakkaus ja importit 
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+public class Book extends AbstractPersistable&lt;Long&gt; {
+    private String name;
+}
+<% end %>
+
+<p>
+  Kun luokasta on tehty olio, jonka <code>id</code>-muuttujan arvo on <code>2</code> ja nimi <code>"Harry Potter and the Chamber of Secrets"</code>, on sen JSON-esitys (esimerkiksi) seuraavanlainen:
+</p>
+
+<pre>
+{
+  "id":2,
+  "name":"Harry Potter and the Chamber of Secrets"
+}
+</pre>
+
+<p>
+  JSON-notaatio määrittelee olion alkavalla aaltosululla <code>{</code>, jota seuraa oliomuuttujien nimet ja niiden arvot. Lopulta olio päätetään sulkevaan aaltosulkuun <code>}</code>. Oliomuuttujien nimet ovat hipsuissa <code>&quot;</code> sillä ne käsitellään merkkijonoina. Muuttujien arvot ovat arvon tyypistä riippuen hipsuissa. Tarkempi kuvaus JSON-notaatiosta löytyy sivulta <a href="http://json.org/" target="_blank">json.org</a>.
+</p>
+
+<p>
+  Pyynnön rungossa lähetettävän JSON-muotoisen datan muuntaminen olioksi tapahtuu annotaation <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" target="_blank">@RequestBody</a> avulla. Annotaatio @RequestBody edeltää kontrollerimetodin parametrina olevaa oliota, johon JSON-muotoisen datan arvot halutaan asettaa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @PostMapping("/books")
+    public String postBook(@RequestBody Book book) {
+        bookRepository.save(book);
+        return "redirect:/books";
+    }
+<% end %>
+
+<p>
+  Vastauksen saa lähetettyä käyttäjälle JSON-muodossa lisäämällä pyyntöä käsittelevään metodiin annotaatio <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/bind/annotation/ResponseBody.html" target="_blank">@ResponseBody</a>. Annotaatio @ResponseBody pyytää Spring-sovelluskehystä asettamaan palvelimen tuottaman datan selaimelle lähetettävän vastauksen runkoon. Jos vastaus on olio, muutetaan se (oletuksena) automaattisesti JSON-muotoiseksi vastaukseksi.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @GetMapping("/books/{id}")
+    @ResponseBody
+    public Book getBook(@PathVariable Long id) {
+        return bookRepository.getOne(id);
+    }
+<% end %>
+
+<p>
+  Alla oleva esimerkki sekä tallentaa olion tietokantaan, että palauttaa tietokantaan tallennetun olion pääavaimineen.
+</p> 
+
+<% partial 'partials/code_highlight' do %>
+    @PostMapping("/books")
+    @ResponseBody
+    public Book postBook(@RequestBody Book book) {
+        return bookRepository.save(book);
+    }
+<% end %>
+
+<p>
+  Palvelulle voi nyt lähettää JSON-muotoista dataa; vastaus on myös JSON-muotoinen, mutta luotavaan kirjaan on liitetty tietokantaan tallennuksen yhteydessä saatava kirjan yksilöivä tunnus.
+</p>
+
+<p>
+  Voimme lisätä annotaatioille <code>@GetMapping</code>, <code>@PostMapping</code>, jne lisätietoa metodin käsittelemästä datasta. Attribuutti <code>consumes</code> kertoo minkälaista dataa metodin kuuntelema osoite hyväksyy. Metodi voidaan rajoittaa vastaanottamaan JSON-muotoista dataa merkkijonolla <code>"application/json"</code>. Vastaavasti metodille voidaan lisätä tietoa datasta, jota se tuottaa. Attribuutti <code>produces</code> kertoo tuotettavan datatyypin. Alla määritelty metodi sekä vastaanottaa että tuottaa JSON-muotoista dataa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @PostMapping(path="/books", consumes="application/json", produces="application/json")
+    @ResponseBody
+    public Book postBook(@RequestBody Book book) {
+        return bookStorage.create(book);
+    }
+<% end %>
+
+<p>
+  Jos toteutat omaa REST-rajapintaa, kannattanee määritellä kontrolleriluokan annotaatioksi <code>@RestController</code>. Tämä asettaa jokaisen luokan metodiin annotaation <code>@ResponseBody</code> sekä sopivan datatyypin -- tässä tapauksessa "application/json".
+</p>
+
+<p>
+  Toteutetaan seuraavaksi kaikki tarvitut metodit kirjojen tallentamiseen. Kontrolleri hyödyntää erillistä luokkaa, joka tallentaa kirjaolioita tietokantaan ja tarjoaa tuen aiemmin määrittelemiemme books-osoitteiden ja pyyntöjen käsittelyyn -- PUT-metodi on jätetty omaa kokeilua varten.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+// importit
+
+@RestController
+public class BookController {
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @GetMapping("/books")
+    public List&lt;Book&gt; getBooks() {
+        return bookRepository.findAll();
+    }
+
+    @GetMapping("/books/{id}")
+    public Book getBook(@PathVariable Long id) {
+        return bookRepository.getOne(id);
+    }
+
+    @DeleteMapping("/books/{id}")
+    public Book deleteBook(@PathVariable Long id) {
+        return bookRepository.deleteById(id);
+    }    
+
+    @PostMapping("/books")
+    public Book postBook(@RequestBody Book book) {
+        return bookRepository.save(book);
+    }
+}
+<% end %>
+
+<% partial 'partials/hint', locals: { name: 'Apuvälineitä rajapinnan tarjoavan sovelluksen testaamiseen' } do %>
+  
+  <p>
+    Avoimen rajapinnan kolmannen osapuolen ohjelmistoille tarjoavat palvelinohjelmistot eivät aina sisällä erillistä käyttöliittymää. Niiden testaaminen tapahtuu sekä automaattisilla testeillä, että erilaisilla selainohjelmistoilla. Yksi hyvin hyödyllinen apuväline on Postman, jonka saa <a href="https://www.getpostman.com" target="_blank" norel>työpöytäsovelluksena</a> ja <a href="https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop" target="_blank" norel>Chromen liitännäisenä</a>.
+  </p>
+  
+  <p>
+    Postmanin hyödyntäminen on erittäin suositeltavaa -- kannattaa katsoa sen johdatusvideo, joka löytyy Postmanin sivulta. Katso myös <a href="https://www.youtube.com/watch?v=7YcW25PHnAA" target="_blank">RESTiä käsittelevä</a> Youtube-video, missä Postmania käytetään hieman.
+  </p>
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'ScoreService (2 osaa)' } do %>
+        
+  <p>
+    Tässä tehtävässä toteutetaan pelitulospalvelu, joka tarjoaa REST-rajapinnan pelien ja tuloksien käsittelyyn. <strong>Huom! Kaikki syötteet ja vasteet ovat JSON-muotoisia olioita.</strong> Tehtäväpohjassa on toteutettu valmiiksi luokat <code>Game</code> ja <code>Score</code> sekä käytännölliset <code>Repository</code>-rajapinnat.
+  </p>
+      
+  <h2>GameController</h2>
+      
+  <p>
+    Pelejä käsitellään luokan <code>Game</code> avulla.
+  </p>
+      
+
+  <p>
+    Toteuta pakkaukseen <code>wad.controller</code> luokka <code>GameController</code>, joka tarjoaa REST-rajapinnan pelien käsittelyyn:
+  </p>
+
+  <ul>
+
+    <li>
+      POST <code>/games</code> luo uuden pelin sille annetun pelin tiedoilla ja palauttaa luodun pelin tiedot. (Huom. vieläkin! Pyynnön <strong>rungossa</strong> oleva data on aina JSON-muotoista. Vastaukset tulee myös palauttaa JSON-muotoisina.)
+    </li>
+    <li>
+      GET <code>/games</code> listaa kaikki talletetut pelit.
+    </li>
+    <li>
+      GET <code>/games/{name}</code> palauttaa yksittäisen pelin tiedot <strong>pelin nimen perusteella</strong>.
+    </li>
+    <li>
+      DELETE <code>/games/{name}</code> poistaa nimen mukaisen pelin. Palauttaa poistetun pelin tiedot.
+    </li>
+  </ul>
+      
+  <h2>ScoreController</h2>
+      
+  <p>
+    Jokaiselle pelille voidaan tallettaa pelikohtaisia tuloksia (luokka <code>Score</code>). Jokainen pistetulos kuuluu tietylle pelille, ja tulokseen liittyy aina pistetulos <code>points</code> numerona sekä pelaajan nimimerkki <code>nickname</code>.
+  </p>
+      
+  <p>
+    Toteuta luokka <code>wad.controller.ScoreController</code>, joka tarjoaa REST-rajapinnan tuloksien käsittelyyn:
+  </p>
+      
+  <ul>
+    <li>
+      POST <code>/games/{name}/scores</code> luo uuden tuloksen pelille <code>name</code> ja asettaa tulokseen pelin tiedot. Tuloksen tiedot lähetetään kyselyn rungossa.
+    </li>
+    <li>
+      GET <code>/games/{name}/scores</code> listaa pelin <code>name</code> tulokset.
+    </li>
+    <li>
+      GET <code>/games/{name}/scores/{id}</code> palauttaa tunnuksella <code>id</code> löytyvän tuloksen <code>name</code>-nimiselle pelille.
+    </li>
+    <li>
+      DELETE <code>/games/{name}/scores/{id}</code> poistaa avaimen <code>id</code> mukaisen tuloksen peliltä <code>name</code> (pelin tietoja ei tule pyynnön rungossa). Palauttaa poistetun tuloksen tiedot.
+    </li>
+  </ul>
+  
+<% end %>    
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Valmiin palvelun käyttäminen
+<% end %>
+
+<p>
+  Toisen sovelluksen tarjoamaan REST-rajapintaan pääsee kätevästi käsiksi <a href="http://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html" target="blank">RestTemplate</a>-luokan avulla. Voimme luoda oman komponentin kirjojen hakemiseen.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// importit
+
+@Service
+public class BookService {
+
+    private RestTemplate restTemplate;
+    
+    public BookService() {
+        this.restTemplate = new RestTemplate();
+    }
+
+    // tänne luokan tarjoamat palvelut
+}
+<% end %>
+
+<p>
+  Alla on kuvattuna RestTemplaten käyttö tiedon hakemiseen, päivittämiseen, poistaamiseen ja lisäämiseen. Esimerkeissä merkkijono <em>osoite</em> vastaa palvelimen osoitetta, esimerkiksi <code>http://www.google.com</code>.
+</p>
+
+<ul>
+  <li>
+    GET osoitteeseen <em>/books</em> palauttaa kaikkien kirjojen tiedot <em>tai</em> osajoukon kirjojen tiedoista -- riippuen toteutuksesta.
+  </li>
+  <% partial 'partials/code_highlight' do %>
+// kirjojen hakeminen
+List&lt;Book&gt; books = restTemplate.getForObject("<em>osoite</em>/books", List.class);
+  <% end %>
+  
+  <li>
+    GET osoitteeseen <em>/books/{id}</em>, missä {id} on yksittäisen kirjan yksilöivä tunniste, palauttaa kyseisen kirjan tiedot.
+  </li>
+  <% partial 'partials/code_highlight' do %>
+// tunnuksella 5 määritellyn kirjan hakeminen
+Book book = restTemplate.getForObject("<em>osoite</em>/books/{id}", Book.class, 5);
+  <% end %>
+  
+  <li>
+    PUT osoitteeseen <em>/books/{id}</em>, missä {id} on yksittäisen kirjan yksilöivä tunniste, muokkaa kyseisen kirjan tietoja tai lisää kirjan kyseiselle tunnukselle (toteutuksesta riippuen, lisäystä ei aina toteutettu). Kirjan tiedot lähetetään pyynnön rungossa.
+  </li>
+  <% partial 'partials/code_highlight' do %>
+// tunnuksella 5 määritellyn kirjan hakeminen
+Book book = restTemplate.getForObject("<em>osoite</em>/books/{id}", Book.class, 5);
+book.setName(book.getName() + " - DO NOT BUY!");
+
+// kirjan tietojen muokkaaminen
+restTemplate.put("<em>osoite</em>/books/{id}", book, 5);
+<% end %>
+
+  <li>
+    DELETE osoitteeseen <em>/books/{id}</em> poistaa kirjan tietyllä tunnuksella.
+  </li>
+
+  <% partial 'partials/code_highlight' do %>
+ // tunnuksella 32 määritellyn kirjan poistaminen
+restTemplate.delete("<em>osoite</em>/books/{id}", 32);
+  <% end %>
+
+  <li>
+    POST osoitteeseen <em>/books</em> luo uuden kirjan pyynnön rungossa lähetettävän datan pohjalta. Palvelun vastuulla on päättää kirjalle tunnus.
+  </li>
+
+  <% partial 'partials/code_highlight' do %>
+Book book = new Book();
+book.setName("Harry Potter and the Goblet of Fire");
+
+// uuden kirjan lisääminen
+book = restTemplate.postForObject("<em>osoite</em>/books", book, Book.class);
+<% end %>
+</ul>
+
+<p>
+  Usein sovellukset hyödyntävät kolmannen osapuolen tarjoamaa palvelua omien toiminnallisuuksiensa toteuttamiseen. Harjoitellaan tätä seuraavaksi.
+</p>
+
+
+<% partial 'partials/exercise', locals: { name: 'GameRater (2 osaa)' } do %>
+      
+  <p>
+    Palvelu <em>GameRater</em> lisää aiempaan tulospalveluun mahdollisuuden arvostella yksittäisiä pelejä antamalla niille numeroarvosanan 0-5. Arvostelu tehdään kuitenkin erilliseen palveluun, emmekä siis laajenna edellistä palvelua suoraan.
+  </p>
+  
+  <p>
+    <em>GameRater</em>-palvelun tulee käyttää <em>Tulospalvelu</em>-palvelun REST-rajapintaa, jonka avulla se tarjoaa samanlaisen rajapinnan pelien ja tulosten käsittelyyn. Ainoastaan pelien arvostelut käsitellään ja talletetaan tässä palvelussa! Arvosteluihin käytettävä entiteetti <code>Rating</code> ja siihen liittyvät palveluluokat on valmiina tehtäväpohjassa.
+  </p>
+      
+  <p>
+    <strong>Huom!</strong> Joudut tutkimaan tehtäväpohjassa annettua koodia, jotta voit hyödyntää sitä. Joudut myös lukemaan tehtävän <em>Tulospalvelu</em> kuvausta tämän tehtävän toteutuksessa.
+  </p>
+      
+  <p>
+    <strong>Huom!</strong> Valmis <em>Tulospalvelu</em>-palvelu löytyy osoitteesta <code>http://wepa-scoreservice-heroku.herokuapp.com/games</code>, joten voit tehdä tämän tehtävän täysin riippumatta tulospalvelu-tehtävästä.
+  </p>
+      
+  
+  <h2>GameRestClient ja GameController</h2>
+      
+  <p>
+    Tee luokka <code>wad.service.GameRestClient</code>, joka toteuttaa rajapinnan <code>GameService</code>. Luokan tulee käyttää <em>Tulospalvelu</em>-palvelua kaikissa rajapinnan määrittelemissä toiminnoissa. REST-rajapinnan käyttö onnistuu Springin <code>RestTemplate</code>-luokan avulla.
+  </p>
+      
+  <p>
+    <strong>Huom!</strong> <code>GameRestClient</code>-luokan <code>setUri</code>-metodi ottaa parametriksi yllä annetun URL-osoitteen valmiiseen <em>Tulospalvelu</em>-palveluun.
+  </p>
+      
+  <p>
+    Luo luokka <code>wad.controller.GameController</code>, joka tarjoaa <strong>täsmälleen samanlaisen</strong> JSON/REST-rajapinnan kuin <em>Tulospalvelu</em>-palvelun <code>GameController</code>, mutta siten, että jokainen toiminto käyttää valmista <em>Tulospalvelu</em>-palvelua rajapinnan <code>GameService</code> kautta.
+  </p>
+      
+  <p>
+    <strong>Huom!</strong> Muista asettaa <code>GameService</code>-rajapinnan kautta URL-osoite valmiiseen <code>http://wepa-scoreservice-heroku.herokuapp.com/games</code>-osoitteeseen ohjelman käynnistyessä, esimerkiksi controller-luokan <code>@PostConstruct</code>-metodissa.
+  </p>
+      
+      
+  <h2>RatingController</h2>
+      
+  <p>
+    Jokaiselle pelille voidaan tallettaa pelikohtaisia arvosteluja entiteetin <code>Rating</code> avulla. Arvosteluun liittyy numeroarvosana <code>rating</code> (0-5).
+  </p>
+      
+  <p>
+    Arvostelut liittyvät peleihin, jotka on talletettu eri palveluun, joten entiteetin <code>Rating</code> viittaus peliin täytyy tallettaa suoraan avaimena. Koska peleihin viitataan REST-rajapinnassa pelin nimellä, talletetaan jokaiseen <code>Rating</code>-entiteettiin pelin nimi attribuuttiin <code>gameName</code>. Tämän attribuutin avulla voidaan siis löytää arvosteluja pelin nimen perusteella.
+  </p>
+      
+  <p>
+    Toteuta luokka <code>wad.controller.RatingController</code>, joka tarjoaa REST-rajapinnan arvostelujen käsittelyyn:
+  </p>
+      
+  <ul>
+    <li>
+      <code>POST /games/{name}/ratings</code> luo uuden arvostelun pelille <code>name</code> - ainoa vastaanotettava attribuutti on <code>rating</code>
+    </li>
+    <li>
+      <code>GET /games/{name}/ratings</code> listaa talletetut arvostelut pelille <code>name</code>
+    </li>
+    <li>
+      <code>GET /games/{name}/ratings/{id}</code> palauttaa yksittäisen arvostelun tiedot pelin nimen <code>name</code> ja avaimen <code>id</code> perusteella
+    </li>
+    <li>
+      <code>DELETE /games/{name}/ratings/{id}</code> poistaa avaimen <code>id</code> mukaisen arvostelun
+    </li>
+  </ul>
+
+  <p>
+    <em>Jos osoitteessa <a href="http://wepa-scoreservice-heroku.herokuapp.com/games" target="_blank">http://wepa-scoreservice-heroku.herokuapp.com/games</a> olevan palvelun tietokanta on "täynnä", voi tietokannan tyhjentää tekemällä kutsun osoitteeseen <code>http://wepa-scoreservice-heroku.herokuapp.com/games</code>.
+    </em>
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  REST-toteutuksen kypsyystasot
+<% end %>
+
+<p>
+  Martin Fowler käsittelee artikkelissaan <a href="http://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">Richardson Maturity Model</a> REST-rajapintojen kypsyyttä. Richardson Maturity Model (RMM) jaottelee REST-toteutuksen kolmeen tasoon, joista kukin tarkentaa toteutusta.
+</p>
+
+<p>
+  Aloituspiste on tason 0 palvelut, joita ei pidetä REST-palveluina. Näissä palveluissa HTTP-protokollaa käytetään lähinnä väylänä viestien lähettämiseen ja vastaanottamiseen, ja HTTP-protokollan käyttötapaan ei juurikaan oteta kantaa. Esimerkki tason 0 palvelusta on yksittäinen kontrollerimetodi, joka päättelee toteutettavan toiminnallisuuden pyynnössä olevan sisällön perusteella.
+</p>
+
+<p>
+  Tason 1 palvelut käsittelevät palveluita resursseina. Resurssit kuvataan palvelun osoitteena (esimerkiksi <code>/books</code>-resurssi sisältää kirjoja), ja resursseja voidaan hakea tunnisteiden perusteella (esim. <code>/books/nimi</code>). Edelliseen tasoon verrattuna käytössä on nyt konkreettisia resursseja; olio-ohjelmoijan kannalta näitä voidaan pitää myös olioina joilla on tila.
+</p>
+
+<p>
+  Tasolla 2 resurssien käsittelyyn käytetään kuvaavia HTTP-pyyntötyyppejä. Esimerkiksi resurssin pyyntö tapahtuu GET-metodilla, ja resurssin tilan muokkaaminen esimerkiksi PUT, POST, tai DELETE-metodilla. Näiden lisäksi palvelun vastaukset kuvaavat tapahtuneita toimintoja. Esimerkiksi jos palvelu luo resurssin, vastauksen tulee olla statuskoodi <code>201</code>, joka viestittää selaimelle resurssin luomisen onnistumisesta. Oleellista tällä tasolla on pyyntötyyppien erottaminen sen perusteella että muokkaavatko ne palvelimen dataa vai ei (GET vs. muut).
+</p>
+
+<p>
+  Kolmas taso sisältää tasot 1 ja 2, mutta lisää käyttäjälle mahdollisuuden ymmärtää palvelun tarjoama toiminnallisuus palvelimen vastausten perusteella. Webissä huomiota herättänyt termi <a href="https://weblogs.java.net/blog/mkarg/archive/2010/02/14/what-hateoas-actually-means" target="_blank">HATEOAS</a> käytännössä määrittelee miten web-resursseja tulisi löytää webistä.
+</p>
+
+<p>
+  Roy Fielding kokee vain tason 3 sovelluksen oikeana REST-sovelluksena. Ohjelmistosuunnittelun näkökulmasta jokainen taso parantaa sovelluksen ylläpidettävyyttä -- <em>Level 1 tackles the question of handling complexity by using divide and conquer, breaking a large service endpoint down into multiple resources; Level 2 introduces a standard set of verbs so that we handle similar situations in the same way, removing unnecessary variation; Level 3 introduces discoverability, providing a way of making a protocol more self-documenting.</em> (<a href="http://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank">lähde</a>)
+</p>
+
+<p>
+  <em>
+    Huom! Sovellusta suunniteltaessa ja toteuttaessa ei tule olettaa että RMM-tason 3 sovellus olisi parempi kuin RMM-tason 2 sovellus. Sovellus voi olla huono riippumatta toteutetusta REST-rajapinnan muodosta -- jossain tapauksissa rajapintaa ei oikeasti edes tarvita; asiakkaan tarpeet ja toiveet määräävät mitä sovelluskehittäjän kannattaa tehdä.
+  </em>
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Spring Data REST
+<% end %>
+
+<p>
+  Spring-sovelluskehys sisältää projektin <a href="http://projects.spring.io/spring-data-rest/" target="_blank">Spring Data REST</a>, minkä avulla REST-palveluiden tekeminen helpottuu hieman. Lisäämällä projektin <code>pom.xml</code>-konfiguraatioon riippuvuus <code>spring-boot-starter-data-rest</code> saamme Spring Boot-paketoidun version kyseisestä projektista käyttöömme.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;dependency&gt;
+  &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+  &lt;artifactId&gt;spring-boot-starter-data-rest&lt;/artifactId&gt;
+&lt;/dependency&gt;
+<% end %>
+
+<p>
+  Nyt Repository-luokkamme tarjoavat automaattisesti REST-rajapinnan, jonka kautta resursseihin pääsee käsiksi. REST-rajapinta luodaan oletuksena sovelluksen juureen, ja tehdään luomalla monikko domain-olioista. Esimerkiksi, jos käytössä on luokka <code>Book</code>, sekä sille määritelty <code>BookRepository</code>, joka perii Spring Data JPA:n rajapinnan, generoidaan rajapinnan <code>/books</code> alle toiminnallisuus kirja-olioiden muokkaamiseen.
+</p>
+
+<p>
+  Usein sovelluksemme kuitenkin toimivat jo palvelun juuripalvelussa, ja haluemme tarjota rajapinnan erillisessä osoitteesssa. Spring Data REST-projektin konfiguraatiota voi muokata erillisen <code>RepositoryRestMvcConfiguration</code>-luokan kautta. Alla olevassa esimerkissä REST-rajapinta luodaan osoitteen <code>/api/v1</code>-alle. Annotaatio <code>@Component</code> kertoo Springille että luokka tulee ladata käyttöön käynnistysvaiheessa; rajapinta kertoo mistä luokasta on kyse.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// pakkaus ja importit
+
+@Component
+public class CustomizedRestMvcConfiguration extends RepositoryRestConfigurerAdapter {
+
+    @Override
+    public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+        config.setBasePath("/api/v1");
+    }
+}
+<% end %>
+
+<p>
+  Nyt jos sovelluksessa on entiteetti <code>Book</code> sekä siihen sopiva <code>BookRepository</code>, on Spring Data REST-rajapinta osoitteessa <code>/api/v1/books</code>.
+</p>
+
+<p>
+  Käytännössä sovelluksen kehittäjä ei kuitenkaan halua kaikkia HTTP-protokollan metodeja kaikkien käyttöön. Käytössä olevien metodien rajaaminen onnistuu käytettävää <code>Repository</code>-rajapintaa muokkaamalla. Alla olevassa esimerkissä <code>BookRepository</code>-rajapinnan olioita ei pysty poistamaan automaattisesti luodun REST-rajapinnan yli.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+// pakkaus
+import wad.domain.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+public interface BookRepository extends JpaRepository&lt;Message, Long&gt; {
+
+    @RestResource(exported = false)
+    @Override
+    public void delete(Long id);
+
+}
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Spring Data REST ja RestTemplate
+<% end %>
+
+<p>
+  Spring Data RESTin avulla luotavien rajapintojen hyödyntäminen onnistuu RestTemplaten avulla. Esimerkiksi yllä luotavasta rajapinnasta voidaan hakea <code>Resource</code>-olioita, jotka sisältävät kirjoja. RestTemplaten metodin <code><a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html#exchange-java.lang.String-org.springframework.http.HttpMethod-org.springframework.http.HttpEntity-java.lang.Class-java.lang.Object...-" target="_blank">exchange</a></code> palauttaa vastausentiteetin, mikä sisältää hakemamme olion tiedot. Kyselyn mukana annettava <code>ParameterizedTypeReference</code> taas kertoo minkälaiseksi olioksi vastaus tulee muuntaa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+RestTemplate restTemplate = new RestTemplate();
+ResponseEntity&lt;Resource&lt;Book&gt;&gt; response = 
+    restTemplate.exchange("<em>osoite</em>/books/1", // osoite
+                  HttpMethod.GET, // metodi
+                  null, // pyynnön runko; tässä tyhjä
+                  new ParameterizedTypeReference&lt;Resource&lt;Book&gt;&gt;() {}); // vastaustyyppi
+
+if (response.getStatusCode() == HttpStatus.OK) {
+    Resource&lt;Book&gt; resource = response.getBody();
+    Book book = resource.getContent();
+}
+<% end %>
+
+
+<% partial 'partials/hint', locals: { name: 'Avoin data' } do %>
+
+  <p>
+    Verkko on täynnä avoimia (ja osittain avoimia) ohjelmointirajapintoja, jotka odottavat niiden hyödyntämistä. Tällaisia kokoelmia löytyy muunmuassa osoitteista <a href="https://www.avoindata.fi/fi" target="_blank">https://www.avoindata.fi/fi</a>, <a href="https://data.europa.eu/euodp/en/home" target="_blank">https://data.europa.eu/euodp/en/home</a>, <a href="https://index.okfn.org/dataset/" target="_blank">https://index.okfn.org/dataset/</a>, <a href="https://github.com/toddmotto/public-apis" target="_blank">https://github.com/toddmotto/public-apis</a>, jne.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  CORS: Rajoitettu pääsy resursseihin
+<% end %>
+
+<p>
+  Palvelinohjelmiston tarjoamiin tietoihin kuten kuviin ja videoihin pääsee käsiksi lähes mistä tahansa palvelusta. Palvelinohjelmiston toiminnallisuus voi rakentua toisen palvelun päälle. On myös mahdollista toteuttaa sovelluksia siten, että ne koostuvat pääosin selainpuolen kirjastoista, jotka hakevat tietoa palvelimilta.
+</p>
+
+<p>
+  Selainpuolella Javascriptin avulla tehdyt pyynnöt ovat oletuksena rajoitettuja. Jos palvelimelle ei määritellä erillistä <a href="https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#mvc-cors" target="_blank">CORS</a>-tukea, eivät sovelluksen osoitteen ulkopuolelta tehdyt Javascript pyynnöt onnistu. Käytännössä siis, jos käyttäjä on sivulla <code>hs.fi</code>, selaimessa toimiva Javascript-ohjelmisto voi tehdä pyyntöjä vain osoitteeseen <code>hs.fi</code>. 
+</p>
+
+<p>
+  Palvelinohjelmistot määrittelevät voiko niihin tehdä pyyntöjä myös palvelimen osoitteen ulkopuolelta ("Cross-Origin Resource Sharing"-tuki). Yksinkertaisimmillaan CORS-tuen saa lisättyä palvelinohjelmistoon lisäämällä kontrollerimetodille annotaatio <code>@CrossOrigin</code>. Annotaatiolle määritellään osoitteet, joissa sijaitsevista osoitteista pyyntöjä saa tehdä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @CrossOrigin(origins = "/**")
+    @GetMapping("/books")
+    @ResponseBody
+    public List&lt;Book&gt; getBooks() {
+        return bookRepository.findAll();
+    }
+<% end %>
+
+<p>
+  Koko sovelluksen tasolla vastaavan määrittelyn voi tehdä erillisen konfiguraatiotiedoston avulla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@Configuration
+@EnableWebMvc
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+	registry.addMapping("/**");
+    }
+}
+<% end %>
+
+<p>
+  Nyt sovellukseen voi tehdä Javascript-pyynnön missä tahansa sijaitsevasta sovelluksesta.
+</p>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Selainohjelmistot
+<% end %>
+
+<p>
+  Tutustutaan seuraavaksi selainpuolen toiminnallisuuden peruspalasiin.
+</p>
+
+<% partial 'partials/material_sub_heading' do %>
+  Web-sivujen rakenne
+<% end %>
+
+<p>
+  Web-sivut määritellään HTML-kielen avulla. Yksittäinen HTML-dokumentti koostuu sisäkkäin ja peräkkäin olevista elementeistä, jotka määrittelevät sivun rakenteen sekä sivun sisältävän tekstin. Rakenteen määrittelevät elementit erotellaan pienempi kuin (&lt;) ja suurempi kuin (&gt;) -merkeillä. Elementti avataan elementin nimen sisältävällä pienempi kuin -merkillä alkavalla ja suurempi kuin -merkkiin loppuvalla merkkijonolla, esim. <code>&lt;html&gt;</code>, ja suljetaan merkkijonolla jossa elementin pienempi kuin -merkin jälkeen on vinoviiva, esim <code>&lt;/html&gt;</code>. Yksittäisen elementin sisälle voi laittaa muita elementtejä.
+</p>
+
+<p>
+  Tyypillisen HTML-dokumentin runko näyttää seuraavalta. Kun klikkaat allaolevassa <code>iframe</code>-elementissä <code>Result</code>-tekstiä, näet HTML-sivun, ja kun painat <code>HTML</code>-tekstiä, näet HTML-koodin. Klikkaamalla elementin oikeassa ylälaidassa olevasta <em>Edit in JSFiddle</em>-linkistä, pääset muokkaamaan elementtiä suoraan JSFiddlessä.
+</p>
+
+<iframe width="100%" height="250" src="http://jsfiddle.net/e3tuhyLz/embedded/html,result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>
+  &nbsp;
+</p>
+
+<p>
+  Yllä olevassa HTML-dokumentissa on dokumentin tyypin kertova erikoiselementti <code>&lt;!DOCTYPE html&gt;</code>, joka kertoo dokumentin olevan HTML-sivu. Tätä seuraa elementti <code>&lt;html&gt;</code>, joka aloittaa HTML-dokumentin. Elementti <code>&lt;html&gt;</code> sisältää yleensä kaksi elementtiä, elementit <code>&lt;head&gt;</code> ja <code>&lt;body&gt;</code>. Elementti <code>&lt;head&gt;</code> sisältää sivun otsaketiedot, eli esimerkiksi sivun käyttämän merkistön <code>&lt;meta charset="utf-8" /&gt;</code> ja otsikon <code>&lt;title&gt;</code>. Elementti <code>&lt;body&gt;</code> sisältää selaimessa näytettävän sivun rungon. Ylläolevalla sivulla on ensimmäisen tason otsake-elementti <code>h1</code> (<em>header 1</em>) ja tekstielementti <code>p</code> (<em>paragraph</em>).
+</p>
+
+<p>
+  Elementit voivat sisältää <em>tekstisolmun</em>. Esimerkiksi yllä olevat elementit <code>title</code>, <code>h1</code> ja <code>p</code> kukin sisältävät tekstisolmun eli tekstiä. Tekstisolmulle ei ole erillistä elementtiä tai määrettä, vaan se näkyy käyttäjälle sivulla olevana tekstinä.
+</p>
+
+<p>
+  Puhe tekstisolmuista antaa viitettä jonkinlaisesta puurakenteesta. HTML-dokumentit ovat rakenteellisia dokumentteja, joiden rakenne on usein helppo ymmärtää puumaisena kaaviona. Ylläolevan web-sivun voi esittää esimerkiksi seuraavanlaisena puuna.
+</p>
+
+<pre>
+                   html
+
+               /          \
+
+             /              \
+
+          head              body
+
+        /       \         /      \
+
+     meta       title     h1      p
+
+                 :        :       :
+
+              tekstiä  tekstiä tekstiä
+</pre>
+
+<p>
+  Koska HTML-dokumentti on rakenteellinen dokumentti, on elementtien sulkemisjärjestyksellä väliä. Elementit tulee sulkea samassa järjestyksessä kuin ne on avattu. Esimerkiksi, järjestys <code>&lt;body&gt;&lt;p&gt;whoa, minttutee!&lt/body&gt;&lt;/p&gt;</code> on väärä, kun taas järjestys <code>&lt;body&gt;&lt;p&gt;whoa, minttutee!&lt;/p&gt;&lt/body&gt;</code> on oikea.
+</p>
+
+<p>
+  Kaikki elementit eivät kuitenkaan sisällä tekstisolmua, eikä niitä suljeta erikseen. Yksi näistä poikkeuksista on <a href="http://www.w3schools.com/tags/tag_link.asp" target="_blank">link</a>-elementti.
+</p>
+
+<p>
+  Kun selaimet lataavat HTML-dokumenttia ja muodostavat sen perusteella muistissa säilytettävää puuta, ne käyvät sen läpi ylhäältä alas, vasemmalta oikealle. Kun selain kohtaa elementin, se luo sille uuden solmun. Seuraavista elementeistä luodut solmut menevät aiemmin luodun solmun alle kunnes aiemmin kohdattu elementti suljetaan. Aina kun elementti suljetaan, puussa palataan ylöspäin edelliselle tasolle.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Elementit, attribuutit, nimet ja luokat
+<% end %>
+
+<p>
+  Elementit voivat sisältää attribuutteja, joilla voi olla yksi tai useampi arvo. Edellä nähdyssä HTML-dokumentissa elementille <code>meta</code> on määritelty erillinen attribuutti <code>charset</code>, joka kertoo dokumentissa käytettävän merkistön: "utf-8". Vastaavasti tiedon syöttämiseen käytettävien lomakkeiden <code>input</code> ym. kentissä käyttämämme attribuutti <code>name</code> määrittelee nimen, jota käytetään palvelimelle lähetettävän kentän sisällön tunnistamisessa.
+</p>
+
+<p>
+  Muita yleisesti käytettäviä attribuuttityyppejä ovat <code>id</code>, joka määrittelee elementille uniikin tunnisteen sekä <code>class</code>, jonka avulla elementille voidaan määritellä tyyppiluokitus. Uudehkossa HTML5-määritelmässä elementit voivat sisältää myös <code>data</code>-attribuutteja, joiden toiminnallisuutta ei ole ennalta määritelty, ja joita käytetään tyypillisesti sovelluksen toiminnallisuuden takaamiseksi.
+</p>
+
+<p>
+  Kun elementtejä haetaan id-attribuutin perusteella, vastaukseksi pitäisi tulla tyypillisesti vain yksi elementti, mutta class-attribuutin perusteella hakuvastauksia voi olla useampi.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Lista attribuuteista' } do %>
+
+  <p>
+    W3Schools-sivusto sisältää hyvän yhteenvedon käytössä olevista attribuuteista: <a href="http://www.w3schools.com/tags/ref_attributes.asp" target="_blank">http://www.w3schools.com/tags/ref_attributes.asp</a>. Lisätietoa data-attribuuteista löytyy osoitteesta <a href="http://www.w3schools.com/tags/att_global_data.asp" target="_blank">http://www.w3schools.com/tags/att_global_data.asp</a>.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Javascript
+<% end %>
+
+<p>
+  Siinä missä HTML on kieli web-sivujen rakenteen ja sisällön luomiseen, JavaScript on kieli dynaamisen toiminnan lisäämiselle. JavaScript on ohjelmakoodia, jota suoritetaan komento kerrallaan -- ylhäältä alas, vasemmalta oikealle.
+</p>
+
+<p>
+  JavaScript-koodi suoritetaan käyttäjän omassa selaimessa. Samalla on hyvä kuitenkin mainita, että nykyään myös palvelinohjelmistoja ohjelmoidaan Javascriptillä -- tästä esimerkkinä <a href="https://nodejs.org/en/" target="_blank" norel>NodeJs</a>.
+</p>
+
+<p>
+  JavaScript-tiedoston pääte on yleensä <code>.js</code> ja siihen viitataan elementillä <code>script</code>. Elementillä <code>script</code> on attribuutti <code>src</code>, jolla kerrotaan lähdekooditiedoston sijainti. Kun lisäämme Javascript-koodia web-projektiimme, lisätään se tyypillisesti kansion <code>src/main/resources/public/javascript/</code> alle. Kansiossa <code>public</code> olevat tiedostot siirtyvät suoraan näkyville web-maailmaan, joten niitä ei tarvitse käsitellä erikseen esimerkiksi Thymeleaf-moottorin toimesta.
+</p>
+
+<p>
+  Jos lähdekoodi on kansiossa <code>javascript</code> olevassa tiedostossa <code>code.js</code>, käytetään <code>script</code>-elementtiä seuraavasti: <code>&lt;script th:src="@{/javascript/code.js}"&gt;&lt;/script&gt;</code>.
+</p>
+
+<p>
+  Yleinen käytänne JavaScript-lähdekoodien sivulle lisäämiseen on lisätä ne sivun loppuun juuri ennen <code>body</code>-elementin sulkemista. Tämä johtuu mm. siitä, että selain lähtee hakemaan JavaScript-tiedostoa kun se kohtaa sen määrittelyn HTML-dokumentissa, jolloin kaikki muut toiminnot odottavat latausta. Jos lähdekooditiedosto ladataan vasta sivun lopussa, käyttäjälle <em>näytetään</em> sivun sisältöä jo ennen Javascript-lähdekoodin latautumista, sillä selaimet usein näyttävät sivua käyttäjälle sitä mukaa kun se latautuu. Tällä luodaan tunne nopeammin reagoivista ja latautuvista sivuista.
+</p>
+
+<% partial 'partials/hint', locals: { name: 'Määre defer siirtää lataamisen sivun loppuun' } do %>
+  
+  <p>
+    Nykyään <code>script</code>-elementille voi lisätä määreen <code>defer</code>, jonka olemassaolo kertoo että elementin <code>src</code>-attribuutin määrittelemä tiedosto tulee suorittaa vasta kun html-sivu on käsitelty.
+  </p>
+
+  <% partial 'partials/xml_highlight' do %>
+...
+&lt;script th:src="@{/javascript/code.js}" defer&gt;&lt;/script&gt;
+...
+  <% end %>
+
+  <p>
+    Defer-määre on kuitenkin uudehko lisä, eikä se toimi kaikissa selaimissa. <a href="http://www.w3schools.com/tags/att_script_defer.asp" target="_blank">Lisätietoa täältä...</a>
+  </p>
+
+<% end %>
+
+
+<p>
+  Luodaan kansioon <code>javascript</code> lähdekooditiedosto <code>code.js</code>. Tiedostossa <code>code.js</code> on funktio <code>sayHello</code>. Funktio luo ponnahdusikkunan, missä on teksti "hello there".
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+function sayHello() {
+    alert("hello there");
+}
+<% end %>
+
+<p>
+  HTML-dokumentti, jossa lähdekooditiedosto ladataan, näyttää seuraavalta. Attribuutille <code>onclick</code> määritellään elementin klikkauksen yhteydessä suoritettava koodi.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8" &gt;
+        &lt;title&gt;Sivun otsikko (näkyy selaimen palkissa)&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;header&gt;
+            &lt;h1&gt;Sivulla näkyvä otsikko&lt;/h1&gt;
+        &lt;/header&gt;
+
+        &lt;article&gt;
+            &lt;p&gt;Sivuilla näytettävä normaali teksti on p-elementin sisällä. Alla on nappi,
+            jota painamalla kutsutaan funktiota "sayHello".&lt;/p&gt;
+            &lt;input type="button" value="Tervehdi" onclick="sayHello();" /&gt;
+        &lt;/article&gt;
+
+        &lt;!-- ladataan JavaScript-koodit tiedoston lopussa! --&gt;
+        &lt;script th:src="@{javascript/code.js}"&gt;&lt;/script&gt;
+
+    &lt;/body&gt;
+&lt;/html&gt;
+<% end %>
+
+<p>
+  Alla sama JSFiddlessä -- siellä kuitenkin <code>code.js</code> samassa kansiossa HTML-tiedoston kanssa:
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/7ntuqtmL/5/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<% partial 'partials/hint', locals: { name: 'Javascript-oppaita' } do %>
+  
+  <p>
+    Jos Javascript ei ole ennalta tuttu kieli, kannattaa tutustua W3Schools-sivuston tarjoamaan <a href="http://www.w3schools.com/js/" target="_blank">Javascript-oppaaseen</a> sekä kurssin <a href="https://web-selainohjelmointi.github.io/" target="_blank">Web-selainohjelmointi</a> (jo hieman hapantuneeseen) materiaaliin.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Sivujen rakenteen muokkaaminen Javascriptin avulla
+<% end %>
+
+<p>
+  JavaScriptiä käytetään ennenkaikkea dynaamisen toiminnallisuuden lisäämiseksi web-sivuille. Esimerkiksi web-sivuilla oleviin elementteihin tulee pystyä asettamaan arvoja, ja niitä tulee myös pystyä hakemaan. JavaScriptissä pääsee käsiksi dokumentissa oleviin elementteihin komennolla <code>document.getElementById("tunnus")</code>, joka palauttaa elementin, jonka <code>id</code>-attribuutti on "tunnus". Muita attribuutti- ja elementtityyppejä pääsee käsittelemään esimerkiksi <a href="http://www.w3schools.com/jsref/met_document_queryselector.asp" target="_blank">querySelector</a>-metodin avulla.
+</p>
+
+<p>
+  Alla on tekstikenttä, jonka HTML-koodi on <code>&lt;input type="text" id="tekstikentta"/&gt;</code>. Kentän tunnus on siis <code>tekstikentta</code>. Jos haluamme päästä käsiksi elementtiin, jonka tunnus on "tekstikentta", käytämme komentoa <code>document.getElementById("tekstikentta")</code>. Tekstikenttäelementillä on attribuutti <code>value</code>, joka voidaan tulostaa.
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/zL0beedq/10/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>
+  Tekstikentälle voidaan asettaa arvo kuten muillekin muuttujille. Alla olevassa esimerkissä haetaan edellisen esimerkin tekstikenttä, ja asetetaan sille arvo <code>5</code>.
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/zL0beedq/11/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>
+  Tehdään vielä ohjelma, joka kysyy käyttäjältä syötettä, ja asettaa sen yllä olevan tekstikentän arvoksi.
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/zL0beedq/12/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Arvon asettaminen osaksi tekstiä
+<% end %>
+
+<p>
+  Yllä tekstikentälle asetettiin arvo sen <code>value</code>-attribuuttiin. Kaikilla elementeillä ei ole <code>value</code>-attribuuttia, vaan joillain näytetään niiden elementin <em>sisällä</em> oleva arvo. Elementin sisälle asetetaan arvo muuttujaan liittyvällä attribuutilla <code>innerHTML</code>.
+</p>
+
+<p>
+  Alla olevassa esimerkissä sivulla on tekstielementti, jossa ei ole lainkaan sisältöä. Jos tekstielementtiin lisätään sisältöä, tulee se näkyville.
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/zL0beedq/16/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>
+  Vastaavasti tekstin keskelle -- sisäelementtiin -- voi asettaa arvoja. Elementti <code>span</code> sopii tähän hyvin.
+</p>
+
+<iframe width="100%" height="200" src="//jsfiddle.net/zL0beedq/17/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Case: Laskin
+<% end %>
+
+<p>
+  Luodaan laskin. Laskimella on kaksi toiminnallisuutta: pluslasku ja kertolasku. Luodaan ensin laskimelle javascriptkoodi, joka on tiedostossa <code>laskin.js</code>. Javascript-koodissa oletetaan, että on olemassa <code>input</code>-tyyppiset elementit tunnuksilla "eka" ja "toka" sekä <code>span</code>-tyyppinen elementti tunnuksella "tulos". Funktiossa <code>plus</code> haetaan elementtien "eka" ja "toka" arvot, ja asetetaan pluslaskun summa elementin "tulos" arvoksi. Kertolaskussa tehdään lähes sama, mutta tulokseen asetetaan kertolaskun tulos. Koodissa on myös apufunktio, jota käytetään sekä arvojen hakemiseen annetuilla tunnuksilla merkityistä kentistä että näiden haettujen arvojen muuttamiseen numeroiksi.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+function haeNumero(tunnus) {
+    return parseInt(document.getElementById(tunnus).value);
+}
+
+function asetaTulos(tulos) {
+    document.getElementById("tulos").innerHTML = tulos;
+}
+
+function plus() {
+    asetaTulos(haeNumero("eka") + haeNumero("toka"));
+}
+
+function kerto() {
+    asetaTulos(haeNumero("eka") * haeNumero("toka"));
+}
+<% end %>
+
+<p>
+  Laskimen käyttämä HTML-dokumentti näyttää seuraavalta:
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8" &gt;
+        &lt;title&gt;Laskin&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;header&gt;
+            &lt;h1&gt;Plus- ja Kertolaskin&lt;/h1&gt;
+        &lt;/header&gt;
+
+        &lt;section&gt;
+            &lt;p&gt;
+                &lt;input type="text" id="eka" value="0" /&gt;
+                &lt;input type="text" id="toka" value="0" /&gt;
+            &lt;/p&gt;
+
+            &lt;p&gt;
+                &lt;input type="button" value="+" onclick="plus();" /&gt;
+                &lt;input type="button" value="*" onclick="kerto();" /&gt;
+            &lt;/p&gt;
+
+
+            &lt;p&gt;Laskimen antama vastaus: &lt;span id="tulos"&gt;&lt/span&gt;&lt;/p&gt;
+        &lt;/section&gt;
+
+        &lt;script src="javascript/laskin.js"&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+<% end %>
+
+<p>
+  Kokonaisuudessaan laskin näyttää seuraavalta:
+</p>
+
+<iframe width="100%" height="300" src="//jsfiddle.net/o8u0fk36/2/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<p>&nbsp;</p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Calculator' } do %>
+        
+  <p>
+    Toteuta edellisen esimerkin perusteella laskin, jossa on plus-, miinus-, kerto- ja jakolaskutoiminnallisuus. Keskity vain selainpuolen toiminnallisuuteen: älä muokkaa palvelinpuolen toiminnallisuutta. Varmista myös, että sivu on käytettävä ilman erillistä ohjetekstiä, eli että käyttämäsi napit ja tekstit kertovat käyttäjälle kaiken oleellisen.
+  </p>
+  
+  <p>
+    Tehtävään ei ole TMC:ssä testejä -- kun sovellus toimii oikein, lähetä se palvelimelle.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Elementtien valinta
+<% end %>
+
+<p>
+  Käytimme <code>getElementById</code>-kutsua tietyn elementin hakemiseen. Kaikki sivun elementit voi taas hakea esimerkiksi <code>getElementsByTagName("*")</code>-kutsulla. Molemmat ovat kuitenkin hieman kömpelöjä jos tiedämme mitä haluamme hakea.
+</p>
+
+<p>
+  W3C DOM-määrittely sisältää myös paremman ohjelmointirajapinnan elementtien läpikäyntiin. <a href="http://www.w3.org/TR/selectors-api/" target="_blank">Selectors API</a> sisältää mm. <code>querySelector</code>-kutsun, jolla saadaan CSS-valitsinten kaltainen kyselytoiminnallisuus.
+</p>
+
+<p>
+  Selector APIn tarjoamien <code>querySelector</code> (yksittäisen osuman haku) ja <code>querySelectorAll</code> (kaikkien osumien haku) -komentojen avulla kyselyn rajoittaminen vain <code>header</code>-elementissä oleviin <code>a</code>-elementteihin on helppoa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var linkit = document.querySelectorAll("nav a");
+// linkit-muuttuja sisältää nyt kaikki a-elementit, jotka ovat nav-elementin sisällä
+<% end %>
+
+<p>
+  Vastaavasti <code>header</code>-elementin sisällä olevat linkit voi hakea seuraavanlaisella kyselyllä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var linkit = document.querySelectorAll("header a");
+// linkit-muuttuja sisältää nyt kaikki a-elementit, jotka ovat header-elementin sisällä
+<% end %>
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Elementtien lisääminen
+<% end %>
+
+<p>
+  HTML-dokumenttiin lisätään uusia elementtejä <code>document</code>-olion <code>createElement</code>-metodilla. Esimerkiksi alla luodaan <code>p</code>-elementti (tekstisolmu; <code>createTextNode</code>), joka asetetaan muuttujaan <code>tekstiElementti</code>. Tämän jälkeen luodaan tekstisolmu, joka sisältää tekstin "o-hai". Lopulta tekstisolmun lisätään tekstielementtiin.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var tekstiElementti = document.createElement("p");
+var tekstiSolmu = document.createTextNode("o-hai");
+
+tekstiElementti.appendChild(tekstiSolmu);
+<% end %>
+
+<p>
+  Ylläoleva esimerkki ei luonnollisesti muuta HTML-dokumentin rakennetta sillä uutta elementtiä ei lisätä osaksi HTML-dokumenttia. Olemassaoleviin elementteihin voidaan lisätä sisältöä elementin <code>appendChild</code>-metodilla. Alla olevan tekstialue sisältää <code>article</code>-elementin, jonka tunnus on <code>dom-esim-3</code>. Voimme lisätä siihen elementtejä elementin <code>appendChild</code>-metodilla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var tekstiElementti = document.createElement("p");
+var tekstiSolmu = document.createTextNode("o-noes!");
+
+tekstiElementti.appendChild(tekstiSolmu);
+
+var alue = document.getElementById("dom-esim-3");
+alue.appendChild(tekstiElementti);
+<% end %>
+
+<p>
+  Artikkelielementin sekä sen sisältämien tekstielementtien lisääminen onnistuu vastaavasti. Alla olevassa esimerkissä käytössämme on seuraavanlainen <code>section</code>-elementti.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!-- .. dokumentin alkuosa .. --&gt;
+    &lt;section id="osio"&gt;&lt;/section&gt;
+&lt;!-- .. dokumentin loppuosa .. --&gt;
+<% end %>
+
+<p>
+  Uusien artikkelien lisääminen onnistuu helposti aiemmin näkemällämme <code>createElement</code>-metodilla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var artikkeli = document.createElement("article");
+
+var teksti1 = document.createElement("p");
+teksti1.appendChild(document.createTextNode("Lorem ipsum... 1"));
+artikkeli.appendChild(teksti1);
+
+var teksti2 = document.createElement("p");
+teksti2.appendChild(document.createTextNode("Lorem ipsum... 2"));
+artikkeli.appendChild(teksti2);
+
+document.getElementById("osio").appendChild(artikkeli);
+<% end %>
+
+<p>
+  Alla olevassa esimerkissä elementtejä lisätään yksitellen. Mukana on myös laskuri, joka pitää kirjaa elementtien lukumäärästä.
+</p>
+
+<iframe width="100%" height="300" src="//jsfiddle.net/tus22m5y/1/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  jQuery
+<% end %>
+
+<p>
+  <a href="http://jquery.com/" target="_blank">jQuery</a> on JavaScript-kirjasto, jonka tavoitteena on helpottaa selainohjelmistojen toteutusta. Se tarjoaa apuvälineitä mm. DOM-puun muokkaamiseen, tapahtumien käsittelyyn sekä palvelimelle tehtävien kyselyiden toteuttamiseen, ja sen avulla toteutettu toiminnallisuus toimii myös useimmissa selaimissa.
+</p>
+
+<p>
+  Uusimman jQuery-version saa ladattua <a href="http://jquery.com/download/" target="_blank">täältä</a>. Käytännössä jQuery on JavaScript-tiedosto, joka ladataan sivun latautuessa. Tiedoston voi asettaa esimerkiksi <code>head</code>-elementin sisään, tai ennen omia lähdekooditiedostoja.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset="utf-8" /&gt;
+        &lt;title&gt;Selaimen palkissa ja suosikeissa näkyvä otsikko&lt;/title&gt;
+     &lt;/head&gt;
+    &lt;body&gt;
+
+        &lt;!-- sivun sisältö --&gt;
+
+        &lt;script src="https://code.jquery.com/jquery-3.1.0.min.js"&gt;&lt;/script&gt;
+        &lt;script src="javascript/koodi.js"&gt;&lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Valitsimet
+<% end %>
+
+<p>
+  Käytimme edellisissä osioissa valmiita JavaScriptin DOM-toiminnallisuuksia. Elementtien etsimiseen on käytetty mm. <code>getElementById</code>-kutsua. JQuery käyttää <a href="http://sizzlejs.com/" target="_blank">Sizzle</a>-kirjastoa elementtien valinnan helpottamiseen. Esimerkiksi elementti, jonka attribuutin "id" arvo on "nimi", löytyy seuraavalla komennolla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var elementti = $("#nimi");
+<% end %>
+
+<p>
+  Kyselyt ovat muotoa<code>$("<em>kysely</em>")</code>. Jos elementtia haetaan <code>id</code>-attribuutin perusteella, lisätään kyselyn alkuun risuaita. Jos elementtiä haetaan luokan (<code>class</code>) perusteella, lisätään kyselyn alkuun piste. Jos taas elementtiä halutaan hakea esimerkiksi nimen perusteella, muodostetaan kysely sekä elementin että attribuutin kautta, esim. <code>$("input[name=nimi]")</code> palauttaa kaikki input-tyyppiset elementit, joissa <code>name</code>-attribuutin arvo on <code>nimi</code>.
+</p> 
+
+
+<% partial 'partials/hint', locals: { name: 'jQueryn valitsimet' } do %>
+  
+  <p>
+    Tarkempi kuvaus jQueryn valitsimista löytyy osoitteesta <a href="http://api.jquery.com/category/selectors/" target="_blank">http://api.jquery.com/category/selectors/</a>.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Elementtien lisääminen
+<% end %>
+
+<p>
+  JQuery tekee elementtien lisäämisestä hieman suoraviivaisempaa. Voimme kutsun <code>document.createElement</code> sijaan määritellä elementin tyypin sanomalla <code>$("&lt;article /&gt;");</code>. Myös tekstielementin luominen on hieman helpompaa: <code>$("&lt;p/&gt;").text("test");</code>. Aiempi koodimme:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var artikkeli = document.createElement("article");
+
+var teksti1 = document.createElement("p");
+teksti1.appendChild(document.createTextNode("Lorem ipsum... 1"));
+artikkeli.appendChild(teksti1);
+
+var teksti2 = document.createElement("p");
+teksti2.appendChild(document.createTextNode("Lorem ipsum... 2"));
+artikkeli.appendChild(teksti2);
+
+document.getElementById("osio").appendChild(artikkeli);
+<% end %>
+
+<p>
+  Voidaan kirjoittaa myös hieman suoraviivaisemmin:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var artikkeli = $("&lt;article/&gt;");
+
+var teksti1 = $("&lt;p/&gt;");
+teksti1.text("Lorem ipsum... 1");
+artikkeli.append(teksti1);
+
+var teksti2 = $("&lt;p/&gt;");
+teksti2.text("Lorem ipsum... 2");
+artikkeli.append(teksti2);
+
+$("#osio").append(artikkeli);
+<% end %>
+
+
+
+<% partial 'partials/hint', locals: { name: 'DOM-puun muokkaus' } do %>
+  
+  <p>
+    Tarkempi kuvaus operaatioista DOM-puun muokkaamiseen löytyy osoitteesta <a href="http://api.jquery.com/category/Manipulation/" target="_blank">http://api.jquery.com/category/Manipulation/</a>.
+  </p>
+  
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Tapahtumien käsittely
+<% end %>
+
+<p>
+  JQuery rakentaa JavaScriptin valmiiden komponenttien päälle, joten sillä on toiminnallisuus myös tapahtumankäsittelijöiden rekisteröimiseen sivun komponenteille. Eräs hyvin hyödyllinen tapahtumankäsittelijä liittyy sivun latautumiseen: komennolla <code>$(document).ready(function() {});</code> voidaan määritellä funktion runko, joka suoritetaan kun sivun latautuminen on valmis.
+</p>
+
+<p>
+  Kun sivun latautuminen on valmis, voimme olla varmoja siitä, että sivulla on kaikki siihen kuuluvat elementit. Tällöin on näppärää tehdä myös kyselyjä palvelimelle. Jos haluaisimme että id-attribuutin arvolla "osio" määriteltyyn elementtiin lisättäisiin kaksi tekstielementtiä sisältävä artikkelielementti kun sivu on latautunut, olisi tarvittava Javascript-koodi seuraavanlainen:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$(document).ready(function() {
+  var artikkeli = $("&lt;article/&gt;");
+
+  var teksti1 = $("&lt;p/&gt;");
+  teksti1.text("Lorem ipsum... 1");
+  artikkeli.append(teksti1);
+
+  var teksti2 = $("&lt;p/&gt;");
+  teksti2.text("Lorem ipsum... 2");
+  artikkeli.append(teksti2);
+
+  $("#osio").append(artikkeli);
+});
+<% end %>
+
+
+<iframe width="100%" height="300" src="//jsfiddle.net/1epmnrd2/embedded/js,html,result/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+
+
+<% partial 'partials/hint', locals: { name: 'JSON' } do %>
+  
+  <p>
+    JSON, eli <code>JavaScript Object Notation</code>, on tiedon esitysmuoto. Olion määrittely alkaa aaltosululla <code>{</code>, jota seuraa muuttujan nimi ja sille annettava arvo. Arvon asetus oliomuuttujalle tapahtuu kaksoispisteellä, esimerkiksi <code>nimi: "Arvo"</code>. Useampia muuttujia voi määritellä pilkulla eroteltuna. Olion määrittely lopetetaan sulkevaan aaltosulkuun <code>}</code>.
+  </p>
+
+  <% partial 'partials/code_highlight' do %>
+var olio = {nimi: "Arvo", tieto: 2000};
+  <% end %>
+
+  <p>
+    Olion muuttujiin pääsee käsiksi piste-notaatiolla. Esimerkiksi <code>olio</code>-olion muuttuja <code>nimi</code> löytyy komennolla <code>olio.nimi</code>.
+  </p>
+
+  <% partial 'partials/code_highlight' do %>
+var olio = {nimi: "Arvo", tieto: 2000};
+alert(olio.nimi);
+  <% end %>
+
+  <p>
+    Myös uusien oliomuuttujien lisääminen on suoraviivaista. Uuden muuttujan lisääminen tapahtuu myös pistenotaatiolla -- harrastuksen lisääminen tapahtuu <code>olio</code>-oliolle sanomalla <code>olio.harrastus = "koodaus";</code>.
+  </p>
+
+  <% partial 'partials/code_highlight' do %>
+var olio = {nimi: "Arvo", tieto: 2000};
+alert(olio.nimi);
+olio.harrastus = "koodaus";
+alert(olio.harrastus);
+  <% end %>
+
+  <p>
+    Olioiden rakennetta ei siis ole lyöty ennalta lukkoon.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Kyselyt palvelimelle
+<% end %>
+
+<p>
+  JQuery tarjoaa myös tuen kyselyjen tekemiseen erilliselle palvelinkomponentille.
+</p>
+
+<p>
+  Kyselyt hoituvat kätevästi JQueryn <code><a href="http://api.jquery.com/jQuery.getJSON/" target="_blank">$.getJSON</a></code>-funktiolla. Alla olevassa esimerkissä haemme <a href="http://www.icndb.com/" target="_blank">ICNDb.com</a>ista oleellista dataa.
+</p>
+
+<p>
+  Kyselyn palauttama data ohjataan <code>$.getJSON</code>-funktion toisena parametrina määriteltävään funktioon. Alla olevassa esimerkissä kutsumme vain <code>alert</code>-komentoa kaikelle palautettavalle datalle.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$.getJSON("http://api.icndb.com/jokes/random/5",
+    function(data) {
+        alert(data);
+    }
+);
+<% end %>
+
+<p>
+  Ylläoleva esimerkki tulostaa vastaukset konsoliin -- huomaa, että jQuery muuntaa merkkijonomuotoiset vastaukset automaattisesti JSON-olioksi. Käytetään JQueryn <code>each</code>-komentoa listassa olevien elementtien iterointiin. Komennolle <code>each</code> voi antaa parametrina iteroitavan listan, sekä funktion, jota kutsutaan jokaisella listassa olevalla oliolla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$.getJSON("http://api.icndb.com/jokes/random/5",
+    function(data) {
+        $.each(data.value, function(i, item) {
+            alert(i);
+            alert(item);
+            alert("-----");
+        });
+    }
+);
+<% end %>
+
+<p>
+  Nyt ylläoleva komento tulostaa vastauksen value-kentässä olevat oliot yksitellen. Oletetaan, että käytössämme on elementti, jonka tunnus on "vitsit". JQuery tarjoaa myös mahdollisuuden nopeaan tekstielementtien luontiin komennolla <code>$("&lt;p/&gt")</code>. Elementteihin voi asettaa tekstin <code>text</code>-komennolla, ja elementin voi lisätä tietyllä tunnuksella määriteltyyn elementtiin komennolla <code>appendTo("#<em>tunnus</em>")</code>.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$.getJSON("http://api.icndb.com/jokes/random/5",
+    function(data) {
+        $.each(data.value, function(i, item) {
+            $("&lt;p/&gt;").text(item.joke).appendTo("#vitsit");
+        });
+    }
+);
+<% end %>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tiedon lähettäminen palvelimelle
+<% end %>
+
+<p>
+  Jos tiedämme, että palvelu palauttaa JSON-dataa, voimme käyttää yllä käsiteltyä lähestymistapaa. Esimerkiksi viestien noutaminen Chat-chat -tehtävän viestipalvelimelta onnistuu seuraavalla komennolla. Tässä tapauksessa lisäämme jokaiseen viestiin liittyvän <code>message</code>-attribuutin "vitsit"-tunnuksella määriteltyyn elementtiin. Osoitteessa <a href="http://bad.herokuapp.com/app/messages" target="_blank">http://bad.herokuapp.com/app/messages</a> on valmiina viestejä tarjoava sovellus.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$.getJSON("http://bad.herokuapp.com/app/messages", function(data) {
+    $.each(data, function(i, item) {
+        $("&lt;p/&gt;").text(item.message).appendTo("#vitsit");
+    });
+});
+<% end %>
+
+<p>
+  Yllä oleva komento on lyhenne alla määritellystä komennosta.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+$.ajax({
+    url: "http://bad.herokuapp.com/app/messages",
+    dataType: 'json',
+    success: parseMessages
+});
+
+function parseMessages(messages) {
+    $.each(messages, function(i, item) {
+        $("&lt;p/&gt;").text(item.message).appendTo("#vitsit");
+    });
+}
+<% end %>
+
+<p>
+  Komennolle <code><a href="http://api.jquery.com/jQuery.ajax/" target="_blank">$.ajax</a></code> voi lisätä myös dataa, mitä lähetetään palvelimelle. Esimerkiksi seuraavalla komennolla lähetetään osoitteeseen <code>http://bad.herokuapp.com/app/in</code> olio, jonka sisällä on attribuutit <code>name</code> ja <code>details</code>. Lähetettävän datan tyyppi asetetaan attribuutilla <code>contentType</code>, alla ilmoitamme että data on json-muotoista, ja että se käyttää utf-8 -merkistöä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+var dataToSend = JSON.stringify({
+        name: "bob",
+        details: "i'm ted"
+    });
+
+$.ajax({
+    url: "http://bad.herokuapp.com/app/in",
+    dataType: 'json',
+    contentType:'application/json; charset=utf-8',
+    type: 'post',
+    data: dataToSend
+});
+<% end %>
+
+<p>
+  Pyynnössä voi sekä lähettää että vastaanottaa dataa. Attribuutin <code>success</code> asettaminen ylläolevaan pyyntöön aiheuttaa success-attribuutin arvona olevan funktion kutsun kun pyyntö on onnistunut.
+</p>
+
+
+<% partial 'partials/exercise', locals: { name: 'Tasks' } do %>
+      
+  <p>
+    Tehtävään on hahmoteltu tehtävien hallintaan tarkoitetun sovelluksen palvelinpuolen toiminnallisuutta. Lisää sovellukseen selainpuolen toiminnallisuus, joka mahdollistaa tehtävien lisäämisen sivulle Javascriptin avulla. Uusien tehtävien lisäämisen ei siis pidä aiheuttaa sivun uudelleenlatausta, vaan uusi tehtävä tulee lähettää palvelimelle Javascript-pyyntönä.
+  </p>
+  
+  <p>
+    Kun saat sovelluksen toimimaan, mieti myös sen käytettävyyttä. Sovellukselle ei ole automaattisia testejä.
+  </p>
+
+<% end %>
+
+
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tyylitiedostot
+<% end %>
+
+<p>
+  Olet ehkäpä huomannut, että tähän mennessä tekemämme web-sovellukset eivät ole kovin kaunista katsottavaa. Kurssilla pääpaino on palvelinpään toiminnallisuuden toteuttamisessa, joten emme jatkossakaan keskity sivustojen ulkoasuun. Sivujen ulkoasun muokkaaminen on kuitenkin melko suoraviivaista. Verkosta löytyy iso kasa oppaita sivun ulkoasun määrittelyyn -- <a href="http://www.w3schools.com/css/" target="_blank">tässä yksi</a>.
+</p>
+
+<p>
+  Ulkoasun määrittelyssä käytetään usein apuna valmista <a href="http://getbootstrap.com/" target="_blank">Twitter Bootstrap</a> -kirjastoa. Ulkoasun määrittely tapahtuu lisäämällä sivun <code>head</code>-osioon oleelliset kirjastot -- tässä kirjastot haetaan <a href="https://www.bootstrapcdn.com/" target="_blank">https://www.bootstrapcdn.com/</a>-palvelusta, joka tarjoaa kirjastojen ylläpito- ja latauspalvelun, jonka lisäksi elementteihin voi lisätä luokkamäärittelyjä, jotka kertovat niiden tyyleistä.
+</p>
+
+<p>
+  Alla on esimerkki HTML-sivusta, jossa Twitter Bootstrap on otettu käyttöön. Sivulla on lisäksi määritelty <code>body</code>-elementin luokaksi (class) "container", mikä tekee sivusta päätelaitteen leveyteen reagoivan. Elementillä <code>table</code> oleva luokka "table" lisää elementtiin tyylittelyn. Erilaisiin Twitter Bootstrapin tyyleihin voi tutustua tarkemmin <a href="http://getbootstrap.com/css/" target="_blank">täällä</a>.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Blank&lt;/title&gt;
+        &lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/&gt;
+        &lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css"/&gt;
+        &lt;script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+
+    &lt;body class="container"&gt;
+
+        &lt;table class="table"&gt;
+            &lt;tr&gt;
+                &lt;th&gt;An&lt;/th&gt;
+                &lt;th&gt;important&lt;/th&gt;
+                &lt;th&gt;header&lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;More&lt;/td&gt;
+                &lt;td&gt;important&lt;/td&gt;
+                &lt;td&gt;text&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;More&lt;/td&gt;
+                &lt;td&gt;important&lt;/td&gt;
+                &lt;td&gt;text&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;More&lt;/td&gt;
+                &lt;td&gt;important&lt;/td&gt;
+                &lt;td&gt;text&lt;/td&gt;
+            &lt;/tr&gt;
+            &lt;tr&gt;
+                &lt;td&gt;More&lt;/td&gt;
+                &lt;td&gt;important&lt;/td&gt;
+                &lt;td&gt;text&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/table&gt;
+
+    &lt;/body&gt;
+&lt;/html&gt;
+<% end %>
+
+<% partial 'partials/exercise', locals: { name: 'Hello CSS' } do %>
+        
+  <p>
+    Tässä tehtävässä tavoitteena on lähinnä kokeilla sovelluksessa olevaa sivua ilman tyylitiedostoja sekä tyylitiedostojen kanssa. Käynnistä palvelin ja katso miltä juuripolussa toimiva sovellus näyttää.
+  </p>
+      
+  <p>
+    Sammuta tämän jälkeen palvelin ja muokkaa sovellukseen liittyvää <code>index.html</code>-tiedostoa siten, että poistat kommenttimerkit <code>head</code>-elementissä olevien Twitter Bootstrap -kirjaston linkkien ympäriltä. Käynnistä tämän jälkeen palvelin uudestaan ja katso miltä sivu tämän jälkeen näyttää. Oleellista tässä on se, että sivun ulkoasun muuttamiseen tarvittiin käytännössä vain tyylitiedostojen lisääminen.
+  </p>
+      
+  <p>
+    Tehtävässä ei ole testejä -- voit palauttaa sen kun olet kokeillut ylläolevaa muutosta.
+  </p>
+
+<% end %>
