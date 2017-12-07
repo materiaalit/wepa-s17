@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web-palvelinohjelmointi Java, syksy 2017 | Osa 6</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <link href="../stylesheets/styles-d08f7ac6.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/xcode.min.css">
+
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.1/cookieconsent.min.css" />
+
+    <link rel="stylesheet" href="https://materiaalit.github.io/code-states-visualizer-cdn/app.css" />
+    <link rel="stylesheet" href="https://materiaalit.github.io/typonator-cdn/app.css" />
+    <link rel="stylesheet" href="https://crowdsorcerer.testmycode.io/dist/app.css" />
+
+      <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-47575342-8', 'auto');
+  ga('send', 'pageview');
+</script>
+
+  </head>
+  <body>
+    <div class="main-wrapper">
+      <div class="header-wrapper">
+        <div class="browser-support-warning" id="browser-support-warning" style="display: none;">
+  Kaikki tämän materiaalin osat eivät välttämättä tuo nykyistä selaintasi. Voisitko harkita vaihtamista <a href="https://www.google.com/chrome/browser/desktop/" target="_blank" rel="noopener">Chrome</a> tai <a href="https://www.mozilla.org/en-US/firefox/new/" target="_blank" rel="noopener">Firefox</a> selaimeen?
+  <span class="browser-support-warning__close">Selvä!</span>
+</div>
+
+
+        <nav class="navbar navbar-light bg-white">
+  <a class="navbar-brand" href="http://mooc.fi" alt="MOOC" target="_blank" rel="noopener">
+    <span class="icon-mooc"></span>
+  </a>
+
+  <ul class="nav navbar-nav hidden-md-down">
+      <li class="nav-item ">
+        <a href="../" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=index.html&gt;')">Johdanto</a>
+      </li>
+      <li class="nav-item ">
+        <a href="../part1/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part1.html&gt;')">Osa 1</a>
+      </li>
+      <li class="nav-item ">
+        <a href="../part2/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part2.html&gt;')">Osa 2</a>
+      </li>
+      <li class="nav-item ">
+        <a href="../part3/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part3.html&gt;')">Osa 3</a>
+      </li>
+      <li class="nav-item ">
+        <a href="../part4/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part4.html&gt;')">Osa 4</a>
+      </li>
+      <li class="nav-item ">
+        <a href="../part5/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part5.html&gt;')">Osa 5</a>
+      </li>
+      <li class="nav-item active">
+        <a href="./" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part6.html&gt;')">Osa 6</a>
+      </li>
+  </ul>
+
+  <div class="float-xs-right navbar__buttons">
+    <div class="dropdown" id="mobile-nav-dropdown">
+      <button class="btn btn-secondary dropdown-toggle navbar__mobile-nav-toggle" data-toggle="dropdown">
+        <i class="fa fa-bars"></i>
+      </button>
+
+      <div class="dropdown-menu">
+      </div>
+    </div>
+
+    <a href="https://riot.im/app/#/room/#_ircnet_#wepa:irc.snt.utwente.nl" target="_blank" rel="noopener" class="btn btn-secondary">
+      <span class="hidden-md-down">Chat</span>
+      <i class="fa fa-commenting-o hidden-lg-up"></i>
+    </a>
+
+    <button class="btn btn-secondary" id="table-of-contents-toggle">
+      <span class="hidden-md-down">Sisällysluettelo</span>
+      <i class="fa fa-ellipsis-h hidden-lg-up"></i>
+    </button>
+
+    <button class="btn btn-primary" id="tmc-login-toggle">Kirjaudu sisään</button>
+  </div>
+</nav>
+
+      </div>
+
+      <div class="content-wrapper">
+        <div class="container material" id="material">
+            <div class="exercise-list">
+  <div class="exercise-list__header">
+    Tehtävät
+  </div>
+
+  <div class="exercise-list__content" id="exercise-list"></div>
+
+</div>
+
+
+          
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Kuudennen osan tavoitteet
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Osaa selittää autentikaation ja autorisaation erot. Osaa luoda sovelluksen, joka pyytää käyttäjää kirjautumaan. Osaa määritellä kirjautumista vaativia polkuja ja metodeja, sekä piilottaa näkymän osia erilaisilta käyttäjäryhmiltä. Tuntee tapoja tiedon validointiin ja osaa validoida lomakedataa. Tietää web-sovellusten tyypillisimmät haavoittuvuudet sekä niihin vaikuttavat tekijät (OWASP). Välttää tyypillisimmät haavoittuvuudet omassa ohjelmistossaan.
+  </p>
+  
+
+  </div>
+</div>
+
+
+
+<h1 class="material-heading">
+    Autentikaatio ja autorisaatio
+
+</h1>
+
+<p>
+  Autentikaatiolla tarkoitetaan käyttäjän tunnistamista esimerkiksi kirjautumisen yhteydessä, ja autorisaatiolla tarkoitetaan käyttäjän oikeuksien varmistamista käyttäjän haluamiin toimintoihin.
+</p>
+
+<p>
+  Tunnistautumis- ja kirjautumistoiminnallisuus rakennetaan evästeiden avulla. Jos käyttäjällä ei ole evästettä, mikä liittyy kirjautuneen käyttäjän sessioon, hänet ohjataan kirjautumissivulle. Kirjautumisen yhteydessä käyttäjään liittyvään evästeeseen lisätään tieto siitä, että käyttäjä on kirjautunut -- tämän jälkeen sovellus tietää, että käyttäjä on kirjautunut.
+</p>
+
+<p>
+  Kirjautumissivuja ja -palveluita on kirjoitettu useita, ja sellainen löytyy lähes jokaisesta web-sovelluskehyksestä. Myös Spring-sovelluskehyksessä löytyy oma projekti kirjautumistoiminnallisuuden toteuttamiseen. Käytämme seuraavaksi <a href="http://projects.spring.io/spring-security/" target="_blank">Spring Security</a> -projektia. Sen saa käyttöön lisäämällä Spring Boot -projektin <code>pom.xml</code>-tiedostoon seuraavan riippuvuuden.
+</p>
+
+<pre class="sh_xml code-highlight"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-security&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</code></pre>
+
+<p>
+  Komponentti tuo käyttöömme komponentin, joka tarkastelee pyyntöjä ennen kuin pyynnöt ohjataan kontrollerien metodeille. Jos käyttäjän tulee olla kirjautunut päästäkseen haluamaansa osoitteeseen, komponentti ohjaa pyynnön tarvittaessa erilliselle kirjautumisivulle.
+</p>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Mistä käyttäjätunnus ja salasana?
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Jos Spring Security -komponentin ottaa käyttöön, mutta ei luo siihen liittyvää konfiguraatiota, ovat oletuksena kaikki polut salattu. Käyttäjätunnus on oletuksena <code>user</code>, salasana löytyy sovelluksen käynnistyksen yhteydessä tulostuvista viesteistä.
+  </p>
+
+  <p>
+    Oletussalasanan voi asettaa konfiguraatiotiedostossa. Alla olevalla esimerkillä käyttäjätunnukseksi tulisi <code>user</code> ja salasanaksi <code>saippuakauppias</code>.
+  </p>
+
+  <pre>
+security.user.password=saippuakauppias
+  </pre>
+
+  <p>
+    Salasanan lisääminen julkiseen versionhallintaan ei ole kuitenkaan hyvä idea. Salasanan voi asettaa myös tuotantoympäristön ympäristömuuttujien avulla. Esimerkiksi Herokun ympäristömuuttujien asettamiseen löytyy opas osoitteesta <a href="https://devcenter.heroku.com/articles/config-vars" target="_blank" norel>https://devcenter.heroku.com/articles/config-vars</a>. Esimerkiksi ympäristömuuttujan <code>MYPASSWORD</code> saa käyttöön seuraavalla tavalla.
+  </p>
+
+  <pre>
+security.user.password=${MYPASSWORD}
+  </pre>
+  
+
+  </div>
+</div>
+
+
+<h2 class="material-heading">
+    Tunnusten ja salattavien sivujen määrittely
+
+</h2>
+
+<p>
+  Kirjautumista varten luodaan erillinen konfiguraatiotiedosto, jossa määritellään sovellukseen liittyvät salattavat sivut. Oletuskonfiguraatiolla pääsy estetään käytännössä kaikkiin sovelluksen resursseihin, ja ohjelmoijan tulee kertoa ne resurssit, joihin käyttäjillä on pääsy.
+</p>
+
+<p>
+  Luodaan oma konfiguraatiotiedosto <code>SecurityConfiguration</code>, joka sisältää sovelluksemme tietoturvakonfiguraation. Huom! Konfiguraatiotiedostoja kannattaa luoda useampia -- ainakin yksi tuotantokäyttöön ja yksi sovelluksen kehittämiseen tarkoitetulle hiekkalaatikolle. Kun konfiguraatiotiedostoja alkaa olla useampia, kannattaa ne lisätä erilliseen pakkaukseen.
+</p>
+
+<pre class="sh_java code-highlight"><code>// pakkaus 
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Ei päästetä käyttäjää mihinkään sovelluksen resurssiin ilman
+        // kirjautumista. Tarjotaan kuitenkin lomake kirjautumiseen, mihin
+        // pääsee vapaasti. Tämän lisäksi uloskirjautumiseen tarjotaan
+        // mahdollisuus kaikille. 
+        http.authorizeRequests()
+                .anyRequest().authenticated().and()
+                .formLogin().permitAll().and()
+                .logout().permitAll();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        // käyttäjällä jack, jonka salasana on bauer, on rooli USER
+        auth.inMemoryAuthentication()
+                .withUser("jack").password("bauer").roles("USER");
+    }
+}
+</code></pre>
+
+<p>
+  Yllä oleva tietoturvakonfiguraatio koostuu kahdesta osasta. Ensimmäisessä osassa <code>configure(HttpSecurity http)</code> määritellään sovelluksen osoitteet, joihin on pääsy kielletty tai pääsy sallittu. Toisessa osassa <code>public void configureGlobal(AuthenticationManagerBuilder auth)</code> taas määritellään  -- tässä tapauksessa -- käytössä olevat käyttäjätunnukset ja salasanat. Käyttäjälle tulee määritellä rooli -- yllä oletuksena on <code>USER</code>.
+</p>
+
+<p>
+  Kun määritellään osoitteita, joihin käyttäjä pääsee käsiksi, on hyvä varmistaa, että määrittelyssä on mukana lause <code>anyRequest().authenticated()</code> -- tämä käytännössä johtaa tilanteeseen, missä kaikki osoitteet, joita ei ole erikseen määritelty, vaatii kirjautumista. Voimme määritellä osoitteita, jotka eivät vaadi kirjautumista seuraavasti:
+</p>
+
+<pre class="sh_java code-highlight"><code>// ..
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+            .antMatchers("/free").permitAll()
+            .antMatchers("/access").permitAll()
+            .antMatchers("/to/*").permitAll()
+            .anyRequest().authenticated().and()
+            .formLogin().permitAll().and()
+            .logout().permitAll();
+}
+// ..
+</code></pre>
+
+<p>
+  Ylläolevassa esimerkissä osoitteisiin <code>/free</code> ja <code>/access</code> ei tarvitse kirjautumista. Tämän lisäksi kaikki osoitteet polun <code>/to/</code> alla on kaikkien käytettävissä. Loput osoitteet on kaikilta kielletty. Komento <code>formLogin().permitAll()</code> määrittelee sivun käyttöön kirjautumissivun, johon annetaan kaikille pääsy, jonka lisäksi komento <code>logout().permitAll()</code> antaa kaikille pääsyn uloskirjautumistoiminnallisuuteen.
+</p>
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Hello Authentication</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+            
+  <p>
+    Tehtävässä on sovellus viestien näyttämiseen. Tehtävänäsi on lisätä siihen salaustoiminnallisuus -- kenenkään muun kuin käyttäjän "maxwell_smart" ei tule päästä viesteihin käsiksi. Aseta Maxwellin salasanaksi "kenkapuhelin".
+  </p>
+
+
+    </div>
+  </div>
+</div>
+
+
+<p>
+  Käyttäjätunnukset tallennetaan tyypillisesti tietokantaan, mistä ne voi tarvittaessa hakea. Salasanoja ei tule tallentaa sellaisenaan, sillä ne <a href="http://www.forbes.com/sites/thomasbrewster/2015/10/28/000webhost-database-leak/" target="_blank">voivat</a> <a href="https://techcrunch.com/2016/06/08/twitter-hack/" target="_blank">joskus</a> <a href="http://www.theregister.co.uk/2016/06/16/verticalscope_breach/" target="_blank">päätyä</a> <a href="https://en.wikipedia.org/wiki/2012_LinkedIn_hack" target="_blank">vääriin</a> <a href="http://www.independent.co.uk/life-style/gadgets-and-tech/news/gmail-hotmail-yahoo-email-passwords-stolen-hacked-hackers-russia-a7014711.html" target="_blank">käsiin</a>. Palaamme salasanojen tallentamismuotoon myöhemmin, nyt tutustumme vain siihen liittyvään tekniikkaan.
+</p>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Klassinen erhe: USER
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    SQL-kielen spesifikaatiota heikosti tunteva aloitteleva web-ohjelmoija tekee usein <code>USER</code>-nimisen entiteetin tai attribuutin. Sana <em>user</em> on kuitenkin varattu SQL-spesifikaatiossa, joten sitä ei voi käyttää..
+  </p>
+
+
+  </div>
+</div>
+
+
+<p>
+  Käyttäjätunnuksen ja salasanan noutamista varten luomme käyttäjälle entiteetin sekä sopivan repository-toteutuksen. Tarvitsemme lisäksi oman <a href="https://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/core/userdetails/UserDetailsService.html" target="_blank">UserDetailsService</a>-rajapinnan toteutuksen, jota käytetään käyttäjän hakemiseen tietokannasta. Allaolevassa esimerkissä rajapinta on toteutettu siten, että tietokannasta haetaan käyttäjää. Jos käyttäjä löytyy, luomme siitä <a href="https://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/core/userdetails/User.html" target="_blank">User</a>-olion, jonka palvelu palauttaa.
+</p>
+
+<pre class="sh_java code-highlight"><code>// importit
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountRepository.findByUsername(username);
+        if (account == null) {
+            throw new UsernameNotFoundException("No such user: " + username);
+        }
+
+        return new org.springframework.security.core.userdetails.User(
+                account.getUsername(),
+                account.getPassword(),
+                true,
+                true,
+                true,
+                true,
+                Arrays.asList(new SimpleGrantedAuthority("USER")));
+    }
+}
+</code></pre>
+
+<p>
+  Kun oma UserDetailsService-luokka on toteutettu, voimme ottaa sen käyttöön SecurityConfiguration-luokassa.
+</p>
+
+<pre class="sh_java code-highlight"><code>// ..
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // mahdollistetaan h2-konsolin käyttö
+        http.csrf().disable();
+        http.headers().frameOptions().sameOrigin();
+        
+        http.authorizeRequests()
+                .antMatchers("/h2-console/*").permitAll()
+                .anyRequest().authenticated();
+        http.formLogin()
+                .permitAll();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+</code></pre>
+
+<p>
+  Edellisessä esimerkissä salasanojen tallentamisessa käytetään <a href="https://docs.spring.io/spring-security/site/docs/current/apidocs/org/springframework/security/crypto/bcrypt/BCryptPasswordEncoder.html" target="_blank">BCrypt</a>-algoritmia, joka rakentaa merkkijonomuotoisesta salasanasta hajautusarvon. Tällöin tietokantaan tallennettujen salasanojen vuoto ei ole täysi kriisi, vaikka ei siltikään toivottavaa.
+</p>  
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Hello Db Authentication</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+        
+  <p>
+    Tehtävän ohjelmakoodiin on toteutettu käyttäjät tunnistava sovellus, joka tallentaa käyttäjien salasanat tietokantaan. Tutustu sovelluksen ohjelmakoodiin ja lisää <code>DefaultController</code>-luokassa olevaa ohjelmakoodia mukaillen sovellukseen toinen käyttäjä, jonka salasana on myös "smart".
+  </p>
+      
+  <p>
+    Käy tämän jälkeen tarkastelemassa sovelluksen tietokantaa osoitteessa <code>http://localhost:8080/h2-console</code> (aseta JDBC URL -kentän arvoksi <code>jdbc:h2:mem:testdb</code>). Vaikka lisäämäsi käyttäjän salasana on myös "smart" pitäisi tietokannassa olevien hajautusarvojen olla erilaiset.
+  </p>
+
+  <p>
+    Tehtävässä ei ole testejä.
+  </p>
+
+
+    </div>
+  </div>
+</div>
+
+<p>
+  Kun käyttäjä on kirjautuneena, saa häneen liittyvän käyttäjätunnuksen ns. tietoturvakontekstista.
+</p>
+
+<pre class="sh_java">
+Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+String username = auth.getName();
+</pre>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Uloskirjautuminen
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Pohdi: Käyttäjä voi uloskirjautua tekemällä POST-pyynnön sovelluksen osoitteeseen <code>/logout</code>. Miksi tavallinen GET-pyyntö ei riitä? Minkälaisia rajoitteita ja määreitä HTTP-protokollan GET-pyyntöihin liittyi?
+  </p>
+
+
+  </div>
+</div>
+  
+<p>
+  Autentikaation tarpeen voi määritellä myös pyyntökohtaisesti. Alla olevassa esimerkissä GET-tyyppiset pyynnöt ovat sallittuja juuriosoitteeseen, mutta POST-tyyppiset pyynnöt juuriosoitteeseen eivät ole sallittuja. 
+</p>
+
+
+<pre class="sh_java code-highlight"><code>@Override
+protected void configure(HttpSecurity http) throws Exception {
+    // mahdollistetaan h2-konsolin käyttö
+    http.csrf().disable();
+    http.headers().frameOptions().sameOrigin();
+  
+    http.authorizeRequests()
+        .antMatchers("/h2-console/*").permitAll()
+        .antMatchers(HttpMethod.GET, "/").permitAll()
+        .antMatchers(HttpMethod.POST, "/").authenticated()
+        .anyRequest().authenticated();
+    http.formLogin()
+        .permitAll();
+}
+</code></pre>
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Reservations</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+        
+  <p>
+    Tehtävänäsi on täydentää kesken jäänyttä varaussovellusta siten, että kaikki käyttäjät näkevät varaukset, mutta vain kirjautuneet käyttäjät pääsevät lisäämään varauksia.
+  </p>
+  
+  <p>
+    Kun käyttäjä tekee pyynnön sovelluksen juuripolkuun <code>/reservations</code>, tulee hänen nähdä varaussivu. Allaolevassa esimerkissä tietokannassa ei ole varauksia, mutta jos niitä on, tulee ne listata kohdan Current reservations alla.
+  </p>
+
+  <img src="../img/2016-mooc/ex38-emptylist-859971f4.png" class="browser-img"/>
+      
+  <p>
+    Jos kirjautumaton käyttäjä yrittää tehdä varauksen, hänet ohjataan kirjautumissivulle.
+  </p>
+
+  <img src="../img/2016-mooc/ex38-login-1489f055.png" class="browser-img"/>
+      
+  <p>
+    Kun kirjautuminen onnistuu, voi käyttäjä tehdä varauksia.
+  </p>
+
+  <img src="../img/2016-mooc/ex38-reservations-f1a8b05a.png" class="browser-img"/>
+
+  <p>
+    Sovelluksen tulee kirjautumis- ja varaustoiminnallisuuden lisäksi myös varmistaa, että varaukset eivät mene päällekkäin.
+  </p>
+
+  <p>
+    Luokassa <code>DefaultController</code> luodaan muutamia testikäyttäjiä, joita voi (esimerkiksi) käyttää sovelluksen testauksessa. Tarvitset ainakin:
+  </p>
+
+  <ul>
+    <li>Palvelun käyttäjän tunnistautumiseen, jolla täydennät luokkaa SecurityConfiguration</li>
+    <li>Tavan aikaleimojen käsittelyyn (kertaa materiaalin kolmas osa)</li>
+    <li>Kontrollerin varausten käsittelyyn ja tekemiseen</li>
+  </ul>
+
+
+    </div>
+  </div>
+</div>
+
+
+<h2 class="material-heading">
+    Käyttäjien roolit
+
+</h2>
+
+<p>
+  Käyttäjillä on usein erilaisia oikeuksia sovelluksessa. Verkkokaupassa kaikki voivat listata tuotteita sekä lisätä tuotteita ostoskoriin, mutta vain tunnistautuneet käyttäjät voivat tehdä tilauksia. Tunnistautuneista käyttäjistä vain osa, esimerkiksi kaupan työntekijät, voivat tehdä muokkauksia tuotteisiin.
+</p>
+
+<p>
+  Tällaisen toiminnan toteuttamiseen käytetään oikeuksia, joiden lisääminen vaatii muutamia muokkauksia aiempaan kirjautumistoiminnallisuuteemme. Aiemmin näkemässämme luokassa <code>CustomUserDetailsService</code> noudettiin käyttäjä seuraavasti:
+</p>
+
+<pre class="sh_java code-highlight"><code>@Override
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    Account account = accountRepository.findByUsername(username);
+    if (account == null) {
+        throw new UsernameNotFoundException("No such user: " + username);
+    }
+
+    return new org.springframework.security.core.userdetails.User(
+            account.getUsername(),
+            account.getPassword(),
+            true,
+            true,
+            true,
+            true,
+            Arrays.asList(new SimpleGrantedAuthority("USER")));
+}
+</code></pre>
+
+<p>
+  Palautettavan <code>User</code>-olion luomiseen liittyy lista oikeuksia. Yllä käyttäjälle on määritelty oikeus <code>USER</code>, mutta oikeuksia voisi olla myös useampi. Seuraava esimerkki palauttaa käyttäjän "USER" ja "ADMIN" -oikeuksilla.
+</p>
+
+<pre class="sh_java code-highlight"><code>return new org.springframework.security.core.userdetails.User(
+        account.getUsername(),
+        account.getPassword(),
+        true,
+        true,
+        true,
+        true,
+        Arrays.asList(new SimpleGrantedAuthority("USER"), new SimpleGrantedAuthority("ADMIN")));
+</code></pre>
+
+<p>
+  Oikeuksia käytetään käytettävissä olevien polkujen rajaamisessa. Voimme rajata luokassa <code>SecurityConfiguration</code> osan poluista esimerkiksi vain käyttäjille, joilla on <code>ADMIN</code>-oikeus. Alla olevassa esimerkissä kaikki käyttäjät saavat tehdä GET-pyynnön sovelluksen juuripolkuun. Vain <code>ADMIN</code>-käyttäjät pääsevät polkuun <code>/clients</code>, jonka lisäksi muille sivuille tarvitaan kirjautuminen (mikä tahansa oikeus). Kuka tahansa pääsee kirjautumislomakkeeseen käsiksi.
+</p>
+
+<pre class="sh_java code-highlight"><code>@Override
+protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/").permitAll()
+            .antMatchers("/clients").hasAnyAuthority("ADMIN")
+            .anyRequest().authenticated();
+    http.formLogin()
+            .permitAll();
+}
+</code></pre>
+
+<p>
+  Oikeuksia varten määritellään tyypillisesti erillinen tietokantataulu, ja käyttäjällä voi olla useampia oikeuksia.
+</p>
+
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Only for the Selected</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+        
+  <p>
+    Sovelluksessa on toteutettuna käyttäjienhallinta tällä hetkellä siten, että käyttäjillä ei ole erillisiä oikeuksia. Muokkaa sovellusta ja lisää sovellukseen käyttäjäkohtaiset oikeudet. Suojaa tämän jälkeen sovelluksen polut seuraavasti:
+  </p>
+
+  <ul>
+    <li>Kuka tahansa saa nähdä polusta <code>/happypath</code> palautetun tiedon</li>
+    <li>Vain USER tai ADMIN -käyttäjät saavat nähdä polusta <code>/secretpath</code> palautetun tiedon</li>		
+    <li>Vain ADMIN-käyttäjät saavat nähdä polusta <code>/adminpath</code> palautetun tiedon</li>
+  </ul>
+  
+  <p>Lisää sovellukseen myös seuraavat käyttäjät:</p>
+
+  <table class="table">
+    <tr>
+      <th>Käyttäjätunnus</th>
+      <th>Salasana</th>
+      <th>Oikeudet</th>
+    </tr>
+    <tr>
+      <td>larry</td>
+      <td>larry</td>
+      <td>USER</td>
+    </tr>
+    <tr>
+      <td>moe</td>
+      <td>moe</td>
+      <td>USER ja ADMIN</td>
+    </tr>
+    <tr>
+      <td>curly</td>
+      <td>curly</td>
+      <td>ADMIN</td>
+    </tr>
+  </table>
+
+
+    </div>
+  </div>
+</div>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Käyttäjän luominen
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Käyttäjien luominen tapahtuu sovelluksissa tyypillisesti erillisen "rekisteröidy"-sivun kautta. Tämä on sivu, missä muutkin sivut, ja tallentaa tietoa tietokantaan normaalisti. Käyttäjän salasanan luomisessa tosin hyödynnetään esimerkiksi BCrypt-salausta.
+  </p>
+
+
+  </div>
+</div>
+
+
+<h3 class="material-heading">
+    Muutama sana salasanoista
+
+</h3>
+
+<p>
+  Salasanoja ei tule tallentaa selväkielisenä tietokantaan. Salasanoja ei tule -- myöskään -- tallentaa salattuna tietokantaan ilman, että niihin on lisätty erillinen "suola", eli satunnainen merkkijono, joka tekee salasanasta hieman vaikeammin tunnistettavan.
+</p>
+
+<p>
+  Vuonna 2010 tehty tutkimus vihjasi, että noin 75&#37; ihmisistä käyttää samaa salasanaa sähköpostissa ja sosiaalisen median palveluissa. Jos käyttäjän sosiaalisen median salasana vuodetaan selkokielisenä, on siis mahdollista, että samalla myös hänen salasana esimerkiksi Facebookiin tai Google Driveen on päätynyt julkiseksi tiedoksi. Jos ilman "suolausta" salattu salasana vuodetaan, voi se mahdollisesti löytyä verkossa olevista valmiista salasanalistoista, mitkä sisältävät salasana-salaus -pareja. <a href="http://wpengine.com/unmasked/" target="_blank">Jostain syystä salasanat ovat myös usein ennustettavissa.</a>
+</p>
+
+<p>
+  Suolan lisääminen salasanaan ei auta tilanteissa, missä salasanat ovat ennustettavissa, koska salasanojen koneellinen läpikäynti on melko nopeaa. Salausmenetelmänä kannattaakin käyttää sekä salasanan suolausta, että algoritmia, joka on hidas laskea. Eräs tällainen on jo valmiiksi Springin kautta käyttämämme <a href="https://en.wikipedia.org/wiki/Bcrypt" target="_blank">BCrypt</a>-algoritmi.
+</p>
+
+
+<figure>
+
+  <img src="http://imgs.xkcd.com/comics/password_strength.png">
+
+  <figcaption>https://xkcd.com/936/ -- xkcd: Password strength. </figcaption>
+  
+</figure>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Käyttäjän luominen
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Käyttäjien luominen tapahtuu sovelluksissa tyypillisesti erillisen "rekisteröidy"-sivun kautta. Tämä on sivu, missä muutkin sivut, ja tallentaa tietoa tietokantaan normaalisti. Käyttäjän salasanan luomisessa tosin hyödynnetään esimerkiksi BCrypt-algoritmia.
+  </p>
+
+
+  </div>
+</div>
+
+
+<h2 class="material-heading">
+    Tunnusten ja salattavien sivujen määrittely
+
+</h2>
+
+
+<p>
+  Tutustuimme edellä käyttäjän tunnistamiseen eli autentikointiin. Autentikoinnin lisäksi sovelluksissa on tärkeää varmistaa, että käyttäjä saa tehdä asioita, joita hän yrittää tehdä: autorisointi. Jos käyttäjän tunnistaminen toimii mutta sovellus ei tarkista oikeuksia tarkemmin, on mahdollista päätyä esimerkiksi tilanteeseen, missä <a href="http://www.telegraph.co.uk/technology/facebook/10251869/Mark-Zuckerberg-Facebook-profile-page-hacked.html" target="_blank">käyttäjä pääsee tekemään epätoivottuja asioita</a>.
+</p>
+
+
+
+<h3 class="material-heading">
+    Näkymätason autorisointi
+
+</h3>
+
+<p>
+  Määrittelimme aiemmin oikeuksia sovelluksen polkuihin liittyen. Tämä ei kuitenkaan aina riitä, vaan käyttöliitymissä halutaan usein rajoittaa toiminta esimerkiksi käyttäjäroolien perusteella. Thymeleaf-projektiin löytyy liitännäinen, jonka avulla voimme lisätä tarkistuksia HTML-sivuille. Liitännäisen saa käyttöön lisäämällä seuraavan riippuvuuden <code>pom.xml</code>-tiedostoon.
+</p>
+
+
+<pre class="sh_xml code-highlight"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.thymeleaf.extras&lt;/groupId&gt;
+    &lt;artifactId&gt;thymeleaf-extras-springsecurity4&lt;/artifactId&gt;
+&lt;/dependency&gt;   
+</code></pre>
+
+<p>
+  Kun näkymiien <code>html</code>-elementtiin lisätään <code>sec:</code>-nimiavaruuden määrittely, voidaan sivulle määritellä elementtejä, joiden sisältö näytetään vain esimerkiksi tietyllä roolilla kirjautuneelle käyttäjälle. Seuraavassa esimerkissä teksti "salaisuus" näkyy vain käyttäjälle, jolla on rooli "ADMIN".
+</p>
+
+<pre class="sh_xml code-highlight"><code>&lt;html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.springframework.org/security/tags"&gt;
+
+...
+&lt;div sec:authorize="hasAuthority('ADMIN')"&gt;
+    &lt;p&gt;salaisuus&lt;/p&gt;
+&lt;/div&gt;
+...
+</code></pre>
+
+<p>
+  Attribuutilla <code>sec:authorize</code> määritellään säännöt, joita tarkistuksessa käytetään. Attribuutille käy mm. arvot <code>isAuthenticated()</code>, <code>hasAuthority('...')</code> ja <code>hasAnyAuthority('...')</code>. Lisää sääntöjä löytyy Spring Securityn <a href="http://docs.spring.io/spring-security/site/docs/current/reference/html/el-access.html" target="_blank">dokumentaatiosta</a>.
+</p>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Näkymän muutokset liittyvät käytettävyyteen
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Edellä lisätty toiminnallisuus liittyy sovelluksen käytettävyyteen. Vaikka linkkiä ei näytettäisi osana sivua, kuka tahansa voi muokata sivun rakennetta selaimellaan. Tällöin pyynnön voi myös tehdä osoitteeseen, jota sivulla ei aluksi näy.
+  </p>
+
+  <p>
+    Tämä pätee oikeastaan kaikkeen selainpuolen toiminnallisuuteen. Web-sivuilla Javascriptin avulla toteutettu dynaaminen toiminnallisuus on hyödyllistä käytettävyyden kannalta, mutta se ei millään tavalla takaa, että sovellus olisi turvallinen käyttää. Tietoturva toteutetaan suurelta osin palvelinpäässä.
+  </p>
+  
+
+  </div>
+</div>
+
+
+<h3 class="material-heading">
+    Metoditason autorisointi
+
+</h3>
+
+<p>
+  Pelkän näkymätason autorisoinnin ongelmana on se, että usein toimintaa halutaan rajoittaa tarkemmin -- esimerkiksi siten, että tietyt operaatiot (esim. poisto tai lisäys) mahdollistetaan vain tietyille käyttäjille tai käyttäjien oikeuksille. Käyttöliittymän näkymää rajoittamalla ei voida rajoittaa käyttäjän tekemiä pyyntöjä, sillä pyynnöt voidaan tehdä myös "käyttöliittymän ohi" esimerkiksi Postmanin avulla.
+</p>
+
+<p>
+  Saamme sovellukseemme käyttöön myös metoditason autorisoinnin. Lisäämällä tietoturvakonfiguraatiotiedostoon luokkatason annotaation <code>@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true)</code>, Spring Security etsii metodeja, joissa käytetään sopivia annotaatioita ja suojaa ne. Suojaus tapahtuu käytännössä siten, että metodeihin luodaan proxy-metodit; aina kun metodia kutsutaan, kutsutaan ensin tietoturvakomponenttia, joka tarkistaa onko käyttäjä kirjautunut.
+</p>
+
+<p>
+  Kun konfiguraatiotiedostoon on lisätty annotaatio, on käytössämme muunmuassa annotaatio <a href="http://docs.spring.io/spring-security/site/docs/current/reference/html/jc.html#jc-method" target="_blank">@Secured</a>. Alla olevassa esimerkissä <code>post</code>-metodin käyttöön vaaditaan "ADMIN"-oikeudet.
+</p>
+
+<pre class="sh_java code-highlight"><code>@Secured("ADMIN")
+@PostMapping("/posts")
+public String post() {
+    // ..
+    return "redirect:/posts";
+}
+</code></pre>
+
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Hidden fields</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+            
+  <p>
+    Tehtävässä on hahmoteltu viestien näyttämiseen tarkoitettua sovellusta.
+  </p>
+      
+  <p>
+    Luo sovellukseen tietoturvakonfiguraatio, missä määritellään kaksi käyttäjää. Ensimmäisellä käyttäjällä "user", jonka salasana on "password" on "USER"-oikeus. Toisella käyttäjällä "postman", jonka salasana on "pat", on "POSTER"-oikeus.
+  </p>
+      
+  <p>
+    Muokkaa näkymää <code>messages.html</code> siten, että vain käyttäjät, joilla on "POSTER"-oikeus näkee lomakkeen, jolla voi lisätä uusia viestejä.
+  </p>
+      
+  <p>
+    Muokkaa lisäksi konfiguraatiota siten, että käyttäjä voi kirjautua ulos osoitteesta <code>/logout</code>. Voit käyttää seuraavaa koodia (joutunet lisäämään konfiguraatioon muutakin..).
+  </p>
+
+<pre class="sh_java code-highlight"><code>http.formLogin()
+    .permitAll()
+    .and()
+    .logout()
+    .logoutUrl("/logout")
+    .logoutSuccessUrl("/login");
+</code></pre>
+
+  <p>
+    Lisää tämän jälkeen sovellukseen metoditason suojaus millä rajoitat POST-pyyntöjen tekemisen osoitteeseen <code>/message</code> vain käyttäjille, joilla on "POSTER"-oikeus. Vaikka testit päästäisivät sinut läpi jo ennen tämän toteutusta, tee se silti.
+  </p>
+  
+
+    </div>
+  </div>
+</div>
+
+<p>
+  Käyttäjän identiteetin varmistaminen vaatii käyttäjälistan, joka taas yleensä ottaen tarkoittaa käyttäjän rekisteröintiä jonkinlaiseen palveluun. Käyttäjän rekisteröitymisen vaatiminen heti sovellusta käynnistettäessä voi rajoittaa käyttäjien määrää huomattavasti, joten rekisteröitymistä kannattaa pyytää vasta kun siihen on tarve.
+</p>
+
+<p>
+  Erillinen rekisteröityminen ja uuden salasanan keksiminen ei ole aina tarpeen. Web-sovelluksille on käytössä useita kolmannen osapuolen tarjoamia keskitettyjä identiteetinhallintapalveluita. Esimerkiksi <a href="http://oauth.net/2/" target="_blank">OAuth2</a>:n avulla sovelluskehittäjä voi antaa käyttäjilleen mahdollisuuden käyttää jo olemassaolevia tunnuksia. Myös erilaiset sosiaalisen median palveluihin perustuvat autentikointimekanismit ovat yleistyneet viime aikoina.
+</p>
+
+<p>
+  Merkittävään osaan näistä löytyy myös Spring-komponentit. Esimerkiki Facebookin käyttäminen kirjautumisessa on melko suoraviivaista -- aiheeseen löytyy opas mm. osoitteesta <a href="http://www.baeldung.com/facebook-authentication-with-spring-security-and-social" target="_blank" norel>http://www.baeldung.com/facebook-authentication-with-spring-security-and-social</a>.
+</p>
+
+<h2 class="material-heading">
+    Profiilit ja käyttäjät
+
+</h2>
+
+<p>
+  Kuten aiemmin kurssilla opimme, osa Springin konfiguraatiosta tapahtuu ohjelmallisesti. Esimerkiksi tietoturvaan liittyvät asetukset, esimerkiksi aiemmin näkemämme <code>SecurityConfiguration</code>-luokka, määritellään usein ohjelmallisesti. Haluamme kuitenkin luoda tilanteen, missä tuotannossa on eri asetukset kuin kehityksessä.
+</p>
+
+<p>
+  Tämä onnistuu <code>@Profile</code>-annotaation avulla, jonka kautta voimme asettaa tietyt luokat tai metodit käyttöön vain kun <code>@Profile</code>-annotaatiossa määritelty profiili on käytössä. Esimerkiksi aiemmin luomamme <code>SecurityConfiguration</code>-luokka voidaan määritellä tuotantokäyttöön seuraavasti:
+</p>
+
+<pre class="sh_java code-highlight"><code>// importit
+
+@Profile("production")
+@Configuration
+@EnableWebSecurity
+public class ProductionSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .anyRequest().authenticated();
+        http.formLogin()
+                .permitAll();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+</code></pre>
+
+<p>
+  Voimme luoda erillisen tietoturvaprofiilin, jota käytetään oletuksena sovelluskehityksessä. Oletusprofiili määritellään merkkijonolla <code>default</code>.
+</p>
+
+<pre class="sh_java code-highlight"><code>// importit
+
+@Profile("default")
+@Configuration
+@EnableWebSecurity
+public class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // sallitaan h2-konsolin käyttö
+        http.csrf().disable();
+        http.headers().frameOptions().sameOrigin();
+        
+        http.authorizeRequests()
+                .antMatchers("/h2-console/*").permitAll()
+                .anyRequest().authenticated();
+        http.formLogin()
+                .permitAll();
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("jack").password("bauer").roles("USER");
+    }
+}
+</code></pre>
+
+<p>
+  Nyt tuotantoympäristössä käyttäjät noudetaan tietokannasta, mutta kehitysympäristössä on erillinen testikäyttäjä. Jos profiilia ei ole erikseen määritelty, käytetään oletusprofiilia (default).
+</p>
+
+
+
+
+<h1 class="material-heading">
+    Syötteiden validointi
+
+</h1>
+
+<p>
+  Lomakkeiden ja lähetettävän datan validointi eli oikeellisuuden tarkistaminen on tärkeää. Ensimmäinen askel -- jonka olemme jo ottaneet -- on tallennettavan datan esittäminen ohjelmaan liittyvien käsitteiden kautta. Olemme käyttäneet datan tallentamisessa olioita, joihin on määritelty sopivat kenttien tyypit. Tämä helpottaa työtämme jo hieman: esimerkiksi numerokenttiin ei saa asetettua merkkijonoja. Käyttämämme Spring Bootin mukana tulee <a href="http://hibernate.org/" target="_blank">Hibernate</a>-projektin komponentti, joka tarjoaa validointitoiminnallisuuden.
+</p>
+
+<p>
+  Validaatiosääntöjen määrittely tapahtuu annotaatioilla. Muokataan alla määriteltyä luokkaa <code>Person</code> siten, että henkilöllä tulee olla henkilötunnus, nimi ja sähköpostiosoite.
+</p>
+
+
+<pre class="sh_java code-highlight"><code>// pakkaus, importit, annotaatiot
+public class Person {
+
+    private String socialSecurityNumber;
+    private String name;
+    private String email;
+
+}
+</code></pre>
+
+<p>
+  Sovitaan että henkilötunnus ei saa koskaan olla tyhjä ja sen tulee olla tasan 11 merkkiä pitkä. Nimen tulee olla vähintään 5 merkkiä pitkä, ja korkeintaan 30 merkkiä pitkä, ja sähköpostiosoitteen tulee olla validi sähköpostiosoite. Annotaatio <code>@NotEmpty</code> varmistaa ettei annotoitu attribuutti ole tyhjä -- lisätään se kaikkiin kenttiin. Annotaatiolla <code>@Size</code> voidaan määritellä pituusrajoitteita muuttujalle, ja annotaatiolla <code>@Email</code> varmistetaan, että attribuutin arvo on varmasti sähköpostiosoite. Annotaatiot löytyvät pakkauksesta <code>javax.validation.constraints</code>.
+</p>
+
+
+<pre class="sh_java code-highlight"><code>// pakkaus, importit, annotaatiot
+public class Person {
+
+    @NotEmpty
+    @Size(min = 11, max = 11)
+    private String socialSecurityNumber;
+
+    @NotEmpty
+    @Size(min = 5, max = 30)
+    private String name;
+
+    @NotEmpty
+    @Email
+    private String email;
+}
+</code></pre>
+
+
+<h2 class="material-heading">
+    Olion validointi kontrollerissa
+
+</h2>
+
+<p>
+  Kontrollerimetodit validoivat olion jos kontrollerimetodissa olevalle <code>@ModelAttribute</code>-annotaatiolla merkatulle oliolle on asetettu myös annotaatio <code>@Valid</code> (<code>javax.validation.Valid</code>).
+</p>
+
+<pre class="sh_java code-highlight"><code>  @PostMapping("/persons")
+  public String create(@Valid @ModelAttribute Person person) {
+      // .. esimerkiksi tallennus ja uudelleenohjaus
+}
+</code></pre>
+
+<p>
+  Spring validoi olion pyynnön vastaanottamisen yhteydessä, mutta validointivirheet eivät ole kovin kaunista luettavaa. Yllä olevalla kontrollerimetodilla virheellisen nimen kohdalla saamme hieman kaoottisen ilmoituksen.
+</p>
+
+<pre class="sample-output">Whitelabel Error Page
+
+This application has no explicit mapping for /error, so you are seeing this as a fallback.
+
+  <em>aika</em>
+There was an unexpected error (type=Bad Request, status=400).
+Validation failed for object='person'. Error count: 1
+</pre>
+
+<p>
+  Virheelle täytyy selvästi tehdä jotain..
+</p>
+
+
+
+<h2 class="material-heading">
+    Validointivirheiden käsittely
+
+</h2>
+
+
+<p>
+  Validointivirheet aiheuttavat poikkeuksen, joka näkyy ylläolevana virheviestinä, jos niitä ei erikseen käsitellä. Validointivirheiden käsittely tapahtuu luokan <code>BindingResult</code> avulla, joka toimii validointivirheiden tallennuspaikkana. Luokan <code>BindingResult</code> kautta voimme käsitellä virheitä. <code>BindingResult</code>-olio kuvaa aina yksittäisen olion luomisen ja validoinnin onnistumista, ja se tulee asettaa heti validoitavan olion jälkeen. Seuraavassa esimerkki kontrollerista, jossa validoinnin tulos lisätään automaattisesti <code>BindingResult</code>-olioon.
+</p>
+
+<pre class="sh_java code-highlight"><code>@PostMapping("/persons")
+public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) {
+    if(bindingResult.hasErrors()) {
+        // validoinnissa virheitä: virheiden käsittely
+    }
+
+    // muu toteutus
+}
+</code></pre>
+
+<p>
+  Ylläolevassa esimerkissä kaikki validointivirheet tallennetaan <code>BindingResult</code>-olioon. Oliolla on metodi <code>hasErrors</code>, jonka perusteella päätämme jatketaanko pyynnön prosessointia vai ei. Yleinen muoto lomakedataa tallentaville kontrollereille on seuraavanlainen:
+</p>
+
+<pre class="sh_java code-highlight"><code>@PostMapping("/persons")
+public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) {
+    if(bindingResult.hasErrors()) {
+        return "lomakesivu";
+    }
+
+    // .. esimerkiksi tallennus
+
+    return "redirect:/index";
+}
+</code></pre>
+
+<p>
+  Yllä oletetaan että lomake lähetettiin näkymästä <em>"lomakesivu"</em>: käytännössä validoinnin epäonnistuminen johtaa nyt siihen, että pyyntö ohjataan takaisin lomakesivulle.
+</p>
+
+
+
+<h2 class="material-heading">
+    Thymeleaf-lomakkeet ja BindingResult
+
+</h2>
+
+<p>
+  Lomakkeiden validointivirheet saadaan käyttäjän näkyville Thymeleafin avulla. Lomakkeet määritellään kuten normaalit HTML-lomakkeet, mutta niihin lisätään muutama apuväline. Lomakkeen attribuutti <code>th:object</code> kertoo olion, johon lomakkeen kentät tulee pyrkiä liittämään (huom! tämän tulee olla määriteltynä myös lomakkeen palauttavassa kontrollerimetodissa -- palaamme tähän kohta). Sitä käytetään yhdessä kontrolleriluokan <code>ModelAttribute</code>-annotaation kanssa. Lomakkeen kentät määritellään attribuutin <code>th:field</code> avulla, jossa oleva <code>*{arvo}</code> liitetään lomakkeeseen liittyvään olioon. Oleellisin virheviestin näkymisen kannalta on kuitenkin attribuuttiyhdistelmä <code>th:if="${#fields.hasErrors('arvo')}" th:errors="*{arvo}"</code>, joka näyttää virheviestin jos sellainen on olemassa.
+</p>
+
+<p>
+  Luodaan lomake aiemmin nähdyn <code>Person</code>-olion luomiseen.
+</p>
+
+
+<pre class="sh_xml code-highlight"><code>&lt;form action="#" th:action="@{/persons}" th:object="${person}" method="POST"&gt;
+    &lt;table&gt;
+        &lt;tr&gt;
+            &lt;td&gt;SSN: &lt;/td&gt;
+            &lt;td&gt;&lt;input type="text" th:field="*{socialSecurityNumber}" /&gt;&lt;/td&gt;
+            &lt;td th:if="${#fields.hasErrors('socialSecurityNumber')}" th:errors="*{socialSecurityNumber}"&gt;SSN Virheviesti&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Name: &lt;/td&gt;
+            &lt;td&gt;&lt;input type="text" th:field="*{name}" /&gt;&lt;/td&gt;
+            &lt;td th:if="${#fields.hasErrors('name')}" th:errors="*{name}"&gt;Name Virheviesti&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Email: &lt;/td&gt;
+            &lt;td&gt;&lt;input type="text" th:field="*{email}" /&gt;&lt;/td&gt;
+            &lt;td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"&gt;Email Virheviesti&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;button type="submit"&gt;Submit&lt;/button&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/table&gt;
+&lt;/form&gt;
+</code></pre>
+
+<p>
+  Yllä oleva lomake lähettää lomakkeen tiedot osoitteessa <code>&lt;sovellus&gt;/persons</code> olevalle kontrollerimetodille. Lomakkeelle tullessa tarvitsemme erillisen tiedon käytössä olevasta oliosta. Alla on näytetty sekä kontrollerimetodi, joka ohjaa GET-pyynnöt lomakkeeseen, että kontrollerimetodi, joka käsittelee POST-tyyppiset pyynnöt. Huomaa erityisesti <code>@ModelAttribute</code>-annotaatio kummassakin metodissa. Metodissa <code>view</code> olion nimi on <code>person</code>, joka vastaa lomakkeessa olevaa <code>th:object</code>-attribuuttia. Tämän avulla lomake tietää, mitä oliota käsitellään -- jos nimet poikkeavat toisistaan, lomakkeen näyttäminen antaa virheen <em>Neither BindingResult nor plain target object for bean name ...</em>.
+</p>
+
+<pre class="sh_java code-highlight"><code>@GetMapping("/persons")
+public String view(@ModelAttribute Person person) {
+    return "lomake";
+}
+
+@PostMapping("/persons")
+public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) {
+    if(bindingResult.hasErrors()) {
+        return "lomake";
+    }
+
+    // .. tallennus ja uudelleenohjaus
+}
+</code></pre>
+
+<p>
+  Jos lomakkeella lähetetyissä kentissä on virheitä, virheet tallentuvat <code>BindingResult</code>-olioon. Tarkistamme kontrollerimetodissa <code>create</code> ensin virheiden olemassaolon -- jos virheitä on, palataan takaisin lomakkeeseen. Tällöin validointivirheet tuodaan lomakkeen käyttöön <code>BindingResult</code>-oliosta, jonka lomakkeen kentät täytetään <code>@ModelAttribute</code>-annotaatiolla merkitystä oliosta. Huomaa että virheet ovat pyyntökohtaisia, ja uudelleenohjauspyyntö kadottaa virheet.
+</p>
+
+<p>
+  <strong>Huom!</strong> Springin lomakkeita käytettäessä lomakesivut haluavat käyttöönsä olion, johon data kytketään jo sivua ladattaessa. Yllä lisäsimme pyyntöön <code>Person</code>-olion seuraavasti:
+</p>
+
+<pre class="sh_java code-highlight"><code>@GetMapping("/persons")
+public String view(@ModelAttribute Person person) {
+    return "lomake";
+}
+</code></pre>
+
+<p>
+  Toinen vaihtoehto on luoda kontrolleriluokkaan erillinen metodi, jonka sisältämä arvo lisätään automaattisesti pyyntöön. Tällöin lomakkeen näyttävä kontrollerimetodi ei tarvitse erikseen ModelAttribute-parametria. Toteutus olisi esimerkiksi seuraavanlainen:
+</p>
+
+<pre class="sh_java code-highlight"><code>@ModelAttribute
+private Person getPerson() {
+    return new Person();
+}
+        
+@GetMapping("/persons")
+public String view() {
+    return "lomake";
+}
+
+@PostMapping("/person")
+public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) {
+    if(bindingResult.hasErrors()) {
+        return "lomake";
+    }
+
+    // .. tallennus ja uudelleenohjaus
+}
+</code></pre>
+
+<p>Thymeleafin avulla tehdyistä lomakkeista ja niiden yhteistyöstä Springin kanssa löytyy lisää osoitteesta <a href="http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form" target="_blank">http://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html#creating-a-form</a>.</p>
+
+
+
+<h2 class="material-heading">
+    Validointi ja entiteetit
+
+</h2>
+
+<p>
+  Vaikka edellisessä esimerkissä käyttämäämme <code>Person</code>-luokkaa ei oltu merkitty <code>@Entity</code>-annotaatiolla -- eli se ei ollut tallennettavissa JPAn avulla tietokantaan -- mikään ei estä meitä lisäämästä sille <code>@Entity</code>-annotaatiota. Toisaalta, lomakkeet voivat usein sisältää tietoa, joka liittyy useaan eri talletettavaan olioon. Tällöin voi luoda erillisen lomakkeen tietoihin liittyvän <em>lomakeolio</em>, jonka pohjalta luodaan tietokantaan tallennettavat oliot kunhan validointi onnistuu. Erilliseen lomakeobjektiin voi täyttää myös kannasta haettavia listoja ym. ennalta.
+</p>
+
+<p>
+  Kun validointisäännöt määritellään entiteetille, tapahtuu validointi kontrollerin lisäksi myös tietokantatallennusten yhteydessä.
+</p>
+
+
+<div class="exercise">
+  <div class="exercise__header">
+    <a data-toggle="collapse" class="exercise__toggle">
+      <i class="fa fa-pencil exercise__icon"></i>
+      <h1 class="exercise__heading">Registration</h1>
+
+      <i class="fa fa-caret-down exercise__arrow"></i>
+    </a>
+  </div>
+
+  <div class="collapse">
+    <div class="exercise__body">
+              
+  <p>
+    Tehtävän mukana tulee sovellus, jota käytetään ilmoittatumiseen. Tällä hetkellä käyttäjä voi ilmoittautua juhliin oikeastaan minkälaisilla tiedoilla tahansa. Tehtävänäsi on toteuttaa parametreille seuraavanlainen validointi:
+  </p>
+      
+  <ol>
+    <li>Nimen (<code>name</code>) tulee olla vähintään 4 merkkiä pitkä ja enintään 30 merkkiä pitkä.</li>
+    <li>Osoitteen (<code>address</code>) tulee olla vähintään 4 merkkiä pitkä ja enintään 50 merkkiä pitkä.</li>
+    <li>Sähköpostiosoitteen (<code>email</code>) tulee olla validi sähköpostiosoite.</li>
+  </ol>
+  
+  
+  <p>
+    Tehtäväpohjan mukana tuleviin sivuihin on toteutettu valmiiksi lomake. Tehtävänäsi on toteuttaa validointitoiminnallisuus pakkauksessa <code>wad.domain</code> olevaan luokkaan <code>Registration</code>.
+  </p>
+      
+  <p>
+    Jos yksikin tarkastuksista epäonnistuu, tulee käyttäjälle näyttää rekisteröitymislomake uudelleen. Muista lisätä kontrolleriin validoitavalle parametrille annotaatio <code>@Valid</code>. Virheviestien ei tule näkyä vastauksessa jos lomakkeessa ei ole virhettä. Käyttöliittymä on tehtävässä valmiina.
+  </p>
+  
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<h1 class="material-heading">
+    Muutama sana tietoturvasta
+
+</h1>
+
+<p>
+  Tutustutaan lyhyesti web-sovellusten tietoturvaan liittyviin teemoihin. Aloita katsomalla Juhani Erosen ARTTech-seminaari aiheesta <a href="https://www.youtube.com/watch?v=-51nIz8pz08" target="_blank">Your privacy is protected by .. what exactly?</a>. Aiheeseen syvennytään tarkemmin tietoturvakursseilla.
+</p>
+
+
+<h2 class="material-heading">
+    Suojattu verkkoyhteys
+
+</h2>
+
+<p>
+  Kommunikointi selaimen ja palvelimen välillä halutaan salata käytännössä aina. HTTPS on käytännössä HTTP-pyyntöjen tekemistä SSL (tai TLS)-salauksella höystettynä. HTTPS mahdollistaa sekä käytetyn palvelun verifioinnin sertifikaattien avulla että lähetetyn ja vastaanotetun tiedon salauksen.
+</p>
+
+<p>
+  HTTPS-pyynnöissä asiakas ja palvelin sopivat käytettävästä salausmekanismista ennen varsinaista kommunikaatiota. Käytännössä selain ottaa ensiksi yhteyden palvelimen HTTPS-pyyntöjä kuuntelevaan porttiin (yleensä 443), lähettäen palvelimelle listan selaimella käytössä olevista salausmekanismeista. Palvelin valitsee näistä parhaiten sille sopivan (käytännössä vahvimman) salausmekanismin, ja lähettää takaisin salaustunnisteen (palvelimen nimi, sertifikaatti, julkinen salausavain). Selain ottaa mahdollisesti yhteyttä sertifikaatin tarjoajaan -- joka on kolmas osapuoli -- ja tarkistaa onko sertifikaatti kunnossa.
+</p>
+
+<p>
+  Selain lähettää tämän jälkeen palvelimelle salauksessa käytettävän satunnaisluvun palvelimen lähettämällä salausavaimella salattuna. Palvelin purkaa viestin ja saa haltuunsa selaimen haluaman satunnaisluvun. Viesti voidaan nyt lähettää salattuna satunnaislukua ja julkista salausavainta käyttäen.
+</p>
+
+<p>
+  Käytännössä kaikki web-palvelimet tarjoavat HTTPS-toiminnallisuuden valmiina, joskin se täytyy ottaa palvelimilla käyttöön. Esimerkiksi Herokussa HTTPS on oletuksena käytössä sovelluksissa -- aiemmin mahdollisesti tekemääsi sovellukseen pääsee käsiksi siis myös osoitteen <code>https://sovelluksen-nimi.herokuapp.com</code> kautta. Tämä ei kuitenkaan estä käyttäjiä tekemästä pyyntöjä sovellukselle ilman HTTPS-yhteyttä -- jos haluat, että käyttäjien tulee tehdä kaikki pyynnöt HTTPS-yhteyden yli, lisää tuotantokonfiguraatioon seuraava rivi.
+</p>
+
+<pre>
+security.require-ssl=true
+</pre>
+
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Muutama sana turvallisesta verkkoyhteydestä
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Jos yhteys selaimen ja sovelluksen välissä on kunnossa, on tilanne melko hyvä. Tässä välissä on hyvä kuitenkin mainita myös avointen verkkoyhteyksien käytöstä.
+  </p>
+
+  <p>
+    Jos selaimen käyttäjä käyttää sovellusta avoimen (salasanattoman) langattoman verkkoyhteyden kautta, voi lähetettyjä viestejä kuunnella (ja muokata) käytännössä kuka tahansa. Avoimissa verkoissa käyttöjärjestelmä kirjautuu siihen verkkoon, jonka signaali on vahvin. Jos ilkeämielinen henkilö rakentaa samannimisen verkon ja saa verkkoyhteyden signaalin vahvemmaksi kuin olemassaolevassa verkossa, ottaa käyttäjän käyttöjärjestelmä automaattisesti yhteyden ilkeämielisen henkilön verkkoon. Tällöin ilkeämielinen henkilö voi myös kuunnella verkkoliikennettä halutessaan.
+  </p>
+
+  <p>
+    Tähän liittyvä hieman humoristinen esitys <a href="https://www.youtube.com/watch?v=rJ5jILY1vlw" target="_blank">DEF CON</a>-konferenssissa.
+  </p>
+
+
+  </div>
+</div>
+
+
+
+<h2 class="material-heading">
+    Tyypillisimpiä tietoturvauhkia
+
+</h2>
+
+
+<p>OWASP (<em>Open Web Application Security Project</em>) on verkkosovellusten tietoturvaan keskittynyt kansainvälinen järjestö, jonka tavoitteena on tiedottaa tietoturvariskeistä ja sitä kautta edesauttaa turvallisten web-sovellusten kehitystä. OWASP-yhteisö pitää myös yllä listaa merkittävimmistä web-tietoturvariskeistä. Vuoden 2013 lista on seuraava:</p>
+
+<ol>
+  <li>Injection -- sovellukseen jääneet aukot, jotka mahdollistavat esimerkiksi SQL-injektioiden tekemisen.</li><br/>
+  <li>Broken Authentication and Session Management -- autentikaatio esimerkiksi siten, että evästeisiin on helppo päästä käsiksi tai siten, että tieto autentikaatiosta kulkee osoitteessa.</li><br/>
+  <li>Cross-Site Scripting (XSS) -- Mahdollisuus syöttää sivulle Javascript-koodia esimerkiksi tekstikentän kautta. Tämä mahdollistaa mm. toisella koneella  olevan Javascript-koodin suorittamisen, tai lomaketietojen lähettämisen kolmannen osapuolen palveluun. </li><br/>
+  <li>Insecure Direct Object References -- mahdollisuus päästä käsiksi esimerkiksi palvelimella sijaitseviin tiedostoihin muokkaamalla polkua tai lähettämällä palvelimelle sopivaa dataa. Yksinkertaisin kokeilu lienee <code>../</code>-merkkijonon kokeilemista sovelluksen polussa.</li><br/>
+  <li>Security Misconfiguration -- huonosti tehdyt tietoturvakonfiguraatiot.</li><br/>
+  <li>Sensitive Data Exposure -- yhteyksien tulee olla suojattu.</li><br/>
+  <li>Missing Function Level Access Control -- autorisaatiota ei tapahdu metoditasolla.</li><br/>
+  <li>Cross-Site Request Forgery (CSRF) -- sovelluksessa XSS-aukko, joka mahdollistaa epätoivotun pyynnön lähettämisen toiselle palvelimelle. Lomakkeisiin voidaan myös määritellä <a href="http://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html" target="_blank">erillinen otsaketieto</a>, joka on uniikki ja luodaan sivun latauksen yhteydessä.</li><br/>
+  <li>Using Components with Known Vulnerabilities -- sovelluksessa käytetään osia, joissa on tunnettuja tietoturvariskejä. </li><br/>
+  <li>Unvalidated Redirects and Forwards -- älä käytä parametreja uudelleenohjauksissa. Riskinä on väärien parametrien syöttäminen ja sitä kautta epätoivottuun tietoon pääseminen.</li><br/>
+</ol>
+
+<p>
+  Tutustu listaan tarkemmin osoitteessa <a href="https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project">https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project</a>. He tarjoavat dokumentaatiossaan kuvaukset riskeistä, sekä esimerkkejä hyökkäyksistä; <a href="https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet" target="_blank">Tässä</a> esimerkki XSS-filtterien kiertämisestä.
+</p>
+
+
+<div class="hint">
+  <div class="hint__header">
+    <i class="fa fa-info-circle hint__icon"></i>Palvelinten fyysinen tietoturva
+  </div>
+
+  <div class="hint__body">
+    
+  <p>
+    Tietoturvaan keskityttäessä on hyvä muistaa myös fyysinen tietoturva. Jos palvelinsaliin pääsee helposti, voi kuka tahansa kävellä sinne ja ottaa palvelimen kainaloonsa. Tällöin sovellukseen toteutetun tietoturvan hyöty on melko pieni.
+  </p>
+  
+
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="footer-wrapper">
+        <footer class="footer">
+  <div>
+    Tämä materiaali on lisensoitu Creative Commons BY-NC-SA-lisenssillä
+  </div>
+  <div>
+    Kurssin on tehnyt Helsingin Yliopiston Agile Education Research -tutkimusryhmä.
+  </div>
+  <div class="improvement">
+    <a href="https://github.com/materiaalit/wepa-s17/issues/new"  target="_blank" rel="noopener">
+  <button class='btn btn-primary'>
+    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Ilmoita virhe
+  </button>
+</a>
+<a href="https://github.com/materiaalit/wepa-s17/edit/master/source/part6.html.erb" target="_blank" rel="noopener">
+  <button class='btn btn-primary'>
+    <i class="fa fa-pencil" aria-hidden="true"></i>
+ Muokkaa sivua
+  </button>
+</a>
+     <a href="https://github.com/materiaalit/ohjelmointi-s17" class="footer__github-link" target="_blank" rel="noopener">
+      <i class="fa fa-github"></i>
+    </a>
+  </div>
+</footer>
+
+      </div>
+    </div>
+
+    <div class="modal fade" id="tmc-login-modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="tmc-login-form">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Kirjaudu TMC-käyttäjällesi</h4>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-info">
+            Puuttuuko sinulta TMC-käyttäjätunnus? <a href="https://tmc.mooc.fi/user/new" class="alert-link" target="_blank" rel="noopener">Rekisteröidy</a>
+          </div>
+
+          <div class="alert alert-danger" id="tmc-login-error" style="display: none;"></div>
+
+          <div class="form-group">
+            <label>Käyttäjätunnus</label>
+            <input type="text" id="tmc-login-username" class="form-control" placeholder="Käyttäjätunnus"/>
+          </div>
+
+          <div class="form-group">
+            <label>Salasana</label>
+            <input type="password" id="tmc-login-password" class="form-control" placeholder="Salasana"/>
+          </div>
+
+          <div class="form-group">
+            <label>Kurssi</label>
+
+            <div class="form-check">
+              <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="tmcLoginCourse" value="hy-wepa-s17">
+                hy-wepa-s17 (Web-palvelinohjelmointi, syksy 2017)
+              </label>
+            </div>
+
+            <small class="form-text text-muted">
+              Kurssin valinnalla on pieniä vaikutuksia materiaalin tiettyihin osiin.
+            </small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-secondary" data-dismiss="modal">Sulje</a>
+          <button type="submit" class="btn btn-primary">Kirjaudu sisään</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+    <div class="table-of-contents-layer" id="table-of-contents-layer">
+</div>
+
+<div class="table-of-contents" id="table-of-contents">
+  <h1 class="table-of-contents__heading">
+    Sisällysluettelo
+  </h1>
+
+  <div class="table-of-contents__content">
+    <ul id="table-of-contents-list"></ul>
+  </div>
+</div>
+
+
+    <script>
+  window._QUIZNATOR_ENABLED = true;
+</script>
+
+<script src="https://quiznator.herokuapp.com/javascripts/plugin-loader.min.js"></script>
+
+
+    <script>
+  window._STUDENT_DASHBOARD_ENABLED = true;
+</script>
+<script src="https://student-dashboard.testmycode.io/plugin-loader/script.js"></script>
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+	    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+	    crossorigin="anonymous"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <script>
+      window.SD_SHOW_SURVEY = ['part6', 'part7'].indexOf(window.location.pathname.replace(/\//g,'')) >= 0;
+    </script>
+
+    <script src="../javascripts/scripts-0a398f9d.js"></script>
+
+    <script src="https://use.fontawesome.com/ed2f73836b.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
+
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.1/cookieconsent.min.js"></script>
+    <script src='//cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js'></script>
+
+    <script>window.cookieconsent.initialise({"palette":{"popup":{"background":"#000"},"button":{"background":"#f1d600"}}, "position": "bottom-left"});</script>
+
+    <!-- <script src='https://materiaalit.github.io/code-states-visualizer-cdn/app.js'></script> -->
+    <!-- <script src='https://materiaalit.github.io/typonator-cdn/app.js'></script> -->
+    <!-- <script src='https://crowdsorcerer.testmycode.io/dist/app.js'></script> -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        // window.initCodeStatesVisualizer();
+        // window.initTyponator(); // default init disabled -- favoring AB
+        // window.initCrowdsorcerer();
+      });
+    </script>
+  </body>
+</html>
