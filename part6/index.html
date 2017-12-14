@@ -63,6 +63,9 @@
       <li class="nav-item active">
         <a href="./" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part6.html&gt;')">Osa 6</a>
       </li>
+      <li class="nav-item ">
+        <a href="../part7/" class="nav-link" onclick="ga('send', 'event', 'navigation_topic_link', 'click', '#&lt;Middleman::Sitemap::Resource path=part7.html&gt;')">Osa 7</a>
+      </li>
   </ul>
 
   <div class="float-xs-right navbar__buttons">
@@ -407,10 +410,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   Kun käyttäjä on kirjautuneena, saa häneen liittyvän käyttäjätunnuksen ns. tietoturvakontekstista.
 </p>
 
-<pre class="sh_java">
-Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+<pre class="sh_java code-highlight"><code>Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 String username = auth.getName();
-</pre>
+</code></pre>
 
 
 <div class="hint">
@@ -1417,7 +1419,7 @@ security.require-ssl=true
       window.SD_SHOW_SURVEY = ['part6', 'part7'].indexOf(window.location.pathname.replace(/\//g,'')) >= 0;
     </script>
 
-    <script src="../javascripts/scripts-0a398f9d.js"></script>
+    <script src="../javascripts/scripts-d489284e.js"></script>
 
     <script src="https://use.fontawesome.com/ed2f73836b.js"></script>
 
