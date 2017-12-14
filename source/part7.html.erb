@@ -1,0 +1,901 @@
+---
+title: Osa 7
+exercise_page: true
+quiz_page: false
+published: true
+---
+
+
+<% partial 'partials/hint', locals: { name: 'Seitsemännen osan tavoitteet' } do %>
+
+  <p>
+    Tuntee menetelmiä sovellusten skaalaamiseen isoille käyttäjäjoukoille. Ymmärtää reaktiivisen ohjelmoinnin perusteet ja osaa tehdä yksinkertaisen palvelinohjelmiston reaktiivisella ohjelmointiparadigmalla.
+  </p>
+  
+<% end %>
+
+
+
+<% partial 'partials/material_heading' do %>
+  Skaalautuvat sovellukset
+<% end %>
+
+<p>
+  Kun sovellukseen liittyvä liikenne ja tiedon määrä kasvaa niin isoksi, että sovelluksen käyttö takkuilee, tulee asialle tehdä jotain.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Hitausongelmat' } do %>
+  
+  <p>
+    Sovelluksen hitausongelmat liittyvät usein konfiguraatio-ongelmiin. Tyypillisiä ongelmia ovat esimerkiksi toistuvat tietokantakyselyt tauluihin, joiden kenttiin ei ole määritelty hakuoperaatioita tehostavia indeksejä. Yksittäisen käyttäjän etsiminen tietokantataulusta nimen perusteella vaatii pahimmassa tapauksessa kaikkien rivien läpikäynnin ilman indeksien käyttöä; indeksillä haku tehostuu merkittävästi.
+  </p>
+
+  <p>
+    Sovelluksen ongelmakohdat löytyvät usein sovelluksen toimintaa profiloimalla. Spring-sovellusten profilointi onnistuu esimerkiksi <a href="https://www.appdynamics.com/java/spring/" target="_blank">AppDynamicsin</a> ja <a href="https://www.yourkit.com/" target="_blank">YourKit</a>in avulla. Spring Boot-projekteihin voi lisätää myös <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready" target="_blank">Actuator</a>-komponentin, jonka avulla <a href="http://kielczewski.eu/2015/01/application-metrics-with-spring-boot-actuator/" target="_blank">sovellukseen voi lisätä tilastojen keruutoiminnallisuutta</a>.
+  </p>
+
+<% end %>
+
+
+<p>
+  Olettaen, että sovelluksen konfiguraatio on kunnossa, sovelluksen skaalautumiseen on useampia lähtökohtia: (1) olemassaolevien resurssien käytön tehostaminen esimerkiksi välimuistitoteutusten ja palvelintehon kasvattamisen avulla, (2) resurssien määrän kasvattaminen esimerkiksi uusia palvelimia hankkimalla, (3) toiminnallisuuden jakaminen pienempiin vastuualueisiin ja palveluihin sekä näiden määrän kasvattaminen.
+</p>
+
+<p>
+  Sovellukset eivät tyypillisesti skaalaudu lineaarisesti ja skaalautumiseen liittyy paljon muutakin kuin resurssien lisääminen. Jos yksi palvelin pystyy käsittelemään tuhat pyyntöä sekunnissa, emme voi olettaa, että kahdeksan palvelinta pystyy käsittelemään kahdeksantuhatta pyyntöä sekunnissa.
+</p>
+
+<p>
+  Tehoon vaikuttavat myös muut käytetyt komponentit sekä verkkokapasiteetti eikä skaalautumiseen ole olemassa yhtä oikeaa lähestymistapaa. Joskus tehokkaamman palvelimen hankkiminen on nopeampaa ja kustannustehokkaampaa kuin sovelluksen muokkaaminen -- esimerkiksi hitaasti toimiva tietokanta tehostuu tyypillisesti huomattavasti lisäämällä käytössä olevaa muistia, joskus taas käytetyn tietokantakomponentin vaihtaminen tehostaa sovellusta merkittävästi.
+</p>
+
+<p>
+  Oleellista sovelluskehityksen kannalta on kuitenkin lähestyä ongelmaa pragmaattisesti ja optimoida käytettyjä henkilöresursseja; jos sovellus ei tule olemaan laajassa käytössä, ei sen skaalautumista kannata pitää tärkeimpänä sovelluksen ominaisuutena. Samalla on hyvä pitää mielessä ohjelmistokehitystyön kustannus -- kuukausipalkalla sivukuluineen saa ostettua useita palvelimia.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Palvelinpuolen välimuistit
+<% end %>
+
+<p>
+  Tyypillisissä palvelinohjelmistoissa huomattava osa kyselyistä on GET-tyyppisiä pyyntöjä. GET-tyyppiset pyynnöt hakevat tietoa mutta eivät muokkaa palvelimella olevaa dataa. Esimerkiksi tietokannasta dataa hakevat GET-tyyppiset pyynnöt luovat yhteyden tietokantasovellukseen, josta data haetaan. Jos näitä pyyntöjä on useita, eikä tietokannassa oleva data juurikaan muutu, kannattaa turhat tietokantakyselyt karsia.
+</p>
+
+<p>
+  Spring Bootia käytettäessä palvelimessa käytettävän <a href="http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-caching.html" target="_blank">välimuistin konfigurointi</a> tapahtuu lisäämällä konfiguraatiotiedostoon annotaatio <code>@EnableCaching</code>. Oman välimuistitoteutuksen toteuttaminen tapahtuu luomalla <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/cache/CacheManager.html" target="_blank">CacheManager</a>-rajapinnan toteuttava luokka sovellukseen. Jos taas omaa välimuistitoteutusta ei tee, etsii sovellus käynnistyessään välimuistitoteutusten (<a href="http://www.ehcache.org/" target="_blank">Ehcache</a>, <a href="https://hazelcast.com/" target="_blank">Hazelcast</a>, <a href="http://www.couchbase.com/" target="_blank">Couchbase</a>...) konfiguraatiotiedostoja. Jos näitä ei löydy, välimuistina käytetään yksinkertaista hajautustaulua.
+</p>
+
+<p>
+  Kun välimuisti on konfiguroitu, voimme lisätä välimuistitoiminnallisuuden palvelumetodeille <code>@Cacheable</code>-annotaation avulla. Alla olevassa esimerkissä metodin <code>read</code> palauttama tulos asetetaan välimuistiin.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@Service
+public class MyService {
+
+    @Autowired
+    private MyRepository myRepository;
+
+    @Cacheable("my-cache-key")
+    public My read(Long id) {
+        return myRepository.findOne(id);
+    }
+
+    // ...<% end %>
+
+<p>
+  Käytännössä annotaatio <code>@Cacheable</code> luo metodille <code>read</code> proxy-metodin, joka ensin tarkistaa onko haettavaa tulosta välimuistissa -- proxy-metodit ovat käytössä vain jos metodia kutsutaan luokan ulkopuolelta. Jos tulos on välimuistissa, palautetaan se sieltä, muuten tulos haetaan tietokannasta ja se tallennetaan välimuistiin. Metodin parametrina annettavia arvoja hyödynnetään välimuistin avaimen toteuttamisessa, eli jokaista haettavaa oliota kohden voidaan luoda oma tietue välimuistiin. Tässä kohtaa on hyvä tutustua Springin <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/cache.html" target="_blank">cache</a>-dokumentaatioon.
+</p>
+
+<p>
+  <em>
+    Huomaa, että Springin kontrollerimetodit palauttavat näkymän nimen -- kontrollerimetodien palauttamien arvojen cachettaminen ei ole toivottua..
+  </em>
+</p>
+
+<p>
+  Välimuistitoteutuksen vastuulla ei ole pitää kirjaa tietokantaan tehtävistä muutoksista, jolloin välimuistin tyhjentäminen muutoksen yhteydessä on sovelluskehittäjän vastuulla. Dataa muuttavat metodit tulee annotoida sopivasti annotaatiolla <code>@CacheEvict</code>, jotta välimuistista poistetaan muuttuneet tiedot.
+</p>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Weather Service' } do %>
+                
+  <p>
+    Kumpulan kampuksella majaileva ilmatieteen laitos kaipailee pientä viritystä omaan sääpalveluunsa. Tällä hetkellä palvelussa on toiminnallisuus sijaintien hakemiseen ja lisäämiseen. Ilmatieteen laitos on lisäksi toteuttanut säähavaintojen lisäämisen suoraan tuotantotietokantaan, mihin ei tässä palvelussa päästä käsiksi. Palvelussa halutaan kuitenkin muutama lisätoiminnallisuus:
+  </p>
+  
+  <p>
+    Lisää sovellukseen välimuistitoiminnallisuus. Osoitteisiin <code>/locations</code> ja <code>/locations/{id}</code> tehtyjen hakujen tulee toimia siten, että jos haettava sijainti ei ole välimuistissa, se haetaan tietokannasta ja tallennetaan välimuistiin. Jos sijainti taas on välimuistissa, tulee se palauttaa sieltä ilman tietokantahakua.
+  </p>
+  
+  <p>
+    Lisää tämän jälkeen sovellukseen toiminnallisuus, missä käytössä oleva välimuisti tyhjennetään kun käyttäjä lisää uuden sijainnin tai tekee GET-tyyppisen pyynnön osoitteeseen <code>/flushcaches</code>. Erityisesti jälkimmäinen on tärkeä asiakkaalle, sillä se lisää tietokantaan tietoa myös palvelinohjelmiston ulkopuolelta.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/hint', locals: { name: 'Välimuistit selainpuolella' } do %>
+
+  <p>
+    Tiedostoja jaettaessa dataa ei kannata siirtää uudestaan jos tiedosto on jo käyttäjällä. Voimme määritellä HTTP-pyynnön vastauksen otsaketietoihin tietoa datan vanhentumisesta, jonka perusteella selain osaa päätellä milloin näytettävä tieto on vanhentunutta ja se pitäisi hakea uudestaan. Hieman uudempi tapa on <a href="http://en.wikipedia.org/wiki/HTTP_ETag" target="_blank">entiteettitagin</a> käyttö pyynnön vastauksessa. Kun resurssiin liittyvään vastaukseen lisätään ETag-otsake, lähettää selain tiedostoa seuraavalla kerralla haettaessa aiemmin annetun arvon osana <code>"If-None-Match"</code>-otsaketta. Käytännössä palvelimella voidaan tällöin tarkistaa onko tiedosto muuttunut -- jos ei, vastaukseksi riittää pelkkä statuskoodi 304 -- NOT MODIFIED.
+  </p>
+  
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Palvelinmäärän kasvattaminen
+<% end %>
+
+<p>
+  Skaalautumisesta puhuttaessa puhutaan käytännössä lähes aina horisontaalisesta skaalautumisesta, jossa käyttöön hankitaan esimerkiksi lisää palvelimia. Vertikaalinen skaalautumisen harkinta on mahdollista tietyissä tapauksissa, esimerkiksi tietokantapalvelimen ja -kyselyiden toimintaa suunniteltaessa, mutta yleisesti ottaen horisontaalinen skaalautuminen on kustannustehokkaampaa. Käytännöllisesti ajatellen kahden viikon ohjelmointityö kymmenen prosentin tehonparannukseen on tyypillisesti kalliimpaa kuin muutaman päivän konfiguraatiotyö ja uuden palvelimen hankkiminen. Käyttäjien määrän kasvaessa uusien palvelinten hankkiminen on joka tapauksessa vastassa.
+</p>
+
+<p>
+  Pyyntöjen määrän kasvaessa yksinkertainen ratkaisu on palvelinmäärän eli käytössä olevan raudan kasvattaminen. Tällöin pyyntöjen jakaminen palvelinten kesken hoidetaan erillisellä kuormantasaajalla (<em><a href="http://en.wikipedia.org/wiki/Load_balancing_(computing)" target="_blank">load balancer</a></em>), joka ohjaa pyyntöjä palvelimille.
+</p>
+
+<p>
+  Jos sovellukseen ei liity tilaa (esimerkiksi käyttäjän tunnistaminen tai ostoskori), kuormantasaaja voi ohjata pyyntöjä käytössä oleville palvelimille round-robin -tekniikalla. Jos sovellukseen liittyy tila, tulee tietyn asiakkaan tekemät pyynnöt ohjata aina samalle palvelimelle, sillä evästeet tallennetaan oletuksena palvelinkohtaisesti. Tämän voi toteuttaa esimerkiksi siten, että kuormantasaaja lisää pyyntöön evästeen, jonka avulla käyttäjä identifioidaan ja ohjataan oikealle palvelimelle. Tätä lähestymistapaa kutsutaan termillä <em>sticky session</em>.
+</p>
+
+<p>
+  Pelkkä palvelinmäärän kasvattaminen ja kuormantasaus ei kuitenkaan aina riitä. Kuormantasaus helpottaa verkon kuormaa, mutta ei ota kantaa palvelinten kuormaan. Jos yksittäinen palvelin käsittelee pitkään kestävää laskentaintensiivistä kyselyä, voi kuormantasaaja ohjata tälle palvelimelle lisää kyselyjä "koska eihän se ole vähään aikaan saanut mitään töitä".  Käytännössä tällöin entisestään paljon laskentaa tekevä palvelimen saa lisää kuormaa. On kuitenkin mahdollista käyttää kuormantasaajaa, joka pitää lisäksi kirjaa palvelinten tilasta. Palvelimet voivat myös raportoida tilastaan -- Springillä tämä onnistuu esimerkiksi <a href="https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready" target="_blank" norel>Actuator</a>-komponentin avulla. Tässäkin on toki omat huonot puolensa, sillä palvelimen tila voi muuttua hyvinkin nopeasti.
+</p>
+
+<p>
+  Parempi ratkaisu on palvelinmäärän kasvattaminen <em>ja</em> sovelluksen suunnittelu siten, että laskentaintensiiviset operaatiot käsitellään erillisillä palvelimilla. Tällöin käytetään käytännössä erillistä laskentaklusteria aikaa vievien laskentaoperaatioiden käsittelyyn, jolloin pyyntöjä kuuntelevan palvelimen kuorma pysyy alhaisena.
+</p>
+
+<p>
+  Riippuen pyyntöjen määrästä, palvelinkonfiguraatio voidaan toteuttaa jopa siten, että staattiset tiedostot (esim. kuvat) löytyvät erillisiltä palvelimilta, GET-pyynnöt käsitellään erillisillä pyyntöjä vastaanottavilla palvelimilla, ja datan muokkaamista tai prosessointia vaativat kyselyt (esim POST) ohjataan asiakkaan pyyntöjä vastaanottavien palvelinten toimesta laskentaklusterille.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Rajoitettu määrä samanaikaisia pyyntöjä osoitetta kohden' } do %>
+    
+  <p>
+    Staattisten resurssien kuten kuvien ja tyylitiedostojen hajauttaminen eri palvelimille on oikeastaan fiksua. <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec8.html" target="_blank">HTTP 1.1-spesifikaation</a> yhteyksiin liittyvässä osissa suositellaan tiettyyn osoitteeseen tehtävien samanaikaisten pyyntöjen määrän rajoittamista kahteen.
+  </p>
+  
+  <p>
+    <em>Clients that use persistent connections SHOULD limit the number of simultaneous connections that they maintain to a given server. A single-user client SHOULD NOT maintain more than 2 connections with any server or proxy. A proxy SHOULD use up to 2*N connections to another server or proxy, where N is the number of simultaneously active users. These guidelines are intended to improve HTTP response times and avoid congestion.</em>
+  </p>
+  
+  <p>
+    Käytännössä suurin osa selaimista tekee enemmän kuin 2 kyselyä kerrallaan samaan osoitteeseen. Jos web-sivusto sisältää paljon erilaisia staattisita resursseja, ja ne sijaitsevat kaikki samalla palvelimella, saadaan resursseja korkeintaan selaimeen rajoitettu määrä kerrallaan. Toisaalta, jos resurssit jaetaan useamman sijainnin kesken, ei tätä rajoitetta ole.
+  </p>
+  
+  <p>
+    Resurssien jakaminen useampaan sijantiin mahdollistaa myös maantieteellisen hajauttamisen, missä käyttäjä saa sivun sisällön lähellä olevilta palvelimilta, mikä nopeuttaa vasteaikaa. Sama resurssi voi olla myös useammalla palvelimella.
+  </p>
+  
+  <p>
+    Tutustu aiheeseen tarkemmin lukemalla Wikipedian artikkeli <a href="http://en.wikipedia.org/wiki/Content_delivery_network" target="_blank">Content delivery network</a>.
+  </p>
+
+<% end %>
+
+
+<p>
+  Palvelinmäärän kasvattaminen onnistuu myös tietokantapuolella. Tällöin käyttöön tulevat tyypillisesti hajautetut tietokantapalvelut kuten <a href="http://cassandra.apache.org/" target="_blank">Apache Cassandra</a> ja <a href="http://geode.apache.org/" target="_blank">Apache Geode</a>. Riippumatta käyttöön valitusta teknologiasta, aiemmin käyttämämme Spring Data JPA:n ohjelmointimalli sopii myös näihin tietokantoihin: esimerkiksi Cassandran käyttöönottoon löytyy ohjeistusta osoitteesta <a href="http://projects.spring.io/spring-data-cassandra/" target="_blank">http://projects.spring.io/spring-data-cassandra/</a>.
+</p>
+
+
+
+<% partial 'partials/hint', locals: { name: 'Teknologiahype' } do %>
+  
+  <p>
+    Tietokantamoottoreiden ympärillä on viime vuosikymmenen lopusta lähtien ollut tietokantamoottoreihin liittyvää hype-tyyppistä keskustelua. Nyt kun tuosta on mennyt hetki, on hyvä tarkastella keskustelua ja siihen liittyviä jälkiviisauksia.
+  </p>
+
+  <p>
+    Eräs merkittävistä NoSQL-buumin aloittajista oli Twitterin noin 2010 tekemä <a href="http://www.computerworld.com/article/2520084/database-administration/twitter-growth-prompts-switch-from-mysql-to--nosql--database.html" target="_blank">päätös siirtyä MySQL-relaatiotietokannan käytöstä NoSQL-tietokantaan</a>; taustasyynä muutokselle oli "relaatiotietokantojen hitaus". Keskustelua seurasi <a href="https://www.mysql.com/" target="_blank">MySQL</a>:n ja <a href="https://mariadb.org/" target="_blank">MariaDB</a>:n kehittäjän Monty Wideniuksen <a href="http://blog.jelastic.com/2013/01/21/are-nosql-and-big-data-just-hype/" target="_blank">pohdintaa</a> teemaan liittyen: <em>The main reason Twitter had problems with MySQL back then, was that they were using it incorrectly. The strange thing was that the solution they suggested for solving their problems could be done just as easily in MySQL as in Cassandra.</em>
+  </p>
+
+  <p>
+    Käytännössä Widenius vihjasi, että Twitter vain käytti MySQL:ää huonosti. Nykyään Twitterkin on tosin rakentanut itselleen sopivampaa tietokannanhallintajärjestelmää, tästä lisää osoitteessa <a href="https://gigaom.com/2014/05/12/3-lessons-in-database-design-from-the-team-behind-twitters-manhattan/" target="_blank">https://gigaom.com/2014/05/12/3-lessons-in-database-design-from-the-team-behind-twitters-manhattan/</a>.
+  </p>
+
+<% end %>
+
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Tiedostojen jakaminen ja tietokannat
+<% end %>
+
+<p>
+  Kun sovelluksen kasvu saavuttaa pisteen, missä yksittäisestä tietokantapalvelimesta siirrytään useamman palvelimen käyttöön, on hyvä hetki miettiä sovelluksen tietokantarakennetta. Tietokantojen määrän kasvaessa numeeristen tunnusten (esim <code>Long</code>) käyttäminen tunnisteena on ongelmallista. Jos tietokantataulussa on numeerinen tunnus ja useampi sovellus luo uusia tietokantarivejä, tarvitaan erillinen palvelu tunnusten antamiselle -- tämän palvelun kaatuessa koko sovellus voi kaatua. Toisaalta, jos palvelua ei ole toteutettu hyvin, on tunnusten törmäykset mahdollisia, mikä johtaa helposti tiedon katoamiseen. Numeeristen avainten käyttö erityisesti osoitteiden yhteydessä tekee niistä myös helposti arvattavia, mikä voi myös luoda tietoturvariskejä yhdessä huonosti toteutetun pääsynvalvonnan kanssa.  Yhtenä vaihtoehtona numeerisille tunnuksille on ehdotettu <a href="http://docs.oracle.com/javase/7/docs/api/java/util/UUID.html" target="_blank">UUID</a>-pohjaisia merkkijonotunnuksia, jotka voidaan luoda ennen olion tallentamista tietokantaan.
+</p>
+
+<p>
+  Spring Data JPAn tapauksessa tämä tarkoittaa sitä, että <code>AbstractPersistable</code>-luokan periminen ei onnistu kuten ennen. Voimme kuitenkin toteuttaa oman UUIDPersistable-luokan, joka luo tunnuksen automaattisesti.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@MappedSuperclass
+public abstract class UUIDPersistable implements Persistable&lt;String&gt; {
+
+    @Id
+    private String id;
+
+    public UUIDPersistable() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @JsonIgnore
+    @Override
+    public boolean isNew() {
+        return false;
+    }
+
+    // muuta mahdollista
+}<% end %>
+
+<p>
+  Yllä oleva toteutus luo uuden id-avaimen olion luontivaiheessa, jolloin se on käytössä jo ennen olion tallentamista tietokantaan. Rajapinta <a href="http://docs.spring.io/spring-data/data-commons/docs/current/api/org/springframework/data/domain/Persistable.html" target="_blank">Persistable</a> on rajapinta, jota Spring Data -projektit käyttävät olioiden tallennuksessa erilaisiin tietokantoihin.
+</p>
+
+<p>
+  Nyt voimme luoda merkkijonotunnusta käyttävän entiteetin seuraavasti:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@Entity
+public class Person extends UUIDPersistable {
+
+    private String name;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+<% end %>
+
+
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Evästeet ja useampi palvelin
+<% end %>
+
+<p>
+  Kun käyttäjä kirjautuu palvelinohjelmistoon, tieto käyttäjästä pidetään tyypillisesti yllä sessiossa. Sessiot toimivat evästeiden avulla, jotka palvelin asettaa pyynnön vastaukseen, ja selain lähettää aina palvelimelle. Sessiotiedot ovat oletuksena yksittäisellä palvelimella, mikä aiheuttaa ongelmia palvelinmäärän kasvaessa. Edellä erääksi ratkaisuksi mainittiin kuormantasaajien (load balancer) käyttö siten, että käyttäjät ohjataan aina samalle koneelle. Tämä ei kuitenkaan ole aina mahdollista -- kuormantasaajat eivät aina tue sticky session -tekniikkaa -- eikä kannattavaa -- kun palvelinmäärää säädellään dynaamisesti, uusi palvelin käynnistetään tyypillisesti vasta silloin, kun havaitaan ruuhkaa -- olemassaolevat käyttäjät ohjataan ruuhkaantuneelle palvelimelle uudesta palvelimesta riippumatta.
+</p>
+
+<p>
+  Yksi vaihtoehto on tunnistautumisongelman siirtäminen tietokantaan -- skaalautumista helpottaa tietokannan hajauttaminen esimerkiksi käyttäjätunnusten perusteella. Sen sijaan, että käytetään palvelimen hallinnoimia sessioita, pidetään käyttäjätunnus ja kirjautumistieto salattuna evästeessä. Eväste lähetetään kaikissa tiettyyn osoitteeseen tehtävissä kutsuissa; palvelin voi tarvittaessa purkaa evästeessä olevan viestin ja hakea käyttäjään liittyvät tiedot tietokannasta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Asynkroniset metodikutsut ja rinnakkaisuus
+<% end %>
+
+<p>
+  Jokaiselle palvelimelle tulevalle pyynnölle määrätään säie, joka on varattuna pyynnön käsittelyn loppuun asti. Jokaisen pyynnön käsittelyyn kuuluu ainakin seuraavat askeleet: (1) pyyntö lähetetään palvelimelle, (2) palvelin vastaanottaa pyynnön ja ohjaa pyynnön oikealle kontrollerille, (3) kontrolleri vastaanottaa pyynnön ja ohjaa pyynnön oikealle palvelulle tai palveluille, (4) palvelu vastaanottaa pyynnön, suorittaa pyyntöön liittyvät operaatiot muiden palveluiden kanssa, ja palauttaa lopulta vastauksen metodin suorituksen lopussa, (5) kontrolleri ohjaa pyynnön sopivalle näkymälle, ja (6) vastaus palautetaan käyttäjälle. Pyyntöä varten on palvelimella varattuna säie kohdissa 2-6. Jos jonkun kohdan suoritus kestää pitkään -- esimerkiksi palvelu tekee pyynnön toiselle palvelimelle, joka on hidas -- on säie odotustilassa.
+</p>
+
+<p>
+  Palvelukutsun suorituksen odottaminen ei kuitenkaan aina ole tarpeen. Jos sovelluksemme suorittaa esimerkiksi raskaampaa laskentaa, tai tekee pitkiä tietokantaoperaatioita joiden tuloksia käyttäjän ei tarvitse nähdä heti, kannattaa pyyntö suorittaa asynkronisesti. Asynkronisella metodikutsulla tarkoitetaan sitä, että asynkronista metodia kutsuva metodi ei jää odottamaan metodin tuloksen valmistumista. Jos edellisissä askeleissa kohta 4 suoritetaan asynkronisesti, ei sen suoritusta tarvitse odottaa loppuun.
+</p>
+
+<p>
+  Ohjelmistokehykset toteuttavat asynkroniset metodikutsut luomalla palvelukutsusta erillisen säikeen, jossa pyyntö käsitellään. Spring Bootin tapauksessa asynkroniset metodikutsut saa käyttöön lisäämällä sovelluksen konfiguraatioon (tapauksessamme usein <code>Application</code>-luokassa) rivi <code>@EnableAsync</code>. Kun konfiguraatio on paikallaan, voimme suorittaa metodeja asynkronisesti. Jotta metodisuoritus olisi asynkroninen, tulee metodin olla <code>void</code>-tyyppinen, sekä sillä tulee olla annotaatio <code>@Async</code>.
+</p>
+
+<p>
+  Tutkitaan tapausta, jossa tallennetaan <code>Item</code>-tyyppisiä olioita. Item-olion sisäinen muoto ei ole niin tärkeä.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @RequestMapping(method = RequestMethod.POST)
+    public String create(@ModelAttribute Item item) {
+        itemService.create(item);
+        return "redirect:/items";
+    }<% end %>
+
+<p>
+  Oletetaan että <code>ItemService</code>-olion metodi <code>create</code> on void-tyyppinen, ja näyttää seuraavalta:
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    public void create(Item item) {
+        // koodia.. 
+    }<% end %>
+
+<p>
+  Metodin muuttaminen asynkroniseksi vaatii <code>@Async</code>-annotaation ItemService-luokkaan.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @Async
+    public void create(Item item) {
+        // koodia.. 
+    }<% end %>
+
+<p>
+  Käytännössä asynkroniset metodikutsut toteutetaan asettamalla metodikutsu suoritusjonoon, josta se suoritetaan kun sovelluksella on siihen mahdollisuus.
+</p>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Calculations' } do %>
+  
+  <p>
+    Tehtäväpohjassa on sovellus, joka tekee "raskasta laskentaa". Tällä hetkellä käyttäjä joutuu odottamaan laskentapyynnön suoritusta pitkään, mutta olisi hienoa jos käyttäjälle kerrottaisiin laskennan tilasta jo laskentavaiheessa.
+  </p>
+  
+  <p>
+    Muokkaa sovellusta siten, että laskenta tallennetaan kertaalleen jo ennen laskentaa -- näin siihen saadaan viite; aseta oliolle myös status "PROCESSING". Muokkaa tämän jälkeen luokkaa <code>CalculationService</code> siten, että laskenta tapahtuu asynkronisesti.
+  </p>
+  
+  <p>
+    Huom! Älä poista <code>CalculationService</code>-luokasta koodia
+  </p>
+  
+  <% partial 'partials/code_highlight' do %>
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(CalculationService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+  <% end %>                            
+  
+  
+  <p>
+    Kun sovelluksesi toimii oikein, laskennan lisäyksen pitäisi olla nopeaa ja käyttäjä näkee lisäyksen jälkeen laskentakohtaisen sivun, missä on laskentaan liittyvää tietoa. Kun sivu ladataan uudestaan noin 2 sekunnin kuluttua, on laskenta valmistunut.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Rinnakkain suoritettavat metodikutsut
+<% end %>
+
+<p>
+  Koostepalvelut, eli palvelut jotka keräävät tietoa useammasta palvelusta ja yhdistävät tietoja käyttäjälle, tyypillisesti haluavat näyttää käyttäjälle vastauksen.
+</p>
+
+<p>
+  Näissä tilanne on usein se, että palveluita on useita, ja niiden peräkkäinen suorittaminen on tyypillisesti hidasta. Suoritusta voi nopeuttaa ottamalla käyttöön rinnakkaisen suorituksen, joka onnistuu esimerkiksi Javan <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ExecutorService.html" target="_blank">ExecutorService</a>-luokan avulla. Voimme käytännössä lisätä tehtäviä niitä suorittavalle palvelulle, jolta saamme viitteen tulevaa vastausta varten.
+</p>
+
+<p>
+  Spring tarjoaa myös tähän apuvälineitä. Kun lisäämme sovellukselle <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/task/AsyncTaskExecutor.html">AsyncTaskExecutor</a>-rajapinnan toteuttaman olion (esimerkiksi <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/scheduling/concurrent/ThreadPoolTaskExecutor.html" target="_blank">ThreadPoolTaskExecutor</a>), voimme injektoida sen sovelluksemme käyttöön tarvittaessa. Tietynlaisen olion sovellukseen tapahtuu luomalla <code>@Bean</code>-annotaatiolla merkitty olio konfiguraatiotiedostossa. Alla esimerkiksi luodaan edellämainitut oliot.
+</p>
+
+
+<% partial 'partials/code_highlight' do %>
+// konfiguraatiotiedosto
+    @Bean
+    public AsyncTaskExecutor asyncTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(8);
+        return executor;
+    }
+<% end %>
+
+<p>
+  Nyt voimme ottaa käyttöön sovelluksessa <code>AsyncTaskExecutor</code>-rajapinnan toteuttavan olion.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    @Autowired
+    private AsyncTaskExecutor taskExecutor;
+<% end %>
+
+<p>
+  Käytännössä tehtävien lisääminen rinnakkaissuorittajalle tapahtuu esimerkiksi seuraavasti. Alla luodaan kolme <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Callable.html" target="_blank">Callable</a>-rajapinnan toteuttavaa oliota, annetaan ne <code>taskExecutor</code>-ilmentymälle, ja otetaan jokaisen kohdalla talteen <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html" target="_blank">Future</a>-viite, mihin suorituksen tulos asetetaan kun suoritus on loppunut. Future-oliosta saa tuloksen <code>get</code>-metodilla.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+    // käytössä myös ylläoleva taskExecutor
+    List&lt;Future&lt;TuloksenTyyppi&gt;&gt; results = new ArrayList&lt;&gt;();
+
+    results.add(taskExecutor.submit(new Callable&lt;TuloksenTyyppi&gt;() {
+        @Override
+        public TuloksenTyyppi call() {
+            // laskentaa.. -- tulos voi olla käytännössä mitä tahansa
+            return new TuloksenTyyppi();
+        }
+    }));
+    
+    for (Future&lt;TuloksenTyyppi&gt; result: results) {
+        TuloksenTyyppi t = result.get();
+
+        // tee jotain tällä..
+    }
+<% end %>
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Lowest Prices' } do %>
+
+  <p>
+    Tehtäväpohjaan on lähdetty toteuttamaan sovellusta, joka etsii eri palveluiden rajapinnoista halutun esineen hintaa ja palauttaa halvimman. Palvelusta on toteutettu ensimmäinen versio, mutta se on liian hidas.
+  </p>
+  
+  <p>
+    Ennenkuin sovelluskehittäjät juoksevat hakemaan uutta rautaa, muokkaa palvelun <code>QuoteService</code>-toiminnallisuutta siten, että se suorittaa hintakyselyt rinnakkain nykyisen peräkkäissuorituksen sijaan.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/hint', locals: { name: 'Java 8 ja kokoelmien rinnakkainen läpikäynti' } do %>
+  
+  <p>
+    Java 8 tarjoaa kehittyneemmän välineistön kokoelmien läpikäyntiin. Tutustu näihin osoitteessa <a href="http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html" target="_blank">http://docs.oracle.com/javase/tutorial/collections/streams/parallelism.html</a>.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/material_sub_sub_heading' do %>
+  Viestijonot
+<% end %>
+
+
+<p>
+  Kun palvelinohjelmistoja skaalataan siten, että osa laskennasta siirretään erillisille palvelimille, on oleellista että palveluiden välillä kulkevat viestit (pyynnöt ja vastaukset) eivät katoa, ja että käyttäjän pyyntöjä vastaanottavan palvelimen ei tarvitse huolehtia toisille palvelimille lähetettyjen pyyntöjen perille menemisestä tai lähetettyjen viestien vastausten käsittelystä. Eniten käytetty lähestymistapa viestien säilymisen varmentamiseen on viestijonot (<em>messaging</em>, <em>message queues</em>), joiden tehtävänä on toimia viestien väliaikaisena säilytyspisteenä. Käytännössä viestijonot ovat erillisiä palveluita, joihin viestien tuottajat (<em>producer</em>) voivat lisätä viestejä, joita viestejä käyttävät palvelut kuluttavat (<em>consumer</em>).
+</p>
+
+<p>
+  Viestijonoja käyttävät sovellukset kommunikoivat viestijonon välityksellä. Tuottaja lisää viestejä viestijonoon, josta käyttäjä niitä hakee. Kun viestin sisältämän datan käsittely on valmis, prosessoija lähettää viestin takaisin. Viestijonoissa on yleensä varmistustoiminnallisuus: jos viestille ei ole vastaanottajaa, jää viesti viestijonoon ja se tallennetaan esimerkiksi viestijonopalvelimen levykkeelle. Viestijonojen konkreettinen toiminnallisuus riippuu viestijonon toteuttajasta.
+</p>
+
+<p>
+  Viestijonosovelluksia on useita, esimerkiksi <a href="http://activemq.apache.org/" target="_blank">ActiveMQ</a> ja <a href="http://www.rabbitmq.com/" target="_blank">RabbitMQ</a>. Viestijonoille on myös useita standardeja, joilla pyritään varmistamaan sovellusten yhteensopivuus. Esimerkiksi Javan melko pitkään käytössä ollut <a href="http://en.wikipedia.org/wiki/Java_Message_Service" target="_blank">JMS</a>-standardi määrittelee viestijonoille rajapinnan, jonka viestijonosovelluksen tarjoajat voivat toteuttaa. Nykyään myös <a href="http://www.amqp.org/" target="_blank">AMQP</a>-protokolla on kasvattanut suosiotaan. Myös Spring tarjoaa komponentteja viestijonojen käsittelyyn, tutustu lisää aiheeseen <a href="http://spring.io/guides/gs/messaging-jms/" target="_blank">täällä</a>.
+</p>
+
+
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Palvelukeskeiset arkkitehtuurit
+<% end %>
+
+
+<p>
+  Monoliittisten "minä sisällän kaiken mahdollisen"-sovellusten ylläpitokustannukset kasvavat niitä kehitettäessä, sillä uuden toiminnallisuuden lisääminen vaatii olemassaolevan sovelluksen muokkaamista sekä testaamista. Olemassaoleva sovellus voi olla kirjoitettu hyvin vähäisesssä käytössä olevalla kielellä (vrt. pankkijärjestelmät ja COBOL) ja esimerkiksi kehitystä tukevat automaattiset testit voivat puuttua siitä täysin. Samalla myös uusien työntekijöiden tuominen ohjelmistokehitystiimiin on vaikeaa, sillä sovellus voi hoitaa montaa vastuualuetta samaan aikaan.
+</p>
+
+<p>
+  Yrityksen toiminta-alueiden laajentuessa sekä uusien sovellustarpeiden ilmentyessä aiemmin toteutettuihin toiminnallisuuksiin olisi hyvä päästä käsiksi, mutta siten, että toiminnallisuuden käyttäminen ei vaadi juurikaan olemassaolevan muokkausta. Koostamalla sovellus erillisistä palveluista saadaan luotua tilanne, missä palvelut ovat tarvittaessa myös uusien sovellusten käytössä. Palvelut tarjoavat rajapinnan (esim. REST) minkä kautta niitä voi käyttää. Samalla rajapinta kapseloi palvelun toiminnan, jolloin muiden palvelua käyttävien sovellusten ei tarvitse tietää sen toteutukseen liittyvistä yksityiskohdista. Oleellista on, että yksikään palvelu ei yritä tehdä kaikkea. Tämä johtaa myös siihen, että yksittäisen palvelun toteutuskieli tai muut teknologiset valinnat ei vaikuta muiden komponenttien toimintaan -- oleellista on vain se, että palvelu tarjoaa rajapinnan jota voi käyttää ja joka löydetään.
+</p>
+
+<p>
+  Yrityksen kasvaessa sen sisäiset toiminnat ja rakennettavat ohjelmistot sisältävät helposti päällekkäisyyksiä. Tällöin tilanne on käytännössä se, että aikaa käytetään samankaltaisten toimintojen ylläpitoon useammassa sovelluksessa -- pyörä keksitään yhä uudestaan ja uudestaan uudestaan uusia sovelluksia kehitettäessä.
+</p>
+
+
+<p>
+  SOA (<em><a href="http://en.wikipedia.org/wiki/Service-oriented_architecture" target="_blank">Service Oriented Architecture</a></em>), eli palvelukeskeinen arkkitehtuuri, on suunnittelutapa, jossa eri sovelluksen komponentit on suunniteltu toimimaan itsenäisinä avoimen rajapinnan tarjoavina palveluina. Pilkkomalla sovellukset erillisiin palveluihin luodaan tilanne, missä palveluita voidaan käyttää myös tulevaisuudessa kehitettävien sovellusten toimesta. Palveluita käyttävät esimerkiksi toiset palvelut tai selainohjelmistot. Selainohjelmistot voivat hakea palvelusta JSON-muotoista dataa Javascriptin avulla ilman tarvetta omalle palvelinkomponentille. SOA-arkkitehtuurin avulla voidaan helpottaa myös ikääntyvien sovellusten jatkokäyttöä: ikääntyvät sovellukset voidaan kapseloida rajapinnan taakse, jonka kautta sovelluksen käyttö onnistuu myös jatkossa.
+</p>
+
+
+<% partial 'partials/hint', locals: { name: 'Amazon ja palvelut' } do %>
+  
+  <p>
+    Amazon on hyvä esimerkki yrityksestä, joka on menestynyt osittain sen takia, että se on toteuttanut tarjoamansa toiminnallisuudet palveluina. Siirtymä ei kuitenkaan ollut yksinkertainen, allaoleva viesti on katkelma Amazonin toimitusjohtajan, Jeff Bezosin, noin vuonna 2002 kirjoittamasta viestistä yritykselle (<a href="https://plus.google.com/+RipRowan/posts/eVeouesvaVX" target="_blank">lähde</a>).
+  </p>
+
+  <pre>
+1) All teams will henceforth expose their data and functionality 
+   through service interfaces.
+
+2) Teams must communicate with each other through these interfaces.
+
+3) There will be no other form of interprocess communication allowed: 
+   no direct linking, no direct reads of another team's data store, 
+   no shared-memory model, no back-doors whatsoever. The only communication 
+   allowed is via service interface calls over the network.
+
+4) It doesn't matter what technology they use. HTTP, Corba, Pubsub, 
+   custom protocols — doesn't matter.
+
+5) All service interfaces, without exception, must be designed from the 
+   ground up to be externalizable. That is to say, the team must plan 
+   and design to be able to expose the interface to developers in the 
+   outside world. No exceptions.
+
+6) Anyone who doesn't do this will be fired.
+  </pre>
+
+  <p>
+    Oikeastaan, hyvin suuri syy sille, että Amazon tarjoaa nykyään erilaisia pilvipalveluita (kts. <a href="http://aws.amazon.com/" target="_blank">Amazon Web Services</a>) liittyy siihen kokemukseen, mitä yrityksen työntekijät sekä yritys on kerännyt kun yrityksen sisäistä toimintaa kehitettiin kohti palveluja tarjoavia ohjelmistotiimejä.
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/hint', locals: { name: 'Lisää palveluorientoituneista arkkitehtuureista' } do %>
+
+  <ul>
+    <li>
+      Tutustu Microsoftin <a href="https://msdn.microsoft.com/en-us/library/aa480021.aspx" target="_blank">SOA-johdatukseen</a> ja katso Youtube-video <a href="https://www.youtube.com/watch?v=OY7QGDg93Ic" target="_blank">Decomposing Applications for Deployability and Scalability</a>.
+    </li>
+    <li>
+      Entä jos joku palveluorientoituneen arkkitehtuurin palvelu kaatuu? NetFlix on kehittänyt tätä varten mainion <a href="https://github.com/Netflix/Hystrix" target="_blank">Hystrix</a>-kirjaston, joka tarjoaa menetelmiä kaatuneiden (tai ei vastaavien) komponenttien käsittelemiseen. Springillä on tuki Hystrix-kirjaston käyttöön, kts. <a href="https://spring.io/guides/gs/circuit-breaker/" target="_blank">https://spring.io/guides/gs/circuit-breaker/</a>.
+    </li>
+    <li>
+      Miten palvelut löydetään? Palveluorientoituneiden arkkitehtuurien yleistyessä markkinoille on ilmestynyt ESB (<a href="http://en.wikipedia.org/wiki/Enterprise_service_bus" target="_blank">enterprise service bus</a>)-sovelluksia, joiden tehtävä on toimia viestinvälittäjänä palveluiden välillä. Viestinvälityspalveluiden käyttäminen johtaa siihen, että palvelut ovat paremmin eriytettynä toisistaan -- palvelua A käyttävä palvelu B tietää vain viestinvälittäjän sekä palvelun A tunnisteen. Palvelun A tunniste ja kuvaus voidaan saada viestinvälittäjältä, ja palvelu voi kuvata itsensä esimerkiksi RAML (<a href="http://raml.org/" target="_blank">RESTful API Modeling Language</a>)-kuvauksen tai <a href="https://swagger.io/" target="_blank">Swagger</a>in avulla (kts. myös <a href="https://dzone.com/articles/spring-boot-restful-api-documentation-with-swagger" target="_blank">Spring Boot</a>-spesifi opas. Hieman skeptisyyttä on hyvä kuitenkin olla ilmassa -- katso esitys <a href="http://www.infoq.com/presentations/soa-without-esb" target="_blank">Does My Bus Look Big in This?</a>.
+    </li>
+  </ul>
+  
+<% end %>
+
+
+
+
+<% partial 'partials/material_heading' do %>
+  Reaktiivisten sovellusten ohjelmointi
+<% end %>
+
+<p>
+  Tarkastellaan seuraavaksi lyhyesti reaktiivisten sovellusten ohjelmointia. Tutustumme ensin pikaisesti funktionaaliseen ohjelmointiin sekä reaktiiviseen ohjelmointiin, jonka jälkeen nämä yhdistetään. Lopuksi katsotaan erästä tapaa lisätä palvelimen ja selaimen välistä vuorovaikutusta.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Funktionaalinen ohjelmointi
+<% end %>
+
+<p>
+  Funktionaalisen ohjelmoinnin ydinajatuksena on ohjelmakoodin suorituksesta johtuvien sivuvaikutusten minimointi. Sivuvaikutuksilla tarkoitetaan ohjelman tai ympäristön tilaan vaikuttavia epätoivottuja muutoksia. Sivuvaikutuksia ovat esimerkiksi muuttujan arvon muuttuminen, tiedon tallentaminen tietokantaan tai esimerkiksi käyttöliittymän näkymän muuttaminen.
+</p>
+
+<p>
+  Keskiössä ovat puhtaat ja epäpuhtaat funktiot. Puhtaat funktiot noudattavat seuraavia periaatteita: (1) funktio ei muuta ohjelman sisäistä tilaa ja sen ainoa tuotos on funktion palauttama arvo, (2) funktion palauttama arvo määräytyy funktiolle parametrina annettavien arvojen perusteella, eikä samat parametrien arvot voi johtaa eri palautettaviin arvoihin, ja (3) funktiolle parametrina annettavat arvot on määritelty ennen funktion arvon palauttamista.
+</p>
+
+<p>
+  Epäpuhtaat funktiot taas voivat palauttaa arvoja, joihin vaikuttavat myös muutkin asiat kuin funktiolle annettavat parametrit, jonka lisäksi epäpuhtaat funktiot voivat muuttaa ohjelman tilaa. Tällaisia ovat esimerkiksi tietokantaa käyttävät funktiot, joiden toiminta vaikuttaa myös tietokannan sisältöön tai jotka hakevat tietokannasta tietoa.
+</p>
+
+<p>
+  Funktionaaliset ohjelmointikielet tarjoavat välineitä ja käytänteitä jotka "pakottavat" ohjelmistokehittäjää ohjelmoimaan funktionaalisen ohjelmoinnin periaatteita noudattaen. Tällaisia kieliä ovat esimerkiksi <a href="https://en.wikipedia.org/wiki/Haskell_(programming_language)" target="_blank">Haskell</a>, joka on puhdas funktionaalinen ohjelmointikieli eli siinä ei ole mahdollista toteuttaa epäpuhtaita funktioita. Toinen esimerkki on <a href="https://en.wikipedia.org/wiki/Clojure" target="_blank">Clojure</a>, jossa on mahdollista toteuttaa myös epäpuhtaita funktiota -- Clojureen löytyy myös erillinen Helsingin yliopiston kurssimateriaali (<a href="http://mooc.fi/courses/2014/clojure/" target="_blank">Functional programming with Clojure</a>).
+</p>
+
+<p>
+  Funktionaalisen ohjelmoinnin hyötyihin liittyy muunmuassa testattavuus. Alla on annettuna esimerkki metodista, joka palauttaa nykyisenä ajanhetkenä tietyllä kanavalla näkyvän ohjelman.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+public TvOhjelma annaTvOhjelma(Opas opas, Kanava kanava) {
+    Aikataulu aikataulu = opas.annaAikataulu(kanava);
+    return aikataulu.annaTvOhjelma(new Date());
+}
+<% end %>
+
+<p>
+  Ylläolevan metodin palauttamaan arvoon vaikuttaa aika, eli sen arvo ei määräydy vain annettujen parametrien perusteella. Metodin testaaminen on vaikeaa, sillä aika muuttuu jatkuvasti. Jos määrittelemme myös ajna metodin parametriksi, paranee testattavuus huomattavasti.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+public TvOhjelma annaTvOhjelma(Opas opas, Kanava kanava, Date aika) {
+    Aikataulu aikataulu = opas.annaAikataulu(kanava);
+    return aikataulu.annaTvOhjelma(aika);
+}
+<% end %>
+
+<p>
+  Funktionaalisessa ohjelmoinnissa käytetään alkioiden käsittelyyn työvälineitä kuten <code>map</code> ja <code>filter</code>, joista ensimmäistä käytetään arvon muuntamiseen ja jälkimmäistä arvojen rajaamiseen. Alla olevassa esimerkissä käydään läpi henkilölista ja valitaan sieltä vain Maija-nimiset henkilöt. Lopulta heiltä valitaan iät ja ne tulostetaan.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+List&lt;Henkilo&gt; henkilot = // .. henkilo-lista saatu muualta
+
+henkilot.stream()
+        .filter(h -&gt; h.getNimi().equals("Maija"))
+        .map(h -> h.getIka())
+        .forEach(System.out::println);
+<% end %>
+
+<p>
+  Ylläolevassa esimerkissä henkilot-listan sisältö ei muutu ohjelmakoodin suorituksen aikana. Periaatteessa -- jos useampi sovellus haluaisi listaan liittyvät tiedot -- kutsun <code>System.out::println</code> voisi vaihtaa esimerkiksi tiedon lähettämiseen liittyvällä kutsulla.
+</p>
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Reaktiivinen ohjelmointi
+<% end %>
+
+<p>
+  Reaktiivisella ohjelmoinnilla tarkoitetaan ohjelmointiparadigmaa, missä ohjelman tila voidaan nähdä verkkona, missä muutokset muuttujiin vaikuttavat myös kaikkiin niistä riippuviin muuttujiin. Perinteisessä imperatiivisessa ohjelmoinnissa alla olevan ohjelman tulostus on 5.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+int a = 3;
+int b = 2;
+int c = a + b;
+a = 7;
+
+System.out.println(c);
+<% end %>
+
+<p>
+  Reaktiivisessa ohjelmoinnissa asia ei kuitenkaan ole näin, vaan ohjelman tulostus olisi 9. Lauseke <code>int c = a + b;</code> määrittelee muuttujan <code>c</code> arvon riippuvaiseksi muuttujista a ja b, jolloin kaikki muutokset muuttujiin a tai b vaikuttavat myös muuttujan c arvoon.
+</p>
+
+<p>
+  Reaktiivista ohjelmointia hyödynnetään esimerkiksi taulukkolaskentaohjelmistoissa, missä muutokset yhteen soluun voivat vaikuttaa myös muiden solujen sisältöihin, mitkä taas mahdollisesti päivittävät muita soluja jne. Yleisemmin ajatellen reaktiivinen ohjelmointiparadigma on kätevä tapahtumaohjatussa ohjelmoinnissa; käyttöliittymässä tehtyjen toimintojen aiheuttamat muutokset johtavat myös käyttöliittymässä näkyvän tiedon päivittymisen.
+</p> 
+
+
+<% partial 'partials/hint', locals: { name: 'Reaktiivisen ohjelmoinnin kehitys' } do %>
+
+  <p>
+    Tutustu osoitteessa <a href="http://soft.vub.ac.be/Publications/2012/vub-soft-tr-12-13.pdf" target="_blank">http://soft.vub.ac.be/Publications/2012/vub-soft-tr-12-13.pdf</a> olevaan Survey-artikkeliin, joka käsittelee reaktiivisen ohjelmoinnin kehitystä. Myös Andre Staltzin kirjoittama osoitteessa <a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754" target="_blank">https://gist.github.com/staltz/868e7e9bc2a7b8c1f754</a> löytyvä johdanto kannattaa lukea.
+  </p> 
+
+<% end %>
+
+
+<p>
+  Termi reaktiivinen ohjelmointi (reactive programming) on kuormittunut, ja sillä on myös toinen yleisesti käytössä oleva merkitys. Reaktiivisella ohjelmoinnilla tarkoitetaan myös reaktiivisten sovellusten kehittämistä.
+</p>
+
+<% partial 'partials/hint', locals: { name: 'Reactive Manifesto' } do %>
+  
+  <p>
+    Tutustu <a href="http://www.reactivemanifesto.org/" target="_blank">Reaktiivisen sovelluskehityksen manifestiin</a>, joka ohjeistaa ohjelmistokehittäjiä luomaan sovelluksia, jotka vastaavat pyyntöön nopeasti (responsive), kestävät virhetilanteita (resilient), mukautuvat erilaisiin kuormiin (elastic) ja välittävät viestejä eri järjestelmän osa-alueiden välillä (message driven):
+  </p>
+  
+  <p>
+    <em>Responsive: The system responds in a timely manner if at all possible. Responsiveness is the cornerstone of usability and utility, but more than that, responsiveness means that problems may be detected quickly and dealt with effectively. Responsive systems focus on providing rapid and consistent response times, establishing reliable upper bounds so they deliver a consistent quality of service. This consistent behaviour in turn simplifies error handling, builds end user confidence, and encourages further interaction.</em>
+  </p>
+
+  <p>
+    <em>Resilient: The system stays responsive in the face of failure. This applies not only to highly-available, mission critical systems — any system that is not resilient will be unresponsive after a failure. Resilience is achieved by replication, containment, isolation and delegation. Failures are contained within each component, isolating components from each other and thereby ensuring that parts of the system can fail and recover without compromising the system as a whole. Recovery of each component is delegated to another (external) component and high-availability is ensured by replication where necessary. The client of a component is not burdened with handling its failures.</em>
+  </p>
+
+  <p>
+    <em>Elastic: The system stays responsive under varying workload. Reactive Systems can react to changes in the input rate by increasing or decreasing the resources allocated to service these inputs. This implies designs that have no contention points or central bottlenecks, resulting in the ability to shard or replicate components and distribute inputs among them. Reactive Systems support predictive, as well as Reactive, scaling algorithms by providing relevant live performance measures. They achieve elasticity in a cost-effective way on commodity hardware and software platforms.</em>
+  </p>
+
+  <p>
+    <em>Message Driven: Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose coupling, isolation and location transparency. This boundary also provides the means to delegate failures as messages. Employing explicit message-passing enables load management, elasticity, and flow control by shaping and monitoring the message queues in the system and applying back-pressure when necessary. Location transparent messaging as a means of communication makes it possible for the management of failure to work with the same constructs and semantics across a cluster or within a single host. Non-blocking communication allows recipients to only consume resources while active, leading to less system overhead.</em>
+  </p>
+
+  <p>
+    Lainattu: <a href="http://www.reactivemanifesto.org/" target="_blank">http://www.reactivemanifesto.org/</a>
+  </p>
+
+<% end %>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Funktionaalinen reaktiivinen ohjelmointi
+<% end %>
+
+<p>
+  Funktionaalinen reaktiivinen ohjelmointi on funktionaalista ohjelmointia ja reaktiivista ohjelmointia yhdistävä ohjelmointiparadigma. Järjestelmiä on karkeasti jakaen kahta tyyppiä, joista toinen perustuu viestien lähettämiseen (viestejä välitetään verkon läpi kunnes tulos saavutettu) ja toinen viestien odottamiseen (odotetaan kunnes tulokselle on tarvetta, ja tuotetaan tulos).
+</p>
+
+<p>
+  Materiaalissa aiemmin esiintyneessä verkkokauppojen hintavertailuohjelmassa (tehtävä LowestPrices) käytettiin esimerkiksi seuraavaa lähdekoodia kaikkien verkkokauppojen läpikäyntiin:
+</p>
+
+
+
+<% partial 'partials/code_highlight' do %>
+// services on lista hintatietoja tarjoavia palveluita
+// ja taskExecutor on Javan AsyncTaskExecutor-luokan ilmentymä
+BaseService bestService = services.stream().parallel()
+                .map(s -&gt; taskExecutor.submit(() -&gt; {
+                            s.getLowestPrice(item);
+                            return s;
+                        })
+                ).map(f -&gt; {
+                    try {
+                        return f.get();
+                    } catch (Throwable t) {
+                        // käsittele virhe
+                        return null;
+                    }
+                })
+                .min((s1, s2) -&gt; Double.compare(s1.getLowestPrice(item), s2.getLowestPrice(item)))
+                .get();
+<% end %>
+
+
+<p>
+  Esimerkissä etsitään edullisin vaihtoehto kaikista vaihtoehdoista, jolle tehdään lopuksi jotain. Esimerkissä on kuitenkin ongelma: metodin <code>get</code>-kutsuminen <a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Future.html" target="_blank">Future</a>-rajapinnan toteuttavalle oliolle jää odottamaan tuloksen valmistumista. Samalla myös pyyntöä käsittelevä säie on odotustilassa.
+</p>
+
+<p>
+  Ohjelman voisi rakentaa fiksummin. Entä jos sovellus lähettäisikin vastauksen selaimelle kun laskenta on valmis, mutta ei pakottaisi säiettä odottamaan vastausta? Eräs mahdollisuus on <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html" target="_blank">CompletableFuture</a>-luokan käyttö, jonka avulla työn alla oleville tehtäville voidaan kertoa <em>mitä pitää tehdä sitten kun laskenta on valmis</em>. Tutustu aiheeseen tarkemmin osoitteessa <a href="http://www.deadcoderising.com/java8-writing-asynchronous-code-with-completablefuture/" target="_blank">http://www.deadcoderising.com/java8-writing-asynchronous-code-with-completablefuture/</a>. Springin <a href="http://docs.spring.io/spring-integration/reference/html/messaging-endpoints-chapter.html#gw-completable-future" target="_blank">dokumentaatiossa</a> löytyy myös aiheeseen liittyvää sisältöä.
+</p>
+
+
+
+<% partial 'partials/material_sub_heading' do %>
+  Web Socketit
+<% end %>
+
+<p>
+  <a href="http://en.wikipedia.org/wiki/WebSocket" target="_blank">WebSocketit</a> ovat tapa toteuttaa palvelimen ja selaimen välinen kommunikointi siten, että selain rekisteröityy palveluun, jonka jälkeen palvelin voi lähettää selaimelle dataa ilman uutta pyyntöä selaimelta. Rekisteröityminen tapahtuu sivulla olevan Javascriptin avulla, jonka jälkeen Javascriptiä käytetään myös palvelimelta tulevan tiedon käsittelyyn.
+</p>
+
+<p>
+  Spring tarjoaa komponentit Websockettien käyttöön. Määritellään ensin riippuvuudet projekteihin <code>spring-boot-starter-websocket</code> ja <code>spring-messaging</code>, jonka jälkeen luodaan tarvittavat konfiguraatiotiedostot.
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-websocket&lt;/artifactId&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-messaging&lt;/artifactId&gt;
+&lt;/dependency&gt;<% end %>
+
+<% partial 'partials/code_highlight' do %>
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfiguration extends AbstractWebSocketMessageBrokerConfigurer {
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // osoite, johon selain ottaa yhteyttä rekisteröityäkseen
+        registry.addEndpoint("/register").withSockJS();
+    }
+
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        // osoite, jonka alla websocket-kommunikaatio tapahtuu
+        registry.setApplicationDestinationPrefixes("/ws");
+        // osoite, jonka kautta viestit kuljetetaan
+        registry.enableSimpleBroker("/channel");
+    }
+}<% end %>
+
+<p>
+  Ylläolevan konfiguraation oleellisimmat osat ovat annotaatio <code>@EnableWebSocketMessageBroker</code>, joka mahdollistaa websocketien käytön sekä luo viestinvälittäjän. Konfiguraation osa <code>registry.enableSimpleBroker("/channel");</code> luo polun, jota pitkin vastaukset lähetetään käyttäjälle ja <code>registry.setApplicationDestinationPrefixes("/ws");</code> kertoo että sovelluksen polkuun <code>/ws</code> päätyvät viestit ohjataan viestinvälittäjälle. Näiden lisäksi rivi <code>registry.addEndpoint("/register").withSockJS();</code> määrittelee <a href="http://en.wikipedia.org/wiki/Streaming_Text_Oriented_Messaging_Protocol" target="_blank">STOMP</a>-protokollalle osoitteen, mitä kautta palveluun voi rekisteröityä. Tässä lisäksi määritellään <a href="https://github.com/sockjs" target="_blank">SockJS</a> fallback-tuki, jota käytetään jos käyttäjän selain ei tue Websocketteja.
+</p>
+
+<p>
+  Selainpuolella käyttäjä tarvitsee sekä SockJS- että StompJS-kirjastot. Hyödynnämme <a href="http://en.wikipedia.org/wiki/Content_delivery_network" target="_blank">CDN</a>-verkostoja, jotka tarjoavat staattista sisältöä sivuille ilman tarvetta niiden omalla palvelimella säilyttämiselle. Esimerkiksi <a href="http://cdnjs.com/" target="_blank">CDNJS</a>-palvelu ehdottaa edellämainituille kirjastoille olemassaolevia osoitteita -- kirjastot voi luononllisesti pitää myös osana omaa sovellusta.
+</p>
+
+<p>
+  Kokonaisuudessaan selainpuolen toiminnallisuus on esimerkiksi seuraava -- alla body-elementin sisältö:
+</p>
+
+<% partial 'partials/xml_highlight' do %>
+&lt;p&gt;&lt;input type="button" onclick="send();" value="Say Wut!"/&gt;&lt;/p&gt;
+
+&lt;script src="//cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.min.js"&gt;&lt;/script&gt;
+&lt;script src="//cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+// luodaan asiakasohjelmisto, joka rekisteröityy osoitteeseen "/register"
+var client = Stomp.over(new SockJS('/register'));
+
+// kun käyttäjä painaa sivulla olevaa nappia, lähetetään osoitteeseen
+// "/ws/messages" viesti "hello world!"
+function send() {
+    client.send("/ws/messages", {}, JSON.stringify({'message': 'hello world!'}));
+}
+
+// otetaan yhteys sovellukseen ja kuunnellaan "channel"-nimistä kanavaa
+// -- jos kanavalta tulee viesti, näytetään JavaScript-alert ikkuna
+client.connect({}, function (frame) {    
+    client.subscribe('channel', function (response) {
+        alert(response);
+    });
+});
+
+// kun sivu suljetaan, yritetään sulkea yhteys palvelimelle
+window.onbeforeunload = function () {
+    client.disconnect();
+}
+&lt;/script&gt;<% end %>
+
+<p>
+  Palvelinpuolella ohjelmistomme toimii esimerkiksi seuraavasti. Kuunnellaan osoitteeseen <code>/ws/messages</code>-tulevia pyyntöjä -- allaoleva esimerkki yrittää muuntaa automaattisesti pyynnössä tulevan JSON-datan <code>Message</code>-olioksi. Toisin kuin aiemmin, käytämme nyt <code>@MessageMapping</code>-annotaatiota, joka on viestinvälityksen vastine <code>@RequestMapping</code>-annotaatiolle.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@Controller
+public class MessageController {
+    
+    // koska konfiguraatiossa määritelty "/ws"-juuripoluksi, vastaanottaa
+    // tämä kontrollerimetodi osoitteeseen /ws/messages tulevat viestit
+    @MessageMapping("/messages")
+    public void handleMessage(Message message) throws Exception {
+        // tee jotain
+    }
+}<% end %>
+
+<p>
+  Voimme lisäksi toteuttaa esimerkiksi palvelun, joka lähettää viestejä <em>kaikille</em> tiettyyn polkuun rekisteröityneille käyttäjille. Allaoleva palvelu lähettää viestin kerran kymmenessä sekunnissa.
+</p>
+
+<% partial 'partials/code_highlight' do %>
+@Service
+public class MessageService {
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Scheduled(fixedDelay = 10000)
+    public void addMessage() {
+        Message message = new Message();
+        // aseta viestin sisältö
+        this.template.convertAndSend("/vastauskanava", message);
+    }
+}
+<% end %>          
+
+<p>
+  Yllä käytetty <a href="http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/messaging/simp/SimpMessagingTemplate.html" target="_blank">SimpMessagingTemplate</a> on hieman kuin aiemmin käyttämämme RestTemplate, mutta eri käyttötarkoitukseen.
+</p>
+
+
+
+
+<% partial 'partials/exercise', locals: { name: 'Chat 2010' } do %>
+      
+  <p>
+    Tutustu osoitteessa <a href="http://spring.io/guides/gs/messaging-stomp-websocket/" target="_blank">http://spring.io/guides/gs/messaging-stomp-websocket/</a> olevaan oppaaseen.
+  </p>
+      
+  <p>
+    Tehtävässä on hahmoteltu chat-palvelua, jossa käyttäjä voi kirjautuessaan valita kanavan, mihin hän kirjoittaa viestejä. Tehtävään on hahmoteltu yksinkertainen kirjautuminen sekä käyttöliittymä, missä on toiminnallisuus yhteyden ottamiseen palvelimelle. Oletuskanavalla on myös jo yksi käyttäjä, joka lähettelee kanavalle viestejä.
+  </p>
+
+  <p>
+    Tutustu sovelluksen toimintaan, ja lisää sovellukseen uusi viestejä lähettävä palvelu. Palvelun tulee lähettää viestejä ajoittain kanavalle.
+  </p>
+
+<% end %>
+
+
+<% partial 'partials/exercise', locals: { name: 'WebFlux Workshop' } do %>
+
+  <p>
+    Osoitteessa <a href="https://bclozel.github.io/webflux-workshop/" target="_blank">https://bclozel.github.io/webflux-workshop/</a> on opas reaktiivisen web-sovelluksen kehittämiseen.
+  </p>
+
+  <p>
+    Käy opas läpi ja toteuta se tehtäväpohjaan. Kun olet valmis, palauta tehtävä TMC:lle.
+  </p>
+
+  
+<% end %>

@@ -263,10 +263,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   Kun käyttäjä on kirjautuneena, saa häneen liittyvän käyttäjätunnuksen ns. tietoturvakontekstista.
 </p>
 
-<pre class="sh_java">
+<% partial 'partials/code_highlight' do %>
 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 String username = auth.getName();
-</pre>
+<% end %>
 
 
 <% partial 'partials/hint', locals: { name: 'Uloskirjautuminen' } do %>
