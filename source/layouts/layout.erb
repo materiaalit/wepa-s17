@@ -13,10 +13,6 @@
 
     <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.1/cookieconsent.min.css" />
 
-    <link rel="stylesheet" href="https://materiaalit.github.io/code-states-visualizer-cdn/app.css" />
-    <link rel="stylesheet" href="https://materiaalit.github.io/typonator-cdn/app.css" />
-    <link rel="stylesheet" href="https://crowdsorcerer.testmycode.io/dist/app.css" />
-
     <% if build? %>
       <%= partial 'partials/analytics' %>
     <% end %>
@@ -74,16 +70,5 @@
     <script src='//cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js'></script>
 
     <script>window.cookieconsent.initialise({"palette":{"popup":{"background":"#000"},"button":{"background":"#f1d600"}}, "position": "bottom-left"});</script>
-
-    <!-- <script src='https://materiaalit.github.io/code-states-visualizer-cdn/app.js'></script> -->
-    <!-- <script src='https://materiaalit.github.io/typonator-cdn/app.js'></script> -->
-    <!-- <script src='https://crowdsorcerer.testmycode.io/dist/app.js'></script> -->
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        // window.initCodeStatesVisualizer();
-        // window.initTyponator(); // default init disabled -- favoring AB
-        // window.initCrowdsorcerer();
-      });
-    </script>
   </body>
 </html>

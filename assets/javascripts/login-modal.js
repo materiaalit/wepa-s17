@@ -33,24 +33,18 @@ class LoginModal {
     initQuiznator();
     initStudentDashboard();
 
+    const researchAgreement = localStorage.getItem('research-agreement') || window['research-agreement'] || ""
+    const agreed = researchAgreement.indexOf('j71pjik42i') !== -1
+    window['research-agreement-agreed'] = agreed
+
+    if (!agreed) {
+      return;
+    }
+
     this.initPheromones();
     this.initLogger();
-
-    this.getUserGroup();
   }
 
-  getUserGroup() {
-    const user = client.getUser();
-
-    fetch(`https://ab-studio.testmycode.io/api/v0/ab_studies/typonator_s17_ohpe/group?oauth_token=${user.accessToken}`).then(function(response) {
-      return response.json();
-    }).then(function(data) {
-      if(parseInt(data.group) == 1) {
-        window.initTyponator();
-      }
-    });
-  }
-    
   initPheromones(){
     const { username } = client.getUser();
 
@@ -101,6 +95,7 @@ class LoginModal {
       client.unauthenticate();
 
       try {
+        localStorage.removeItem('research-agreement')
         window.StudentDashboard.destroy();
         window.Quiznator.removeUser();
       } catch(e) {}
